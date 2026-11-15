@@ -564,7 +564,15 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
    calligraphy wordmark — img/logo-wordmark.svg, the hero artwork
    with its viewBox trimmed to the art and the plum baked in (an
    <img>-loaded SVG cannot inherit the page colour) — sized big
-   enough to read as the brand name, like SlickDeals/Dan's. */
+   enough to read as the brand name, like SlickDeals/Dan's.
+   Panel round (same day, latest): the owner moved the three-lines
+   button to the RIGHT of the wordmark (controls split left/right
+   "makes no sense") and put EVERYTHING in the panel — account
+   block, notifications row, expandable sections with counts,
+   sign-out at the bottom; the bell and the avatar button left the
+   top row entirely, and the unread badge rides the lines button.
+   The row is one anchored line: wordmark hard left, lines hard
+   right, nothing floating in the middle. */
 .phdr{display:none}
 .pnav-bg{display:none}
 @media(max-width:768px){
@@ -575,16 +583,14 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .phdr-spacer{flex:1}
   .phdr-ic{position:relative;width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--brd);background:#fff;color:var(--plum);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
   .phdr-ic:active{background:var(--plum-lt)}
-  .phdr-burger,.phdr-bell{border:none;background:none;border-radius:0}
-  .phdr-burger:active,.phdr-bell:active{background:none}
-  .phdr-signin{overflow:hidden}
-  .phdr-signin .s-ico{width:100%!important;height:100%!important;min-width:unset!important;min-height:unset!important;display:flex;align-items:center;justify-content:center;border-radius:50%}
+  .phdr-burger{border:none;background:none;border-radius:0}
+  .phdr-burger:active{background:none}
   .phdr-searchrow{padding:0 .7rem .55rem}
   .phdr-pill{display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--brd);border-radius:999px;padding:.42rem .8rem;color:var(--ink3)}
   .phdr-pill input{flex:1;border:none;background:transparent;outline:none;font-family:'Inter',sans-serif;font-size:.92rem;color:var(--ink);min-width:0}
   .phdr-pill input::placeholder{color:var(--ink3)}
   #phdr-search-clear{background:none;border:none;cursor:pointer;color:#888;font-size:16px;line-height:1;padding:0 2px;align-items:center}
-  .pnav{border-top:1px solid var(--brd);max-height:62vh;overflow-y:auto;padding:.45rem .7rem .8rem}
+  .pnav{border-top:1px solid var(--brd);max-height:calc(100dvh - 8rem);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:.45rem .7rem .8rem}
   .pnav-link{display:flex;align-items:center;gap:.7rem;width:100%;padding:.55rem .4rem;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.05);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
   .pnav-link:last-child{border-bottom:none}
   .pnav-ic{width:32px;height:32px;flex:none;border-radius:50%;background:var(--plum-lt);color:var(--plum);display:flex;align-items:center;justify-content:center}
@@ -592,6 +598,24 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .pnav-cat{display:flex;align-items:center;gap:.6rem;width:100%;padding:.42rem .4rem;background:none;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:.93rem;font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
   .pnav-cat.on{background:var(--plum-lt);color:var(--plum);font-weight:700}
   .pnav-cat.sub{padding-left:2.4rem;font-size:.9rem}
+  /* Panel redesign (owner, 2026-11-15): the panel is the ONE phone
+     menu — account block on top, a Notifications row, expandable
+     sections with counts, sign-out at the bottom. The bell and the
+     avatar button left the top row; the unread count rides the
+     three-lines button itself as a badge. */
+  .pnav-acct{padding:.35rem .4rem .6rem;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:.35rem}
+  .pnav-acct-row{display:flex;align-items:center;gap:.6rem}
+  .pnav-avatar{width:38px;height:38px;flex:none;border-radius:50%;background:var(--plum-lt);color:var(--plum);display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden}
+  .pnav-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .pnav-acct-name{flex:1;min-width:0;font-weight:700;font-size:.98rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pnav-change{flex:none;background:#fff;border:1px solid rgba(91,45,142,.35);color:var(--plum);border-radius:999px;padding:.22rem .7rem;font-weight:600;font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif}
+  .pnav-signin-btn{width:100%;background:var(--plum);color:#fff;border:none;border-radius:12px;padding:.6rem;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer}
+  .pnav-acct-sub{font-size:.78rem;color:var(--ink3);margin-top:.4rem;line-height:1.45}
+  .pnav-sec-h{display:flex;align-items:center;justify-content:space-between;width:100%;padding:.55rem .4rem;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.05);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);text-align:left;cursor:pointer}
+  .pnav-arrow{color:var(--plum);font-size:.8rem;flex:none}
+  .pnav-count{margin-left:auto;flex:none;font-size:.75rem;font-weight:600;color:var(--ink3);background:rgba(91,45,142,.07);border-radius:999px;padding:.05rem .5rem}
+  .pnav-ncount{margin-left:auto;flex:none;min-width:22px;height:22px;border-radius:999px;background:#dc2626;color:#fff;font-size:.74rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+  .pnav-signout{color:var(--plum)}
   .pnav-bg{position:fixed;inset:0;background:rgba(40,20,70,.25);z-index:290}
   /* the old phone chrome retires into the panel */
   .mbar{display:none!important}
@@ -1531,6 +1555,17 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
   font-family:inherit;width:100%;min-width:60px;
 }
 .cp-search-pill input::placeholder{color:#aaa}
+/* Clean pill searches (owner, 2026-11-15 — "inside the pill there's
+   something SQUARE that shows through"): the global glassy `input`
+   rule leaves its 8px-corner inset shadow, backdrop blur and chunky
+   padding on these inputs where their own rules don't override them
+   — a squarish ghost floating inside the round pill. Inside a pill
+   the input is fully borderless and transparent, padding-free, and
+   takes the pill's own curve; the search-overlay input keeps its
+   grey pill but sheds the same leftover shadow/blur. */
+.cp-search-pill input,.phdr-pill input{background:transparent!important;background-image:none!important;border:none!important;border-radius:999px!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0!important}
+.cp-search-pill input:focus,.phdr-pill input:focus{border:none!important;box-shadow:none!important}
+.search-ov-input{box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:rgba(91,45,142,.28);border-radius:4px}
@@ -1672,22 +1707,19 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
 <div class="main">
 
 <!-- PHONE COMPACT HEADER (owner, 2026-11-15) — visible ≤768px only.
-     One top row: hamburger · full wordmark · notifications bell ·
-     account, with a live search row under it. Everything the old
-     phone chrome carried (bottom bar, category strip) lives in the
-     hamburger panel below. Desktop uses .topbar/.sidebar as before. -->
+     One top row: full wordmark on the LEFT, the three-lines menu
+     button on the RIGHT (redesign, 2026-11-15 — the bell and the
+     avatar button left the row; everything lives in the lines
+     panel now, and the unread badge rides the lines button), with
+     a live search row under it. Everything the old phone chrome
+     carried (bottom bar, category strip) lives in the panel below.
+     Desktop uses .topbar/.sidebar as before. -->
 <header class="phdr" id="phdr">
   <div class="phdr-row">
-    <button class="phdr-ic phdr-burger" id="phdr-burger" onclick="togglePnav()" title="Menu" aria-label="Menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="20" height="20"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
-    </button>
     <a class="phdr-logo" href="/" onclick="goHome();return false"><img src="img/logo-wordmark.svg" alt="Gifting Butler"></a>
     <div class="phdr-spacer"></div>
-    <button class="phdr-ic phdr-bell" onclick="gbSignIn()" title="Notifications" aria-label="Notifications" style="display:none">
-      <svg viewBox="0 0 20 20" fill="currentColor" width="19" height="19"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
-    </button>
-    <button class="phdr-ic phdr-signin" onclick="gbSignIn()" title="Sign in">
-      <span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+    <button class="phdr-ic phdr-burger" id="phdr-burger" onclick="togglePnav()" title="Menu" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="20" height="20"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
     </button>
   </div>
   <div class="phdr-searchrow">
@@ -1698,15 +1730,31 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
     </div>
   </div>
   <nav class="pnav" id="pnav" style="display:none" aria-label="Menu">
-    <button class="pnav-link" onclick="closePnav();goHome()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg></span>Home</button>
+    <div class="pnav-acct" id="pnav-acct"></div>
+    <button class="pnav-link" id="pnav-notes-row" onclick="pnavNotes()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Notifications<span class="pnav-ncount" id="pnav-notes-count" style="display:none"></span></button>
     <button class="pnav-link" onclick="closePnav();openSearchOverlay()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg></span>Search</button>
+    <div class="pnav-sec">
+      <button class="pnav-sec-h" id="pnav-sec-h-gifts" onclick="togglePnavSec('gifts')" aria-expanded="true"><span>Gifts</span><span class="pnav-arrow" id="pnav-arrow-gifts">▾</span></button>
+      <div class="pnav-sec-body" id="pnav-sec-body-gifts">
+        <button class="pnav-link" onclick="closePnav();goHome()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg></span>Home — All Gifts<span class="pnav-count" id="pnav-all-count"></span></button>
+        <div id="pnav-cats"></div>
+      </div>
+    </div>
     <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist</button>
-    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders</button>
+    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg></span>Reminders</button>
     <button class="pnav-link" onclick="closePnav();om('gw-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg></span>Giveaway</button>
     <button class="pnav-link" onclick="location.href='/room-gifts.html'"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
-    <button class="pnav-link" onclick="closePnav();gbSignIn()"><span class="pnav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Sign in / Account</button>
-    <div class="pnav-h">Categories &amp; Occasions</div>
-    <div id="pnav-cats"></div>
+    <div class="pnav-sec">
+      <button class="pnav-sec-h" id="pnav-sec-h-more" onclick="togglePnavSec('more')" aria-expanded="false"><span>More</span><span class="pnav-arrow" id="pnav-arrow-more">▸</span></button>
+      <div class="pnav-sec-body" id="pnav-sec-body-more" style="display:none">
+        <a class="pnav-link" href="#" onclick="closePnav();om('about-modal');return false">About Us</a>
+        <a class="pnav-link" href="mailto:giftingbutler.help@gmail.com">Contact</a>
+        <a class="pnav-link" href="/advertise.html">Advertise With Us</a>
+        <a class="pnav-link" href="/suggest.html">Suggest a Gift</a>
+        <a class="pnav-link" href="/guides/">Gift Guides</a>
+      </div>
+    </div>
+    <button class="pnav-link pnav-signout" id="pnav-signout" style="display:none" onclick="closePnav();gbSignOut()"><span class="pnav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Sign out</button>
   </nav>
 </header>
 <div class="pnav-bg" id="pnav-bg" style="display:none" onclick="closePnav()"></div>
@@ -1715,12 +1763,77 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
    The hamburger panel carries every destination the old phone
    chrome had: the bottom bar's five stops, Gift This Room, and the
    full category/occasion list (same CATS data + holiday gating as
-   the desktop category strip). Picking anything closes the panel. */
+   the desktop category strip). Picking anything closes the panel.
+   Panel redesign (owner, later the same day): the three-lines
+   button moved to the RIGHT of the wordmark and the panel became
+   the ONE phone menu, SlickDeals-style — account block on top
+   (name + Change, or Sign in), a Notifications row (the bell left
+   the top row; its unread badge now rides the lines button),
+   navigation in expandable sections with counts, sign-out at the
+   bottom. The panel uses the full height under the header and
+   scrolls, so every row is reachable. */
 function togglePnav(){
   var p=document.getElementById('pnav');
   if(!p) return;
-  if(p.style.display==='none'){ renderPnavCats(); p.style.display='block'; var b=document.getElementById('pnav-bg'); if(b)b.style.display='block'; var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','true'); }
+  if(p.style.display==='none'){ renderPnavCats(); renderPnavAcct(); p.style.maxHeight='calc(100dvh - '+phdrH()+'px)'; p.style.display='block'; var b=document.getElementById('pnav-bg'); if(b)b.style.display='block'; var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','true'); }
   else closePnav();
+}
+function togglePnavSec(key){
+  var body=document.getElementById('pnav-sec-body-'+key), hd=document.getElementById('pnav-sec-h-'+key), ar=document.getElementById('pnav-arrow-'+key);
+  if(!body) return;
+  var open=body.style.display!=='none';
+  body.style.display=open?'none':'';
+  if(hd)hd.setAttribute('aria-expanded',open?'false':'true');
+  if(ar)ar.textContent=open?'▸':'▾';
+}
+/* The panel's account block: signed out → a Sign in button; signed
+   in → the member's name (their comment name) with a Change button
+   that opens the account window on its name form. Sign out lives at
+   the panel's bottom and is painted here too. renderAuth calls this
+   on every sign-in change; togglePnav calls it on every open, so
+   the block is never stale. */
+function renderPnavAcct(user){
+  var host=document.getElementById('pnav-acct'); if(!host) return;
+  if(user===undefined){ var u=(window.gbAuth&&window.gbAuth.currentUser); user=u||null; }
+  var so=document.getElementById('pnav-signout'); if(so)so.style.display=user?'':'none';
+  if(!user){
+    host.innerHTML='<button class="pnav-signin-btn" onclick="closePnav();gbSignIn()">Sign in</button><div class="pnav-acct-sub">Sign in to sync your wishlists &amp; reminders on every device.</div>';
+    return;
+  }
+  var name=(user.displayName||'').trim()||(user.email?user.email.split('@')[0]:'Your account');
+  var av=user.photoURL?'<img src="'+user.photoURL+'" referrerpolicy="no-referrer" alt="">':'<span>'+gbNoteEsc(name.charAt(0).toUpperCase())+'</span>';
+  host.innerHTML='<div class="pnav-acct-row"><span class="pnav-avatar">'+av+'</span><span class="pnav-acct-name">'+gbNoteEsc(name)+'</span><button class="pnav-change" onclick="pnavChangeName()">Change</button></div>';
+}
+function pnavChangeName(){
+  closePnav();
+  if(typeof window.gbAccount==='function'){ window.gbAccount(); if(typeof window.gbNameEditShow==='function')window.gbNameEditShow(); }
+}
+/* The Notifications row: opens the account window landed on its
+   notifications (gbAccount renders the notes; we then bring them
+   into view) — never the avatar top. Signed out, it goes to
+   sign-in like everything account-shaped. */
+function pnavNotes(){
+  closePnav();
+  if(typeof window.gbAccount!=='function'){ if(typeof window.gbSignIn==='function')window.gbSignIn(); return; }
+  window.gbAccount();
+  setTimeout(function(){ var n=document.getElementById('acct-notes'); if(n&&n.scrollIntoView)n.scrollIntoView({block:'start'}); },90);
+}
+/* Gift counts for the panel, mirroring renderP's own rules so the
+   number next to a name is what tapping it would show. */
+function pnavCatCount(id){
+  if(typeof P==='undefined') return 0;
+  var vis=P.filter(function(p){ return !p._hidden; });
+  if(id==='all') return vis.length;
+  var cat=(typeof CATS!=='undefined')?CATS.find(function(c){ return c.id===id; }):null;
+  var subs=(cat&&cat.subs)?cat.subs.map(function(s){ return s.id; }):[];
+  if(subs.length){
+    return vis.filter(function(p){ return p.cats.some(function(c){ return subs.indexOf(c)>=0; })||(id==='jewish-occasions'&&typeof isJudaica==='function'&&isJudaica(p)); }).length;
+  }
+  // renderP's own special cases, mirrored so the numbers stay honest:
+  if(id==='wedding-shower') return vis.filter(function(p){ return p.cats.indexOf('wedding-shower')>=0||p.cats.indexOf('wedding')>=0||p.cats.indexOf('lchaim-vort')>=0; }).length;
+  if(id==='personalized') return vis.filter(function(p){ return p.cats.indexOf('personalized')>=0||(p.badge&&p.badge.toLowerCase().indexOf('personaliz')>=0); }).length;
+  if(id==='trending') return vis.filter(function(p){ return p.badge&&/bestseller|top rated|trending/i.test(p.badge); }).length;
+  return vis.filter(function(p){ return p.cats.indexOf(id)>=0; }).length;
 }
 function closePnav(){
   var p=document.getElementById('pnav'); if(p)p.style.display='none';
@@ -1731,13 +1844,14 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePnav(
 function renderPnavCats(){
   var host=document.getElementById('pnav-cats'); if(!host||typeof CATS==='undefined') return;
   var html='';
-  CATS.filter(function(c){ return holidayVisible(c.id); }).forEach(function(c){
-    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="cpi" style="background:'+c.bg+'">'+c.icon+'</span>'+c.label+'</button>';
+  CATS.filter(function(c){ return c.id!=='all'&&holidayVisible(c.id)&&catDoorOpen(c.id); }).forEach(function(c){
+    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="cpi" style="background:'+c.bg+'">'+c.icon+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
     (c.subs||[]).forEach(function(s){
-      html+='<button class="pnav-cat sub'+(s.id===activeSubCat?' on':'')+'" onclick="pnavSub(\''+c.id+'\',\''+s.id+'\')"><span class="cpi" style="background:#EDE5F8">'+s.icon+'</span>'+s.label+'</button>';
+      html+='<button class="pnav-cat sub'+(s.id===activeSubCat?' on':'')+'" onclick="pnavSub(\''+c.id+'\',\''+s.id+'\')"><span class="cpi" style="background:#EDE5F8">'+s.icon+'</span>'+s.label+'<span class="pnav-count">'+pnavCatCount(s.id)+'</span></button>';
     });
   });
   host.innerHTML=html;
+  var ac=document.getElementById('pnav-all-count'); if(ac)ac.textContent=pnavCatCount('all');
 }
 function phdrH(){ var h=document.getElementById('phdr'); if(!h) return 0; return h.getBoundingClientRect().height||0; }
 function pnavCat(id){ closePnav(); sc(id); }
@@ -1752,9 +1866,12 @@ function phdrSearchInput(el){
   var _fi=document.getElementById('fsb-input'); if(_fi)_fi.value=el.value;
   renderP();
   document.getElementById('phdr-search-clear').style.display=el.value?'flex':'none';
-  var f=document.getElementById('feed'); if(!f) return;
-  var r=f.getBoundingClientRect();
-  if(r.top<-40||r.top>window.innerHeight*0.6){ f.scrollIntoView({block:'start'}); el.focus(); }
+  /* NO scrolling while typing (owner, 2026-11-15 — "you just type E
+     and it goes right away from the search box"): the old code jumped
+     the page to the feed on the first letter whenever the feed sat
+     off-screen, yanking the box out of view mid-type. The header is
+     sticky, so the box stays exactly where it is and the results
+     simply filter underneath. */
 }
 function phdrSearchClear(){
   var i=document.getElementById('phdr-search'); if(i)i.value='';
@@ -1924,7 +2041,7 @@ function phdrSearchClear(){
         <a href="#" onclick="sc('mothers-day');return false">Mother's Day</a>
         <a href="#" onclick="sc('fathers-day');return false">Father's Day</a>
         <a href="#" onclick="sc('christmas');return false">Christmas</a>
-        <a href="#" onclick="sc('jewish-occasions');return false">Jewish Occasions</a>
+        <a href="#" id="foot-jewish-link" onclick="sc('jewish-occasions');return false">Jewish Occasions</a>
       </div>
       <div class="fc">
         <h4>Features</h4>
@@ -2198,6 +2315,18 @@ const GB_MODE='jewish';/*GB_MODE*/
    other feed (including All Gifts) stays general so the site never reads
    as Jewish-centric. The Jewish site ignores all of this. */
 const GB_JEWISH_CATS=['jewish-occasions','upsherin','bar-mitzvah','bat-mitzvah','yomtov','chanukah','purim','rosh-hashana','lchaim-vort'];
+/* ── Jewish Occasions SIDELINED (owner, 2026-11-15) ─────────────────
+   While SHOW_JEWISH_OCCASIONS is false, the Jewish Occasions category
+   and its subcategories vanish from every doorway in: the category
+   strip (renderCats), the phone menu panel (renderPnavCats), the
+   search suggestions (showSugg/showMobSugg) and the footer link
+   (removed just below). Products and data are NOT touched — every
+   gift filed under a Jewish category also lives under an ordinary
+   category, so nothing loses its only home. TO BRING THE SECTION
+   BACK: set SHOW_JEWISH_OCCASIONS = true. Nothing else to change. */
+const SHOW_JEWISH_OCCASIONS=false;
+function catDoorOpen(id){ return SHOW_JEWISH_OCCASIONS||GB_JEWISH_CATS.indexOf(id)<0; }
+if(!SHOW_JEWISH_OCCASIONS){ var _fjl=document.getElementById('foot-jewish-link'); if(_fjl)_fjl.remove(); }
 const GB_JUDAICA_RE=/menorah|chanukiah|mezuzah|kiddush|challah|havdalah|shabbat|shabbos|mishna|seforim|siddur|shtender|kugelach|upsherin|judaica|jewish|kosher|tallit|tallis|tefillin|dreidel|matzah|matzo|seder|hamotzi|tzedakah|pushke|haggadah/i;
 function isJudaica(p){return GB_JUDAICA_RE.test((p.title||'')+' '+(p.brand||'')+' '+(p.desc||''));}
 const CATS=[
@@ -2727,7 +2856,7 @@ function holidayVisible(id){
 }
 function renderCats(){
   const searchPill=`<div class="cp-search-pill"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path stroke-linecap="round" stroke-linejoin="round" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/></svg><input type="text" id="fsb-input" placeholder="Search…" oninput="fsbInput(this)" onkeydown="if(event.key==='Escape'){fsbClear()}if(event.key==='Enter'){searchQ=this.value;renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})}"><button id="fsb-clear" onclick="fsbClear()" style="display:none;background:none;border:none;cursor:pointer;color:#888;font-size:16px;line-height:1;padding:0 2px" aria-label="Clear">×</button></div>`;
-  document.getElementById('cat-nav').innerHTML=CATS.filter(c=>holidayVisible(c.id)).map(c=>`<button class="cp${c.id===activeCat?' on':''}" onclick="sc('${c.id}')"><div class="cpi" style="background:${c.bg}">${c.icon}</div>${c.label}</button>`).join('')+searchPill;
+  document.getElementById('cat-nav').innerHTML=CATS.filter(c=>holidayVisible(c.id)&&catDoorOpen(c.id)).map(c=>`<button class="cp${c.id===activeCat?' on':''}" onclick="sc('${c.id}')"><div class="cpi" style="background:${c.bg}">${c.icon}</div>${c.label}</button>`).join('')+searchPill;
   const sn=document.getElementById('kids-subnav');
   if(activeCat==='kids'||activeCat==='jewish-occasions'){
     const pCat=CATS.find(c=>c.id===activeCat);
@@ -3103,12 +3232,22 @@ async function gbNotesCall(name, body){
   try{ var r = await fetch('https://us-central1-giftingbutler-74395.cloudfunctions.net/' + name, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok }, body: JSON.stringify(body || {}) }); return await r.json(); }catch(e){ return null; }
 }
 function gbPaintNoteBadges(){
-  document.querySelectorAll('.sb-signin,.mb-signin,.tb-signin,.phdr-bell').forEach(function(btn){
+  // Desktop: the badge rides the sign-in buttons, as before. Phone:
+  // the bell left the top row in the panel redesign, so the badge
+  // rides the three-lines button itself — unread mail is still
+  // visible at a glance, and the panel's Notifications row carries
+  // the same count.
+  document.querySelectorAll('.sb-signin,.mb-signin,.tb-signin,.phdr-burger').forEach(function(btn){
     var b = btn.querySelector('.gb-note-badge');
     if(!GB_NOTES.unread || GB_NOTES.muted){ if(b) b.remove(); return; }
     if(!b){ b = document.createElement('span'); b.className = 'gb-note-badge'; btn.appendChild(b); }
     b.textContent = GB_NOTES.unread > 9 ? '9+' : String(GB_NOTES.unread);
   });
+  var pc = document.getElementById('pnav-notes-count');
+  if(pc){
+    if(GB_NOTES.unread && !GB_NOTES.muted){ pc.textContent = GB_NOTES.unread > 9 ? '9+' : String(GB_NOTES.unread); pc.style.display = 'flex'; }
+    else pc.style.display = 'none';
+  }
 }
 async function gbLoadNotes(user){
   if(!user){ GB_NOTES = { unread: 0, items: [], uid: '', muted: false }; gbPaintNoteBadges(); return; }
@@ -4436,7 +4575,7 @@ function showSugg(q){
   if(!box)return;
   if(!q||q.length<2){box.style.display='none';return;}
   const ql=q.toLowerCase();
-  const _ch=[];CATS.forEach(c=>{if(c.id!=='all'&&holidayVisible(c.id)){if(c.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:null,icon:c.icon,label:c.label});(c.subs||[]).forEach(s=>{if(s.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:s.id,icon:s.icon,label:s.label});});}});const catHits=_ch.slice(0,3);
+  const _ch=[];CATS.forEach(c=>{if(c.id!=='all'&&holidayVisible(c.id)&&catDoorOpen(c.id)){if(c.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:null,icon:c.icon,label:c.label});(c.subs||[]).forEach(s=>{if(s.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:s.id,icon:s.icon,label:s.label});});}});const catHits=_ch.slice(0,3);
   const prodHits=P.filter(p=>!p._hidden&&(p.title.toLowerCase().includes(ql)||p.brand.toLowerCase().includes(ql)||(p.desc&&p.desc.toLowerCase().includes(ql)))).slice(0,5);
   if(!catHits.length&&!prodHits.length){box.style.display='none';return;}
   let html='';
@@ -4453,7 +4592,7 @@ function showMobSugg(q){
   if(!box)return;
   if(!q||q.length<2){box.innerHTML='';return;}
   const ql=q.toLowerCase();
-  const _ch=[];CATS.forEach(c=>{if(c.id!=='all'&&holidayVisible(c.id)){if(c.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:null,icon:c.icon,label:c.label});(c.subs||[]).forEach(s=>{if(s.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:s.id,icon:s.icon,label:s.label});});}});const catHits=_ch.slice(0,3);
+  const _ch=[];CATS.forEach(c=>{if(c.id!=='all'&&holidayVisible(c.id)&&catDoorOpen(c.id)){if(c.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:null,icon:c.icon,label:c.label});(c.subs||[]).forEach(s=>{if(s.label.toLowerCase().includes(ql))_ch.push({id:c.id,sub:s.id,icon:s.icon,label:s.label});});}});const catHits=_ch.slice(0,3);
   const prodHits=P.filter(p=>!p._hidden&&(p.title.toLowerCase().includes(ql)||(p.brand&&p.brand.toLowerCase().includes(ql))||(p.desc&&p.desc.toLowerCase().includes(ql)))).slice(0,6);
   if(!catHits.length&&!prodHits.length){box.innerHTML='';return;}
   let html='';
@@ -4464,16 +4603,15 @@ function showMobSugg(q){
 populateDays();
 document.getElementById('rem-month').addEventListener('change',populateDays);
 function fsbClear(){var i=document.getElementById('fsb-input');i.value='';searchQ='';renderP();document.getElementById('fsb-clear').style.display='none';i.focus();}
-// typing in the floating bar: render results AND keep them on screen — without this,
-// filtering shrinks the page while scrolled deep and the user ends up over the footer
+// typing in the category-strip pill: filter the results underneath
+// and leave the page exactly where it is — the old scrollIntoView
+// jump (shared with phdrSearchInput) yanked the page to the feed on
+// the first letter and the box was gone mid-type (owner, 2026-11-15).
 function fsbInput(el){
   searchQ=el.value.trim();
   const _ts=document.getElementById('search');if(_ts)_ts.value=el.value;
   renderP();
   document.getElementById('fsb-clear').style.display=el.value?'flex':'none';
-  const f=document.getElementById('feed');
-  const r=f.getBoundingClientRect();
-  if(r.top<-40||r.top>window.innerHeight*0.6){f.scrollIntoView({block:'start'});el.focus();}
 }
 // Let a plain mouse wheel scroll the category bar sideways (no trackpad needed)
 (function(){const cb=document.getElementById('cat-nav');if(!cb)return;cb.addEventListener('wheel',e=>{if(e.deltaY&&Math.abs(e.deltaY)>=Math.abs(e.deltaX)){cb.scrollLeft+=e.deltaY;e.preventDefault();}},{passive:false});})();
@@ -4715,12 +4853,10 @@ function fsbInput(el){
     setAuthBtn(document.querySelector('.sb-signin'),user);
     setAuthBtn(document.querySelector('.mb-signin'),user);
     setAuthBtn(document.querySelector('.tb-signin'),user);
-    setAuthBtn(document.querySelector('.phdr-signin'),user);
-    // Phone header bell (2026-11-15): notifications need an account,
-    // so the bell only shows while signed in — its unread badge is
-    // painted by gbPaintNoteBadges like the sign-in buttons' was.
-    var _pb=document.querySelector('.phdr-bell');
-    if(_pb) _pb.style.display=user?'':'none';
+    // Phone panel account block (2026-11-15 redesign): the panel is
+    // the one phone menu — its account area (name + Change, or Sign
+    // in, and the Sign out row) repaints from here on every change.
+    if(typeof renderPnavAcct==='function')renderPnavAcct(user);
     gbLoadNotes(user);
     // first-name label under the sidebar button only
     const sb=document.querySelector('.sb-signin');
