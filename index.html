@@ -521,7 +521,7 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
 .fc h4{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.85rem}
 .fc a{display:block;font-size:.8rem;color:rgba(255,255,255,.5);text-decoration:none;margin-bottom:.45rem;transition:color .15s}
 .fc a:hover{color:#fff}
-.foot-cc{padding:0 2.5rem 2rem}.foot-cc-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:1.1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1rem 1.25rem}.foot-cc img{height:40px;width:auto;display:block}.foot-cc-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}.foot-cc-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}.foot-cc-text{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.45;margin-top:.2rem}.foot-cc-btn{margin-left:auto;flex-shrink:0;background:#EDE5F8;color:#5B2D8E;text-decoration:none;font-weight:700;font-size:.86rem;padding:.55rem 1.1rem;border-radius:999px}.foot-cc-btn:hover{background:#fff}@media(max-width:640px){.foot-cc{padding:0 1.25rem 1.5rem}.foot-cc-inner{flex-wrap:wrap}.foot-cc-btn{margin-left:0}}
+.foot-cc{padding:0 2.5rem 2rem}.foot-cc-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:1.1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1rem 1.25rem}.foot-cc img{height:52px;width:auto;display:block}.foot-cc-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}.foot-cc-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}.foot-cc-text{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.45;margin-top:.2rem}.foot-cc-btn{margin-left:auto;flex-shrink:0;background:#EDE5F8;color:#5B2D8E;text-decoration:none;font-weight:700;font-size:.86rem;padding:.55rem 1.1rem;border-radius:999px}.foot-cc-btn:hover{background:#fff}@media(max-width:640px){.foot-cc{padding:0 1.25rem 1.5rem}.foot-cc-inner{flex-wrap:wrap}.foot-cc-btn{margin-left:0}}
 .foot-aff{border-top:1px solid rgba(255,255,255,.07);padding:1.5rem 2.5rem}.foot-aff-inner{max-width:1320px!important}
 .foot-aff-inner{max-width:1200px;margin:0 auto;display:flex;gap:1rem;align-items:flex-start}
 .aff-badge{flex-shrink:0;background:rgba(196,154,40,.2);color:var(--gold-lt,#FDF3D8);font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;border:1px solid rgba(196,154,40,.28);margin-top:.1rem}
@@ -551,14 +551,20 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
    giveaway button leaves the top row (the giveaway lives in the
    hamburger panel), only the account keeps its circle, and the
    header itself is flat white: no tinted glass band, no blur,
-   no shadow. */
+   no shadow.
+   Wordmark round (same day, later): the lone script G read as a
+   stray squiggle at header size, so the logo is now the FULL
+   calligraphy wordmark — img/logo-wordmark.svg, the hero artwork
+   with its viewBox trimmed to the art and the plum baked in (an
+   <img>-loaded SVG cannot inherit the page colour) — sized big
+   enough to read as the brand name, like SlickDeals/Dan's. */
 .phdr{display:none}
 .pnav-bg{display:none}
 @media(max-width:768px){
   .phdr{display:block;position:sticky;top:0;z-index:300;background:#fff;border-bottom:1px solid var(--brd)}
-  .phdr-row{display:flex;align-items:center;gap:.45rem;padding:.5rem .7rem .3rem}
-  .phdr-logo{display:flex;align-items:center;flex:none}
-  .phdr-logo img{height:30px;width:auto;display:block}
+  .phdr-row{display:flex;align-items:center;gap:.55rem;padding:.45rem .7rem .4rem}
+  .phdr-logo{display:flex;align-items:center;flex:0 1 auto;min-width:0}
+  .phdr-logo img{height:64px;width:auto;max-width:100%;display:block}
   .phdr-spacer{flex:1}
   .phdr-ic{position:relative;width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--brd);background:#fff;color:var(--plum);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
   .phdr-ic:active{background:var(--plum-lt)}
@@ -1659,7 +1665,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
 <div class="main">
 
 <!-- PHONE COMPACT HEADER (owner, 2026-11-15) — visible ≤768px only.
-     One top row: hamburger · logo · notifications bell · giveaway ·
+     One top row: hamburger · full wordmark · notifications bell ·
      account, with a live search row under it. Everything the old
      phone chrome carried (bottom bar, category strip) lives in the
      hamburger panel below. Desktop uses .topbar/.sidebar as before. -->
@@ -1668,7 +1674,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
     <button class="phdr-ic phdr-burger" id="phdr-burger" onclick="togglePnav()" title="Menu" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="20" height="20"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
     </button>
-    <a class="phdr-logo" href="/" onclick="goHome();return false"><img src="logo-g.png" alt="Gifting Butler"></a>
+    <a class="phdr-logo" href="/" onclick="goHome();return false"><img src="img/logo-wordmark.svg" alt="Gifting Butler"></a>
     <div class="phdr-spacer"></div>
     <button class="phdr-ic phdr-bell" onclick="gbSignIn()" title="Notifications" aria-label="Notifications" style="display:none">
       <svg viewBox="0 0 20 20" fill="currentColor" width="19" height="19"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
@@ -1928,8 +1934,8 @@ function phdrSearchClear(){
       <img src="img/cc-logo-tag.png" alt="" aria-hidden="true">
       <div>
         <div class="foot-cc-label">Our other site</div>
-        <div class="foot-cc-title">Chase deals instead? Today's best prices &amp; free stuff</div>
-        <p class="foot-cc-text">CommonCents is our sister site — fresh deals and freebies, posted every day.</p>
+        <div class="foot-cc-title">Looking for deals, not just gifts?</div>
+        <p class="foot-cc-text">CommonCents hunts down premium deals and price drops every day — every cent counts.</p>
       </div>
       <a class="foot-cc-btn" href="https://commoncentsdeals.com" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a>
     </div>
