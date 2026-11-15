@@ -540,21 +540,30 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
 }
 /* ── PHONE COMPACT HEADER (owner, 2026-11-15 — SlickDeals-style) ──
    Phones get ONE slim sticky header: a top row (hamburger, logo,
-   notifications bell, giveaway, account) and a search row under it.
-   The floating bottom bar, the big hero logo row and the always-on
-   category strip move into the hamburger panel — the space they ate
-   goes back to the gifts. Desktop never renders any of this. */
+   notifications bell, account) and a search row under it. The
+   floating bottom bar, the big hero logo row and the always-on
+   category strip move into the hamburger panel — the space they
+   ate goes back to the gifts. Desktop never renders any of this.
+   Slimmed down the same day after the owner saw the preview: the
+   circled icon buttons read as one big cluttered top box, so —
+   like SlickDeals/Dan's — the hamburger is BARE plum lines and
+   the bell a bare glyph (its unread badge still rides it), the
+   giveaway button leaves the top row (the giveaway lives in the
+   hamburger panel), only the account keeps its circle, and the
+   header itself is flat white: no tinted glass band, no blur,
+   no shadow. */
 .phdr{display:none}
 .pnav-bg{display:none}
 @media(max-width:768px){
-  .phdr{display:block;position:sticky;top:0;z-index:300;background:rgba(250,249,253,.94);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border-bottom:1px solid var(--brd);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  .phdr{display:block;position:sticky;top:0;z-index:300;background:#fff;border-bottom:1px solid var(--brd)}
   .phdr-row{display:flex;align-items:center;gap:.45rem;padding:.5rem .7rem .3rem}
   .phdr-logo{display:flex;align-items:center;flex:none}
   .phdr-logo img{height:30px;width:auto;display:block}
   .phdr-spacer{flex:1}
   .phdr-ic{position:relative;width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--brd);background:#fff;color:var(--plum);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
   .phdr-ic:active{background:var(--plum-lt)}
-  .phdr-gift{background:var(--plum-lt);border-color:rgba(91,45,142,.25)}
+  .phdr-burger,.phdr-bell{border:none;background:none;border-radius:0}
+  .phdr-burger:active,.phdr-bell:active{background:none}
   .phdr-signin{overflow:hidden}
   .phdr-signin .s-ico{width:100%!important;height:100%!important;min-width:unset!important;min-height:unset!important;display:flex;align-items:center;justify-content:center;border-radius:50%}
   .phdr-searchrow{padding:0 .7rem .55rem}
@@ -1587,7 +1596,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
   </defs>
 </svg>
 <aside class="sidebar" id="sidebar">
-  <a class="sb-logo" href="/" onclick="goHome();return false"><img src="/logo-g.png" alt="G" style="height:52px;width:auto;display:block;margin:0 auto"></a>
+  <a class="sb-logo" href="/" onclick="goHome();return false"><img src="logo-g.png" alt="G" style="height:52px;width:auto;display:block;margin:0 auto"></a>
   <nav class="s-nav">
     <button class="s-btn s-home" onclick="goHome()" title="Home">
       <div class="s-ico"><svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg></div>
@@ -1659,13 +1668,10 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
     <button class="phdr-ic phdr-burger" id="phdr-burger" onclick="togglePnav()" title="Menu" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="20" height="20"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
     </button>
-    <a class="phdr-logo" href="/" onclick="goHome();return false"><img src="/logo-g.png" alt="Gifting Butler"></a>
+    <a class="phdr-logo" href="/" onclick="goHome();return false"><img src="logo-g.png" alt="Gifting Butler"></a>
     <div class="phdr-spacer"></div>
     <button class="phdr-ic phdr-bell" onclick="gbSignIn()" title="Notifications" aria-label="Notifications" style="display:none">
       <svg viewBox="0 0 20 20" fill="currentColor" width="19" height="19"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
-    </button>
-    <button class="phdr-ic phdr-gift" onclick="om('gw-modal')" title="Giveaway" aria-label="Giveaway">
-      <svg viewBox="0 0 48 48" width="25" height="25" aria-hidden="true"><use href="#gwGiftMark"></use></svg>
     </button>
     <button class="phdr-ic phdr-signin" onclick="gbSignIn()" title="Sign in">
       <span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
