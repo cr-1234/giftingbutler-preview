@@ -522,6 +522,13 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
 .fc a{display:block;font-size:.8rem;color:rgba(255,255,255,.5);text-decoration:none;margin-bottom:.45rem;transition:color .15s}
 .fc a:hover{color:#fff}
 .foot-cc{padding:0 2.5rem 2rem}.foot-cc-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:1.1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1rem 1.25rem}.foot-cc img{height:52px;width:auto;display:block}.foot-cc-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}.foot-cc-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}.foot-cc-text{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.45;margin-top:.2rem}.foot-cc-btn{margin-left:auto;flex-shrink:0;background:#EDE5F8;color:#5B2D8E;text-decoration:none;font-weight:700;font-size:.86rem;padding:.55rem 1.1rem;border-radius:999px}.foot-cc-btn:hover{background:#fff}@media(max-width:640px){.foot-cc{padding:0 1.25rem 1.5rem}.foot-cc-inner{flex-wrap:wrap}.foot-cc-btn{margin-left:0}}
+.cc-feed-card{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);cursor:default;align-items:center;justify-content:center;text-align:center;padding:1.4rem 1.1rem}
+.cc-feed-card img{height:52px;width:auto;display:block;margin:0 auto .7rem}
+.cc-feed-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}
+.cc-feed-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}
+.cc-feed-text{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.45;margin-top:.2rem}
+.cc-feed-btn{display:inline-block;margin-top:.9rem;background:#EDE5F8;color:#5B2D8E;text-decoration:none;font-weight:700;font-size:.86rem;padding:.55rem 1.1rem;border-radius:999px}
+.cc-feed-btn:hover{background:#fff}
 .foot-aff{border-top:1px solid rgba(255,255,255,.07);padding:1.5rem 2.5rem}.foot-aff-inner{max-width:1320px!important}
 .foot-aff-inner{max-width:1200px;margin:0 auto;display:flex;gap:1rem;align-items:flex-start}
 .aff-badge{flex-shrink:0;background:rgba(196,154,40,.2);color:var(--gold-lt,#FDF3D8);font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;border:1px solid rgba(196,154,40,.28);margin-top:.1rem}
@@ -2808,10 +2815,17 @@ function renderRecent(){
   row.innerHTML=items.map(p=>cardHTML(p)).join('')
     +(allItems.length>4?`<div style="grid-column:1/-1;text-align:center;padding:.5rem"><button onclick="toggleRvExpand()" style="background:none;border:1px solid var(--brd);border-radius:20px;padding:.5rem 1.2rem;cursor:pointer;color:var(--plum);font-weight:600;font-size:.85rem">${rvExpanded?'Show less':'View all ('+allItems.length+') →'}</button></div>`:'');
 }
+// Sister-site feed card (owner, 2026-11-15): the CommonCents card as it
+// appears inside the gift feed — same content as the footer card, one
+// grid slot. Built fresh on each render; never part of the items list.
+function ccFeedCardHTML(){
+  return `<div class="card cc-feed-card"><img src="img/cc-logo-tag.png" alt="" aria-hidden="true"><div class="cc-feed-label">Our other site</div><div class="cc-feed-title">Looking for deals, not just gifts?</div><p class="cc-feed-text">CommonCents hunts down premium deals and price drops every day — every cent counts.</p><a class="cc-feed-btn" href="https://commoncentsdeals.com" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a></div>`;
+}
 function renderP(){
   const grid=document.getElementById('grid');
   const ttl=document.getElementById('feed-ttl');
   const fct=document.getElementById('fct');
+  const _ggMode=!!window._ggMode;
   let items=P.filter(p=>!p._hidden);
   if(onSaleOnly)items=items.filter(p=>isOnSale(p));
   const KID_IDS=['kids','children-u3','children-4-8','children-9-12','grandchildren'];
@@ -2944,7 +2958,13 @@ function renderP(){
   }
   if(!items.length){grid.innerHTML=`<div class="nores"><p>${searchQ?`No matches for "<em>${searchQ}</em>" — <button onclick="clearSearch()" style="background:none;border:none;color:var(--plum);font-weight:700;cursor:pointer;text-decoration:underline;font-size:.9rem">browse all</button>`:'No gifts in this category yet.'}</p></div>`;return}
 
-  grid.innerHTML=`<div class="cards-grid">${items.map(p=>cardHTML(p)).join("")}</div>`;
+  const _cardStrs=items.map(p=>cardHTML(p));
+  // Sister-site ad in the feed (owner, 2026-11-15): once, after the 6th
+  // gift, in browse views showing 7+ gifts — spliced into the rendered
+  // HTML only, never into items, so it never counts as a gift, never
+  // displaces one, and never appears in search results.
+  if(!searchQ&&!_ggMode&&_cardStrs.length>=7)_cardStrs.splice(6,0,ccFeedCardHTML());
+  grid.innerHTML=`<div class="cards-grid">${_cardStrs.join("")}</div>`;
   if(typeof gbLoadVotes==='function')gbLoadVotes();
   if(typeof renderRecent==='function')renderRecent();
 }
