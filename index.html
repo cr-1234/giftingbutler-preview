@@ -597,7 +597,6 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .pnav-h{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin:.7rem .4rem .25rem}
   .pnav-cat{display:flex;align-items:center;gap:.6rem;width:100%;padding:.42rem .4rem;background:none;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:.93rem;font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
   .pnav-cat.on{background:var(--plum-lt);color:var(--plum);font-weight:700}
-  .pnav-cat.sub{padding-left:2.4rem;font-size:.9rem}
   /* Panel redesign (owner, 2026-11-15): the panel is the ONE phone
      menu — account block on top, a Notifications row, expandable
      sections with counts, sign-out at the bottom. The bell and the
@@ -607,7 +606,9 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .pnav-acct-row{display:flex;align-items:center;gap:.6rem}
   .pnav-avatar{width:38px;height:38px;flex:none;border-radius:50%;background:var(--plum-lt);color:var(--plum);display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden}
   .pnav-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-  .pnav-acct-name{flex:1;min-width:0;font-weight:700;font-size:.98rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pnav-acct-id{flex:1;min-width:0;display:flex;flex-direction:column;gap:.05rem}
+  .pnav-acct-label{font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+  .pnav-acct-name{font-weight:700;font-size:.98rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pnav-change{flex:none;background:#fff;border:1px solid rgba(91,45,142,.35);color:var(--plum);border-radius:999px;padding:.22rem .7rem;font-weight:600;font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif}
   .pnav-signin-btn{width:100%;background:var(--plum);color:#fff;border:none;border-radius:12px;padding:.6rem;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer}
   .pnav-acct-sub{font-size:.78rem;color:var(--ink3);margin-top:.4rem;line-height:1.45}
@@ -1732,7 +1733,6 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
   <nav class="pnav" id="pnav" style="display:none" aria-label="Menu">
     <div class="pnav-acct" id="pnav-acct"></div>
     <button class="pnav-link" id="pnav-notes-row" onclick="pnavNotes()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Notifications<span class="pnav-ncount" id="pnav-notes-count" style="display:none"></span></button>
-    <button class="pnav-link" onclick="closePnav();openSearchOverlay()"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg></span>Search</button>
     <div class="pnav-sec">
       <button class="pnav-sec-h" id="pnav-sec-h-gifts" onclick="togglePnavSec('gifts')" aria-expanded="true"><span>Gifts</span><span class="pnav-arrow" id="pnav-arrow-gifts">▾</span></button>
       <div class="pnav-sec-body" id="pnav-sec-body-gifts">
@@ -1741,17 +1741,17 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
       </div>
     </div>
     <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist</button>
-    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg></span>Reminders</button>
+    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders</button>
     <button class="pnav-link" onclick="closePnav();om('gw-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg></span>Giveaway</button>
-    <button class="pnav-link" onclick="location.href='/room-gifts.html'"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
+    <button class="pnav-link" onclick="location.href='room-gifts.html'"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
     <div class="pnav-sec">
       <button class="pnav-sec-h" id="pnav-sec-h-more" onclick="togglePnavSec('more')" aria-expanded="false"><span>More</span><span class="pnav-arrow" id="pnav-arrow-more">▸</span></button>
       <div class="pnav-sec-body" id="pnav-sec-body-more" style="display:none">
         <a class="pnav-link" href="#" onclick="closePnav();om('about-modal');return false">About Us</a>
         <a class="pnav-link" href="mailto:giftingbutler.help@gmail.com">Contact</a>
-        <a class="pnav-link" href="/advertise.html">Advertise With Us</a>
-        <a class="pnav-link" href="/suggest.html">Suggest a Gift</a>
-        <a class="pnav-link" href="/guides/">Gift Guides</a>
+        <a class="pnav-link" href="advertise.html">Advertise With Us</a>
+        <a class="pnav-link" href="suggest.html">Suggest a Gift</a>
+        <a class="pnav-link" href="guides/">Gift Guides</a>
       </div>
     </div>
     <button class="pnav-link pnav-signout" id="pnav-signout" style="display:none" onclick="closePnav();gbSignOut()"><span class="pnav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Sign out</button>
@@ -1767,7 +1767,8 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
    Panel redesign (owner, later the same day): the three-lines
    button moved to the RIGHT of the wordmark and the panel became
    the ONE phone menu, SlickDeals-style — account block on top
-   (name + Change, or Sign in), a Notifications row (the bell left
+   (picture + labelled name + Change name, or Sign in), a
+   Notifications row (the bell left
    the top row; its unread badge now rides the lines button),
    navigation in expandable sections with counts, sign-out at the
    bottom. The panel uses the full height under the header and
@@ -1787,8 +1788,9 @@ function togglePnavSec(key){
   if(ar)ar.textContent=open?'▸':'▾';
 }
 /* The panel's account block: signed out → a Sign in button; signed
-   in → the member's name (their comment name) with a Change button
-   that opens the account window on its name form. Sign out lives at
+   in → the member's picture and the name they go by, labelled
+   "Your name on the site", with a Change name button that opens
+   the account window on its name form. Sign out lives at
    the panel's bottom and is painted here too. renderAuth calls this
    on every sign-in change; togglePnav calls it on every open, so
    the block is never stale. */
@@ -1801,8 +1803,15 @@ function renderPnavAcct(user){
     return;
   }
   var name=(user.displayName||'').trim()||(user.email?user.email.split('@')[0]:'Your account');
-  var av=user.photoURL?'<img src="'+user.photoURL+'" referrerpolicy="no-referrer" alt="">':'<span>'+gbNoteEsc(name.charAt(0).toUpperCase())+'</span>';
-  host.innerHTML='<div class="pnav-acct-row"><span class="pnav-avatar">'+av+'</span><span class="pnav-acct-name">'+gbNoteEsc(name)+'</span><button class="pnav-change" onclick="pnavChangeName()">Change</button></div>';
+  /* The person's picture (owner, 2026-11-15): the main profile
+     photo when there is one; when the account was made with email
+     and Google was linked later, the photo lives on the linked
+     method instead — look there too before falling back to the
+     initial letter. */
+  var pic=user.photoURL||'';
+  if(!pic&&user.providerData){ for(var pi=0;pi<user.providerData.length;pi++){ var pd=user.providerData[pi]; if(pd&&pd.photoURL){ pic=pd.photoURL; break; } } }
+  var av=pic?'<img src="'+pic+'" referrerpolicy="no-referrer" alt="">':'<span>'+gbNoteEsc(name.charAt(0).toUpperCase())+'</span>';
+  host.innerHTML='<div class="pnav-acct-row"><span class="pnav-avatar">'+av+'</span><span class="pnav-acct-id"><span class="pnav-acct-label">Your name on the site</span><span class="pnav-acct-name">'+gbNoteEsc(name)+'</span></span><button class="pnav-change" onclick="pnavChangeName()">Change name</button></div>';
 }
 function pnavChangeName(){
   closePnav();
@@ -1845,10 +1854,12 @@ function renderPnavCats(){
   var host=document.getElementById('pnav-cats'); if(!host||typeof CATS==='undefined') return;
   var html='';
   CATS.filter(function(c){ return c.id!=='all'&&holidayVisible(c.id)&&catDoorOpen(c.id); }).forEach(function(c){
+    /* One plain row per category (owner, 2026-11-15): no subcategory
+       rows in the panel — Kids is just Kids. pnavCatCount already
+       counts a category's subcategories into its number, so the
+       single row's count covers everything under it; the age
+       breakdowns live on the site itself, not in this menu. */
     html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="cpi" style="background:'+c.bg+'">'+c.icon+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
-    (c.subs||[]).forEach(function(s){
-      html+='<button class="pnav-cat sub'+(s.id===activeSubCat?' on':'')+'" onclick="pnavSub(\''+c.id+'\',\''+s.id+'\')"><span class="cpi" style="background:#EDE5F8">'+s.icon+'</span>'+s.label+'<span class="pnav-count">'+pnavCatCount(s.id)+'</span></button>';
-    });
   });
   host.innerHTML=html;
   var ac=document.getElementById('pnav-all-count'); if(ac)ac.textContent=pnavCatCount('all');
@@ -5162,7 +5173,7 @@ function fsbInput(el){
       }
       // Keep any open panels in sync with freshly loaded data.
       try{renderMembers();renderWL();renderReminders();updateGW();}catch(e){}
-      toast('Welcome, '+((user.displayName||'').split(' ')[0]||'back')+'! ?');
+      toast('Welcome, '+((user.displayName||'').split(' ')[0]||'back')+'!');
     }).catch(e=>console.warn('[gb] load',e));
   });
   // -- Shared Wishlist Reader --
