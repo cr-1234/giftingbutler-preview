@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gift Reminders — Never Miss a Birthday Again | Gifting Butler</title>
+<meta name="description" content="Set it once. Gifting Butler emails you — and nudges your browser — before every birthday, anniversary, and holiday on your list. Free forever.">
+<link rel="canonical" href="https://giftingbutler-74395.web.app/reminders">
+<meta property="og:title" content="Never Miss a Birthday Again">
+<meta property="og:description" content="Free gift reminders by email and browser push. Set it once — we handle the rest.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://giftingbutler-74395.web.app/reminders">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{--ink:#2b2140;--ink2:#5c5470;--rose:#C0395A;--plum:#5B2D8E;--plum2:#7C3AED;--bg:#f7f3fc}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:0 1.1rem}
+.topbar{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:1px solid rgba(91,45,142,.12);position:sticky;top:0;z-index:10}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:.7rem;padding-bottom:.7rem}
+.brand{font-family:Georgia,serif;font-style:italic;font-size:1.35rem;color:var(--plum);text-decoration:none}
+.back{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;color:var(--plum);text-decoration:none;font-weight:700;border:1.5px solid rgba(91,45,142,.25);border-radius:999px;padding:.42rem .95rem;background:rgba(255,255,255,.7)}
+.back:hover{background:var(--plum);color:#fff;border-color:var(--plum)}
+.hero{padding:3.4rem 0 2.6rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;top:-8rem;left:50%;transform:translateX(-50%);width:44rem;max-width:130vw;height:30rem;background:radial-gradient(ellipse at center,rgba(124,58,237,.12),transparent 70%);pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.kicker{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--plum2),var(--plum));padding:.3rem .9rem;border-radius:999px;margin-bottom:1rem}
+h1{font-size:2.4rem;line-height:1.2;letter-spacing:-.01em}
+h1 .em{color:var(--plum)}
+.hero-sub{color:var(--ink2);font-size:1.05rem;max-width:600px;margin:1rem auto 0}
+.cta-row{margin-top:1.6rem;display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-block;background:linear-gradient(135deg,var(--plum),var(--plum2));color:#fff;font-weight:800;font-size:.95rem;padding:.75rem 2rem;border-radius:999px;text-decoration:none;box-shadow:0 6px 20px rgba(91,45,142,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(91,45,142,.45)}
+.btn-ghost{display:inline-block;color:var(--plum);font-weight:700;font-size:.95rem;padding:.75rem 1.6rem;border-radius:999px;text-decoration:none;border:1.5px solid rgba(91,45,142,.3);background:#fff}
+.section{padding:2.2rem 0}
+.section h2{font-size:1.5rem;text-align:center;margin-bottom:.4rem;letter-spacing:-.01em}
+.section .sec-sub{text-align:center;color:var(--ink2);font-size:.95rem;max-width:560px;margin:0 auto 1.6rem}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.card{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:18px;padding:1.5rem 1.3rem;box-shadow:0 6px 22px rgba(40,20,70,.06)}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;background:linear-gradient(135deg,var(--plum2),var(--plum));color:#fff;font-weight:800;font-size:.9rem;margin-bottom:.8rem}
+.card h3{font-size:1.02rem;margin-bottom:.45rem}
+.card p{font-size:.88rem;color:var(--ink2)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;counter-reset:step}
+.step{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:18px;padding:1.5rem 1.3rem;position:relative;box-shadow:0 6px 22px rgba(40,20,70,.06)}
+.step::before{counter-increment:step;content:counter(step);position:absolute;top:-.85rem;left:1.2rem;width:1.7rem;height:1.7rem;border-radius:50%;background:linear-gradient(135deg,var(--rose),#e05070);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(192,57,90,.4)}
+.step h3{font-size:1.02rem;margin-bottom:.45rem;margin-top:.3rem}
+.step p{font-size:.88rem;color:var(--ink2)}
+.proof{background:linear-gradient(135deg,rgba(124,58,237,.09),rgba(91,45,142,.05));border:1px solid rgba(91,45,142,.18);border-radius:18px;padding:1.8rem;text-align:center;margin:0 auto}
+.proof p{font-size:1rem;color:var(--ink2);max-width:560px;margin:0 auto}
+.proof p strong{color:var(--ink)}
+.faq{max-width:640px;margin:0 auto}
+.faq details{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:14px;padding:1rem 1.2rem;margin-bottom:.7rem;box-shadow:0 4px 14px rgba(40,20,70,.05)}
+.faq summary{font-weight:700;font-size:.95rem;cursor:pointer;color:var(--ink)}
+.faq summary::marker{color:var(--plum)}
+.faq details p{font-size:.88rem;color:var(--ink2);margin-top:.5rem}
+.final{text-align:center;padding:1rem 0 2rem}
+.final h2{margin-bottom:.5rem}
+.final p{color:var(--ink2);margin-bottom:1.2rem}
+footer{border-top:1px solid rgba(91,45,142,.12);padding:1.4rem 0 2.4rem;text-align:center;font-size:.8rem;color:var(--ink2)}
+footer a{color:var(--plum);font-weight:700;text-decoration:none}
+@media(max-width:640px){.cards,.steps{grid-template-columns:1fr}h1{font-size:1.8rem}.hero{padding:2.4rem 0 2rem}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+  <a href="/" style="display:inline-block"><img src="img/logo.svg" alt="Gifting Butler" style="height:72px;width:auto;display:block"></a>
+  <a class="back" href="/">&larr; Back to gifts</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <span class="kicker">Gift Reminders</span>
+  <h1>Never Miss a <span class="em">Birthday</span> Again</h1>
+  <p class="hero-sub">Set it once. We'll email you — and nudge your browser — before every birthday, anniversary, and holiday on your list. Free, forever.</p>
+  <div class="cta-row">
+    <a class="btn-primary" href="/">Set Your First Reminder</a>
+    <a class="btn-ghost" href="#how">How it works</a>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2>Why gift-givers love reminders</h2>
+  <p class="sec-sub">One less thing to keep in your head. We remember the dates so you can enjoy the giving.</p>
+  <div class="cards">
+    <div class="card">
+      <span class="num">1</span>
+      <h3>Email before the big day</h3>
+      <p>A friendly email lands in your inbox days ahead — with gift ideas picked for the occasion, so you're never scrambling.</p>
+    </div>
+    <div class="card">
+      <span class="num">2</span>
+      <h3>Browser push nudges</h3>
+      <p>Prefer a tap on the shoulder? Get a notification right on your screen, even when the site is closed.</p>
+    </div>
+    <div class="card">
+      <span class="num">3</span>
+      <h3>Every occasion, covered</h3>
+      <p>Birthdays, anniversaries, holidays, graduations — if it comes around every year, we'll remind you.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="section" id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="sec-sub">Three steps, about a minute. Then you're done thinking about dates.</p>
+  <div class="steps">
+    <div class="step">
+      <h3>Add the occasion</h3>
+      <p>Tell us whose birthday or anniversary it is, and the date. Add as many as you like.</p>
+    </div>
+    <div class="step">
+      <h3>Pick your timing</h3>
+      <p>A week before? Two days? On the day? You choose how far ahead we remind you.</p>
+    </div>
+    <div class="step">
+      <h3>Get the reminder</h3>
+      <p>We handle the rest — the reminder arrives by email, browser push, or both.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="proof">
+    <p><strong>Free forever. No spam</strong> — just the reminders you asked for, plus gift ideas when you want them. Join the gift-givers who never miss a birthday.</p>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <h2>Questions, answered</h2>
+  <p class="sec-sub">Everything you might want to know before your first reminder.</p>
+  <div class="faq">
+    <details>
+      <summary>Is it really free?</summary>
+      <p>Yes. Gift reminders are completely free, with no limits on how many you can set.</p>
+    </details>
+    <details>
+      <summary>How far ahead will you remind me?</summary>
+      <p>You decide. When you create a reminder, choose how many days before the occasion you'd like to hear from us — a week for planners, a day or two for the rest of us.</p>
+    </details>
+    <details>
+      <summary>Can I turn reminders off?</summary>
+      <p>Anytime. Delete a reminder in one click from your account, or unsubscribe directly from any reminder email. No questions, no hoops.</p>
+    </details>
+    <details>
+      <summary>Do I need to keep the site open?</summary>
+      <p>No. Email reminders arrive in your inbox on their own. Browser push notifications work even when the site is closed — you just allow them once.</p>
+    </details>
+  </div>
+</div></section>
+
+<section class="final"><div class="wrap">
+  <h2>Your next birthday surprise starts here</h2>
+  <p>Set your first reminder in under a minute.</p>
+  <a class="btn-primary" href="/">Set Your First Reminder</a>
+</div></section>
+
+<footer><div class="wrap">
+  <a href="/">Gifting Butler</a> · <a href="/guides/">Gift Guides</a> · <a href="/reminders">Reminders</a>
+  <p style="margin-top:.5rem">Your personal gift concierge.</p>
+</div></footer>
+</body>
+</html>

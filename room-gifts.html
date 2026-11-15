@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gift This Room — AI Gift Finder | Gifting Butler</title>
+<meta name="description" content="Snap a photo of any room and let AI find gifts that fit the space. Your photo is only used for the analysis and never stored.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.json">
+<style>
+:root{--ink:#2b2140;--ink2:#5c5470;--plum:#5B2D8E;--plum2:#7C3AED;--bg:#f7f3fc}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:0 1.1rem}
+.topbar{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:1px solid rgba(91,45,142,.12);position:sticky;top:0;z-index:10}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:.6rem;padding-bottom:.6rem}
+.brand{display:inline-flex;align-items:center;text-decoration:none;color:var(--plum)}
+.brand img{height:80px;width:auto;display:block}
+.back{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;color:var(--plum);text-decoration:none;font-weight:700;border:1.5px solid rgba(91,45,142,.25);border-radius:999px;padding:.42rem .95rem;background:rgba(255,255,255,.7)}
+.hero{padding:2.4rem 0 1.2rem;text-align:center}
+.kicker{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--plum2),var(--plum));padding:.3rem .9rem;border-radius:999px;margin-bottom:.9rem}
+h1{font-size:1.9rem;line-height:1.25;letter-spacing:-.01em}
+.lede{color:var(--ink2);font-size:1rem;max-width:600px;margin:.8rem auto 0}
+.perm{background:#fff;border:1px solid rgba(91,45,142,.16);border-radius:14px;padding:.9rem 1.1rem;font-size:.82rem;color:var(--ink2);margin:1.2rem 0;display:flex;gap:.7rem;align-items:flex-start}
+.perm svg{flex:0 0 20px;margin-top:.15rem}
+.upload-zone{border:2px dashed rgba(91,45,142,.35);border-radius:18px;background:#fff;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;margin:1rem 0}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--plum2);background:#faf7ff}
+.upload-zone input{display:none}
+.uz-icon{font-size:2.6rem;margin-bottom:.5rem}
+.uz-title{font-weight:700;font-size:1.05rem;margin-bottom:.25rem}
+.uz-sub{font-size:.85rem;color:var(--ink2)}
+#preview-wrap{display:none;margin:1rem 0;text-align:center}
+#preview{max-width:100%;max-height:340px;border-radius:14px;box-shadow:0 8px 28px rgba(40,20,70,.14)}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--plum2),var(--plum));color:#fff;font-weight:800;font-size:.95rem;padding:.75rem 2rem;border:none;border-radius:999px;cursor:pointer;box-shadow:0 6px 18px rgba(91,45,142,.3);margin-top:1rem}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn-secondary{background:#fff;color:var(--plum);border:1.5px solid rgba(91,45,142,.3);box-shadow:none;margin-left:.5rem}
+#analyzing{display:none;text-align:center;padding:2rem 0}
+.spinner{width:44px;height:44px;border:4px solid rgba(91,45,142,.15);border-top-color:var(--plum);border-radius:50%;margin:0 auto 1rem;animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#results{display:none;margin:1.5rem 0}
+.room-card{background:#fff;border:1px solid rgba(91,45,142,.14);border-radius:16px;padding:1.2rem 1.3rem;margin-bottom:1.2rem}
+.room-card h2{font-size:1.05rem;margin-bottom:.4rem}
+.room-card .style-tag{display:inline-block;background:rgba(124,58,237,.1);color:var(--plum);font-size:.75rem;font-weight:700;border-radius:999px;padding:.2rem .8rem;margin-bottom:.6rem}
+.room-card ul{margin:.4rem 0 .4rem 1.1rem;font-size:.88rem;color:var(--ink2)}
+.room-card ul a{color:var(--plum);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+.picks-head{display:flex;align-items:center;gap:.8rem;margin:1.6rem 0 .4rem;color:var(--ink2);font-size:.76rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.picks-head::after{content:"";flex:1;height:1px;background:rgba(91,45,142,.16)}
+.pick{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:18px;padding:1.1rem;margin:1rem 0;display:flex;gap:1rem;box-shadow:0 6px 22px rgba(40,20,70,.07)}
+.pick-img{width:120px;height:120px;object-fit:contain;flex:0 0 120px;background:#fbf8ff;border-radius:12px;padding:.4rem}
+.pick-body h2{font-size:1rem;margin-bottom:.3rem;line-height:1.35}
+.pick-body .why{font-size:.82rem;color:var(--ink2);margin-bottom:.7rem}
+.amz-btn{display:inline-block;background:linear-gradient(135deg,#5B2D8E,#7C3AED);color:#fff;font-weight:800;font-size:.83rem;padding:.5rem 1.2rem;border-radius:999px;text-decoration:none}
+#error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:12px;padding:.9rem 1.1rem;font-size:.87rem;margin:1rem 0}
+footer{border-top:1px solid rgba(91,45,142,.12);margin-top:2rem;padding:1.4rem 0 2.4rem;text-align:center;font-size:.8rem;color:var(--ink2)}
+.aff-disclosure{font-size:.72rem;max-width:560px;margin:.9rem auto 0;line-height:1.5}
+.amz-note{font-size:.8rem;color:var(--ink2);margin:.2rem 0 .6rem}
+.save-btn{display:inline-flex;align-items:center;gap:.4rem;background:#fff;color:var(--plum);font-weight:700;font-size:.8rem;padding:.45rem 1rem;border:1.5px solid rgba(91,45,142,.3);border-radius:999px;cursor:pointer;margin-left:.5rem;vertical-align:middle}
+.save-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
+.save-btn.saved{background:linear-gradient(135deg,var(--plum2),var(--plum));color:#fff;border-color:transparent}
+.save-btn.saved svg{fill:#fff;stroke:#fff}
+.ideas-card ul{margin:.4rem 0 .4rem 1.1rem;font-size:.9rem;color:var(--ink2)}
+.ideas-card .picks-head{margin-top:.2rem}
+#room-toast{position:fixed;left:50%;bottom:2rem;transform:translateX(-50%);background:#2b2140;color:#fff;padding:.7rem 1.35rem;border-radius:999px;font-size:.86rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99;box-shadow:0 8px 24px rgba(40,20,70,.3)}
+#room-toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <a class="brand" href="/"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="1800.000000pt" height="981.000000pt" viewBox="0 0 1800.000000 981.000000" preserveAspectRatio="xMidYMid meet" style="height:80px;width:auto;display:block"> <g transform="translate(0.000000,981.000000) scale(0.040000,-0.040000)" fill="currentColor" stroke="none" class=""> <path d="M10438 16811 c-69 -19 -154 -35 -188 -36 -34 -1 -141 -30 -237 -65 -97 -35 -204 -72 -240 -84 -35 -11 -86 -31 -112 -44 -27 -14 -166 -83 -309 -155 -250 -126 -386 -209 -671 -410 -268 -189 -705 -588 -895 -817 -81 -99 -175 -208 -206 -243 -32 -35 -87 -109 -123 -166 -35 -57 -95 -143 -132 -191 -78 -101 -170 -256 -264 -444 -98 -199 -121 -201 -325 -34 -195 162 -267 248 -387 466 -80 146 -82 157 -83 450 -1 390 64 546 353 847 99 103 307 247 398 275 65 20 100 108 60 148 -20 20 -50 19 -110 -3 -46 -16 -104 -30 -129 -30 -112 0 -428 -190 -594 -358 -266 -267 -349 -467 -350 -844 0 -360 50 -524 242 -785 116 -159 442 -438 512 -438 13 0 64 -23 112 -52 101 -60 96 -87 -76 -427 -19 -36 -34 -87 -34 -112 0 -26 -17 -79 -38 -118 -20 -39 -37 -96 -37 -125 0 -29 -16 -106 -36 -170 -79 -260 -72 -1018 12 -1246 129 -351 383 -676 613 -784 54 -26 120 -58 147 -72 221 -116 820 -118 1080 -3 44 18 94 34 113 34 43 0 474 218 621 313 401 261 751 581 1072 982 130 162 193 120 109 -74 -26 -60 -67 -159 -92 -221 -45 -113 -74 -182 -149 -357 -22 -52 -40 -110 -40 -129 0 -19 -16 -67 -36 -106 -19 -39 -54 -121 -77 -183 -23 -62 -50 -129 -60 -150 -18 -39 -147 -110 -428 -234 -189 -85 -928 -450 -1036 -514 -42 -24 -154 -86 -250 -138 -97 -52 -193 -111 -215 -129 -22 -19 -48 -35 -59 -35 -11 0 -62 -34 -114 -75 -52 -41 -102 -75 -111 -75 -35 0 -433 -316 -598 -473 -306 -294 -592 -709 -631 -919 -9 -46 -26 -90 -38 -97 -39 -25 -25 -567 16 -622 20 -27 37 -68 37 -93 0 -66 249 -307 375 -363 316 -139 836 -119 1125 43 21 12 94 51 163 88 300 160 686 518 973 904 90 121 175 233 189 250 14 16 25 37 25 46 0 9 31 63 70 120 38 57 78 120 88 141 10 21 39 71 65 113 101 159 397 778 526 1100 44 110 96 231 115 270 20 39 36 87 36 107 0 20 11 55 25 79 29 52 95 237 124 347 27 107 75 171 185 246 51 35 98 63 103 63 73 0 450 286 699 530 211 208 252 217 227 51 -92 -607 127 -924 575 -831 195 41 549 319 717 565 31 45 82 94 114 108 63 29 62 -3 -6 -198 -71 -202 -134 -397 -175 -537 -24 -83 -60 -187 -79 -233 -18 -45 -34 -110 -34 -144 0 -35 -17 -103 -38 -152 -20 -50 -37 -119 -37 -154 0 -35 -16 -120 -36 -190 -66 -230 -100 -690 -67 -891 109 -663 667 -735 1071 -136 141 208 330 638 385 875 12 55 33 122 46 150 12 27 27 83 33 125 6 41 23 125 38 187 69 291 105 566 105 798 l0 253 144 -5 c287 -10 549 116 812 389 79 82 151 141 161 132 9 -10 14 -134 11 -276 -9 -387 101 -577 386 -665 253 -78 514 7 824 270 96 81 236 233 312 338 184 254 200 249 200 -59 0 -345 88 -490 333 -552 309 -77 709 166 1041 633 47 66 99 119 118 119 43 0 43 -123 1 -188 -69 -105 -148 -340 -133 -394 40 -146 245 -242 374 -176 93 48 139 103 140 167 1 25 17 76 36 112 19 37 82 165 140 284 58 120 177 327 265 461 88 133 160 251 160 263 0 12 10 21 23 21 13 0 30 20 38 44 27 82 479 593 638 722 196 158 311 200 397 143 94 -61 66 -223 -94 -538 -136 -270 -160 -317 -202 -390 -14 -24 -31 -60 -39 -81 -7 -21 -30 -69 -50 -108 -20 -39 -36 -83 -36 -96 0 -14 -15 -61 -34 -105 -229 -530 54 -991 545 -889 258 53 636 367 838 695 46 77 108 9 91 -99 -40 -248 152 -551 369 -584 367 -55 736 201 1109 767 109 165 140 192 168 147 12 -21 -115 -397 -202 -594 -18 -44 -34 -95 -34 -114 0 -20 -17 -57 -37 -84 -20 -27 -37 -71 -37 -99 -2 -96 -80 -164 -334 -290 -140 -69 -294 -148 -342 -176 -716 -416 -1254 -840 -1469 -1157 -38 -56 -74 -107 -81 -114 -172 -172 -313 -777 -212 -911 20 -27 37 -67 37 -89 0 -70 173 -247 292 -300 205 -90 556 -66 758 53 21 12 60 32 88 45 204 92 744 696 895 1002 11 21 57 105 103 188 125 222 273 526 377 774 20 48 52 125 71 169 19 45 54 132 77 194 24 62 59 144 78 183 20 39 36 86 36 103 0 115 109 270 254 359 346 213 592 421 814 686 89 107 173 194 188 194 18 0 21 -80 9 -247 -27 -392 0 -566 102 -668 144 -145 254 -96 259 115 5 260 82 506 295 950 227 472 643 999 888 1127 288 150 404 -312 215 -852 -139 -394 -166 -440 -286 -486 -56 -21 -124 -39 -151 -39 -65 0 -275 -81 -427 -164 -286 -157 -397 -355 -304 -544 112 -227 472 -244 789 -37 59 38 116 70 126 70 51 0 527 554 530 618 1 34 93 132 124 132 27 0 117 42 225 104 21 11 60 31 88 44 27 12 106 63 174 112 161 116 191 116 160 4 -13 -48 -40 -118 -60 -156 -20 -39 -37 -89 -37 -111 0 -23 -17 -81 -37 -131 -24 -55 -38 -169 -38 -300 0 -156 10 -218 38 -241 20 -17 37 -45 37 -61 0 -55 137 -156 255 -188 133 -36 307 -7 481 80 186 94 620 578 697 778 40 106 72 6 55 -176 -39 -414 50 -619 298 -686 271 -74 712 195 983 600 111 165 185 253 212 253 10 0 19 -107 19 -238 0 -489 286 -722 745 -608 292 73 814 542 963 866 55 121 104 54 106 -145 4 -391 158 -653 435 -737 158 -48 209 -39 494 92 146 68 437 344 564 537 141 215 197 212 209 -11 5 -92 29 -196 57 -250 52 -101 186 -256 221 -256 11 0 34 -13 51 -30 38 -38 343 -118 453 -119 120 -1 335 66 540 168 423 211 794 573 1260 1231 83 117 163 226 177 243 14 16 25 35 25 42 0 7 34 63 75 124 41 61 75 120 76 132 2 61 122 167 156 139 20 -17 87 -37 149 -45 62 -9 144 -41 182 -71 80 -63 88 -39 -128 -395 -149 -247 -285 -525 -286 -588 0 -24 -17 -72 -36 -106 -53 -92 -49 -424 6 -542 64 -136 184 -245 326 -296 358 -129 943 297 1442 1051 55 82 106 155 113 162 116 114 165 276 104 351 -64 80 -123 40 -269 -182 -479 -727 -989 -1199 -1183 -1095 -109 58 -132 154 -85 356 23 100 57 200 75 222 18 22 33 47 33 55 0 18 165 361 201 418 191 303 249 432 249 559 0 201 -86 253 -581 356 -228 47 -227 47 -169 160 138 266 154 316 158 491 5 207 -31 268 -183 309 -139 37 -348 -40 -468 -173 -247 -273 -245 -652 3 -857 l88 -72 -178 -268 c-98 -147 -190 -279 -205 -292 -15 -14 -59 -71 -97 -128 -38 -56 -88 -123 -112 -150 -24 -26 -84 -99 -134 -160 -135 -168 -359 -387 -527 -516 -546 -421 -950 -395 -1079 67 -78 283 -54 336 184 400 308 83 735 348 949 590 290 329 337 600 142 822 l-110 125 -259 -3 c-244 -2 -269 -7 -409 -84 -241 -132 -429 -293 -585 -501 -36 -48 -72 -93 -80 -100 -8 -7 -22 -29 -31 -50 -10 -21 -40 -71 -67 -112 -27 -42 -56 -92 -65 -113 -16 -41 -54 -125 -136 -308 -97 -213 -598 -806 -786 -930 -401 -263 -568 6 -466 751 57 411 78 452 405 781 352 355 973 1101 973 1170 0 9 32 57 71 107 182 233 508 845 628 1179 77 218 104 554 54 675 -115 275 -446 298 -753 52 -193 -155 -536 -550 -609 -702 -10 -21 -32 -60 -49 -87 -76 -125 -157 -256 -184 -301 -33 -55 -269 -531 -322 -649 -18 -42 -68 -151 -110 -244 -42 -93 -76 -179 -76 -192 0 -13 -15 -55 -34 -94 -74 -152 -152 -354 -191 -495 -11 -42 -32 -109 -46 -150 -14 -42 -43 -137 -63 -213 -21 -76 -55 -200 -77 -277 -21 -77 -39 -168 -39 -203 0 -34 -34 -109 -75 -166 -41 -57 -75 -113 -75 -125 0 -12 -24 -43 -53 -69 -30 -26 -81 -92 -116 -145 -99 -157 -532 -574 -658 -635 -275 -133 -448 -39 -448 245 -1 158 51 460 105 613 14 41 32 108 39 150 7 41 28 97 47 124 19 27 34 69 34 93 0 24 16 80 35 125 19 46 52 128 72 183 53 141 192 483 238 587 21 48 55 127 76 175 80 190 129 263 184 279 119 33 541 22 659 -18 113 -39 118 -38 176 16 120 113 52 237 -142 262 -107 14 -451 -18 -567 -53 -49 -15 -56 -8 -56 59 0 42 10 80 22 84 13 5 58 75 102 156 165 307 206 380 252 453 152 238 97 404 -142 431 -101 12 -116 5 -199 -82 -49 -52 -100 -119 -113 -147 -13 -29 -61 -120 -108 -202 -46 -83 -109 -201 -138 -263 -30 -62 -65 -129 -78 -150 -25 -41 -41 -74 -121 -259 l-52 -121 -231 14 c-128 8 -264 17 -303 21 -93 10 -128 -45 -106 -162 22 -116 125 -155 341 -130 173 20 190 -11 101 -183 -26 -51 -67 -137 -90 -192 -24 -56 -59 -132 -78 -171 -19 -39 -34 -90 -34 -114 0 -24 -10 -54 -23 -67 -24 -24 -89 -191 -127 -323 -25 -92 -69 -218 -122 -350 -42 -106 -276 -438 -309 -438 -10 0 -19 -17 -19 -37 0 -21 -9 -38 -21 -38 -11 0 -56 -48 -99 -106 -344 -468 -695 -646 -745 -378 -31 169 93 676 230 938 19 36 35 79 35 95 0 27 199 466 250 551 105 175 178 364 159 412 -22 59 -170 138 -258 138 -169 0 -202 -44 -530 -698 -556 -1108 -1117 -1741 -1333 -1502 -52 57 -38 363 23 508 19 44 53 130 77 192 114 296 501 1115 538 1138 28 17 52 174 35 221 -25 63 -171 141 -265 141 -153 0 -221 -89 -435 -569 -107 -238 -140 -289 -269 -405 -150 -135 -357 -301 -376 -301 -7 0 -55 -28 -106 -62 -107 -73 -199 -85 -175 -23 8 22 22 70 30 106 8 37 31 110 50 163 65 170 53 652 -18 802 -130 273 -408 366 -672 226 -62 -33 -139 -72 -172 -86 -108 -49 -441 -409 -590 -638 -81 -124 -175 -268 -208 -319 -34 -52 -72 -94 -83 -94 -29 0 -28 168 1 186 12 8 30 60 40 116 9 56 33 132 52 169 19 36 35 90 35 119 0 57 65 126 288 302 421 335 815 738 1193 1221 375 480 617 999 618 1330 3 656 -627 599 -1227 -111 -166 -196 -386 -506 -431 -607 -9 -21 -39 -71 -65 -112 -27 -42 -78 -132 -114 -200 -35 -69 -74 -142 -87 -163 -37 -62 -216 -452 -275 -600 -31 -76 -70 -171 -88 -212 -53 -123 -155 -410 -187 -525 -20 -72 -41 -137 -103 -319 -15 -45 -36 -126 -46 -181 -11 -55 -32 -132 -48 -171 -15 -39 -28 -102 -28 -140 0 -73 -104 -236 -235 -367 -43 -43 -135 -139 -206 -213 -308 -323 -599 -572 -669 -572 -48 0 -51 65 -7 150 18 34 58 147 90 250 32 103 69 216 83 250 14 34 35 102 45 150 21 95 61 215 115 345 19 45 34 107 35 137 0 31 17 77 37 104 20 27 37 70 37 96 0 26 15 78 34 114 19 37 62 121 94 187 79 161 111 216 144 249 86 86 -44 218 -214 218 -120 0 -134 -7 -208 -100 -97 -122 -93 -122 -219 -3 -428 408 -1373 -107 -1807 -984 -156 -316 -618 -880 -878 -1073 -219 -162 -397 -132 -395 67 1 112 73 352 121 400 15 15 28 40 28 54 0 15 83 195 184 402 266 540 272 555 275 792 5 318 -114 445 -418 445 -158 0 -212 -15 -366 -104 -21 -11 -60 -31 -87 -44 -197 -89 -607 -550 -973 -1096 -40 -58 -82 -106 -93 -106 -29 0 -28 89 0 144 54 106 290 602 323 681 21 48 52 117 70 152 101 199 55 354 -124 418 -132 48 -249 -13 -316 -164 -28 -62 -50 -127 -50 -146 0 -18 -18 -76 -40 -128 -87 -203 -107 -251 -187 -444 -84 -204 -130 -284 -278 -491 -369 -516 -747 -891 -941 -934 -155 -34 -204 29 -204 264 0 111 13 226 29 256 17 30 38 94 48 142 19 92 59 211 113 338 46 109 335 718 361 762 84 144 149 309 137 349 -21 66 -175 151 -273 151 -119 0 -232 -127 -383 -431 -113 -229 -166 -343 -297 -641 -21 -47 -88 -150 -149 -230 -61 -79 -111 -152 -111 -162 0 -56 -537 -623 -687 -725 -119 -81 -281 -120 -361 -87 -243 101 -187 585 180 1564 138 367 153 403 352 839 68 150 102 197 163 222 100 41 637 27 682 -18 78 -78 221 1 221 123 0 152 -200 193 -681 139 -197 -23 -209 -5 -105 159 35 55 74 125 88 155 27 59 48 96 150 256 35 55 72 116 82 137 10 21 34 66 54 100 99 170 -29 366 -223 344 -96 -11 -215 -86 -215 -136 0 -9 -16 -34 -35 -56 -40 -44 -189 -318 -328 -602 -51 -103 -117 -238 -148 -300 l-55 -112 -311 0 -310 0 -8 -93 c-13 -150 111 -198 419 -164 94 10 90 -51 -20 -284 -54 -115 -117 -260 -141 -322 -44 -116 -77 -195 -147 -357 -22 -52 -41 -120 -42 -150 0 -31 -17 -77 -37 -104 -20 -27 -37 -75 -37 -108 0 -99 -430 -597 -595 -690 -29 -15 -95 -52 -148 -82 -181 -100 -432 -126 -524 -54 -16 12 -43 100 -60 194 -49 277 -177 383 -319 263 -154 -129 -136 -378 40 -566 l113 -122 -31 -281 c-18 -154 -40 -354 -50 -443 -10 -89 -30 -202 -45 -250 -26 -82 -50 -180 -107 -449 -14 -61 -36 -123 -49 -136 -14 -14 -25 -54 -25 -90 0 -36 -17 -87 -37 -114 -20 -27 -37 -62 -37 -79 -2 -61 -204 -452 -288 -560 -212 -266 -409 -106 -358 291 65 495 74 544 160 852 19 70 35 154 36 187 0 33 17 89 37 123 19 34 36 91 36 125 1 34 18 95 39 134 20 39 37 94 37 121 0 26 13 73 29 103 17 30 38 94 48 142 10 48 30 121 44 163 15 41 45 142 67 225 85 319 118 427 152 503 19 44 35 91 35 105 0 13 19 62 42 108 23 46 56 113 74 148 18 36 210 244 428 463 385 386 546 570 831 950 164 218 407 560 425 597 7 14 41 71 75 126 34 56 76 123 92 150 57 94 283 550 283 571 0 12 16 56 34 100 19 43 55 173 80 288 63 290 -4 495 -194 593 -316 163 -961 -368 -1371 -1127 -56 -104 -272 -512 -312 -588 -105 -200 -370 -790 -450 -1000 -24 -62 -58 -146 -75 -187 -31 -73 -77 -191 -155 -400 -20 -55 -53 -137 -72 -183 -19 -45 -35 -96 -35 -114 0 -174 -625 -975 -965 -1236 -139 -106 -281 -129 -348 -55 -60 66 -59 385 2 502 20 39 36 93 36 121 0 28 16 87 35 132 19 46 54 133 78 195 24 62 92 214 150 338 58 123 113 241 122 262 9 21 55 105 102 188 166 290 171 353 31 438 -179 109 -368 22 -490 -226 -30 -62 -65 -129 -76 -150 -12 -21 -39 -77 -60 -125 -56 -128 -191 -424 -239 -523 -94 -196 -957 -978 -1145 -1037 -61 -19 -100 22 -63 67 14 17 36 70 50 118 15 48 50 149 80 225 30 76 64 175 75 222 12 46 33 96 48 111 15 15 27 52 27 84 0 31 16 93 35 138 19 46 53 144 77 220 101 329 189 512 326 676 62 75 123 149 136 165 12 16 30 68 39 117 51 271 -420 297 -541 30 -13 -28 -45 -84 -72 -125 -27 -42 -61 -98 -75 -125 -14 -28 -48 -84 -75 -125 -27 -42 -61 -98 -74 -125 -51 -101 -254 -372 -447 -596 -692 -803 -1488 -1292 -2102 -1292 -189 0 -420 58 -483 121 -16 16 -43 29 -60 29 -39 0 -187 185 -239 300 -104 229 -120 290 -134 506 -15 245 15 632 64 819 71 270 196 645 250 750 23 44 142 39 348 -14 163 -43 865 -49 1007 -10 51 14 163 36 250 49 225 32 588 127 753 196 39 16 79 29 91 29 21 0 234 92 439 189 194 93 594 338 728 447 173 141 659 640 659 677 0 17 16 44 36 61 88 72 248 463 277 672 72 518 -135 833 -638 974 -190 53 -748 63 -912 16z m873 -316 c215 -86 382 -339 352 -532 -85 -561 -564 -1175 -1251 -1606 -97 -61 -560 -282 -592 -283 -18 0 -54 -17 -81 -37 -27 -20 -69 -37 -93 -37 -24 0 -81 -16 -126 -35 -86 -37 -259 -83 -557 -149 -406 -90 -1413 -82 -1413 11 0 116 483 828 845 1246 389 448 980 942 1368 1140 68 35 141 74 162 85 63 36 178 83 413 167 215 78 238 81 550 76 225 -5 355 -19 423 -46z m4366 -796 c147 -79 -30 -660 -376 -1236 -41 -69 -87 -148 -101 -175 -128 -248 -1034 -1456 -1168 -1557 -123 -92 -104 1 83 412 20 45 53 118 73 163 41 93 232 508 336 732 116 248 251 516 341 675 46 82 94 172 107 200 13 27 52 92 88 144 36 53 65 101 65 108 0 34 310 414 392 483 108 88 97 85 160 51z m11388 -36 c41 -63 39 -115 -10 -325 -23 -97 -205 -470 -306 -625 -27 -42 -56 -92 -66 -113 -15 -32 -182 -262 -389 -537 -95 -125 -395 -462 -623 -700 -169 -176 -224 -219 -247 -196 -24 24 -19 56 25 150 54 116 105 226 252 546 120 260 322 659 382 756 32 51 66 110 75 131 152 329 691 975 815 975 28 0 69 -28 92 -62z m7405 -107 c4 -56 -10 -143 -31 -194 -22 -51 -39 -113 -39 -138 0 -25 -16 -77 -35 -116 -19 -39 -93 -189 -164 -333 -71 -144 -151 -296 -177 -337 -27 -42 -60 -101 -73 -132 -23 -53 -68 -122 -302 -468 -94 -140 -519 -710 -561 -753 -15 -15 -71 -85 -125 -156 -169 -222 -230 -158 -110 113 26 58 47 116 47 130 0 13 16 56 36 95 53 104 114 250 114 273 0 10 22 65 48 121 26 56 106 225 178 377 221 469 321 669 411 825 48 82 95 166 105 187 30 61 160 253 278 407 213 281 383 323 400 99z m2487 -1939 c17 -43 -15 -214 -53 -284 -16 -30 -29 -77 -29 -105 0 -51 -80 -93 -125 -66 -43 27 -30 319 17 389 71 102 164 135 190 66z m-13519 -564 c224 -102 225 -207 7 -578 -28 -48 -79 -138 -112 -200 -34 -62 -83 -146 -109 -187 -27 -42 -56 -92 -66 -113 -88 -192 -611 -760 -778 -846 -144 -73 -269 -26 -295 112 -84 446 450 1499 878 1729 234 126 339 145 475 83z m11875 7 c129 -85 72 -305 -142 -548 -77 -88 -417 -359 -496 -395 -21 -10 -87 -46 -148 -80 -112 -63 -202 -81 -202 -39 0 21 50 130 104 227 12 21 27 52 34 69 32 81 41 98 87 169 27 41 60 100 74 131 43 98 359 397 476 450 140 65 139 64 213 16z m-9313 -1641 c-1 -48 -159 -237 -278 -331 -165 -131 -372 -140 -372 -16 0 70 83 136 313 247 291 140 337 154 337 100z m-16281 -966 c-30 -59 -207 -436 -249 -528 -114 -254 -470 -948 -557 -1087 -333 -532 -509 -766 -757 -1008 -218 -213 -518 -429 -598 -431 -25 0 -74 -17 -108 -36 -92 -53 -385 -49 -482 6 -673 381 -76 1516 1210 2301 83 51 181 112 217 136 37 24 90 55 118 68 27 14 117 64 200 112 82 48 240 133 350 190 221 113 255 132 400 223 137 87 289 119 256 54z m13043 -143 c0 -20 -333 -717 -387 -810 -12 -21 -62 -116 -110 -212 -49 -97 -140 -252 -202 -347 -62 -94 -113 -176 -113 -183 0 -21 -229 -316 -323 -417 -223 -239 -511 -367 -676 -301 -390 156 -180 854 415 1375 254 223 825 634 947 682 13 6 64 41 112 77 48 37 104 76 125 85 21 10 66 34 100 54 65 38 113 37 112 -3z" class="" stroke-width="1"></path> <path d="M6050 16498 c0 -61 58 -52 71 10 4 25 -8 42 -32 42 -23 0 -39 -21 -39 -52z" class="" stroke-width="1"></path> <path d="M12908 14526 c-263 -44 -428 -436 -259 -620 155 -171 430 -71 557 202 63 134 55 217 -30 321 -79 96 -140 118 -268 97z" class=""></path> <path d="M18350 14532 c-267 -100 -403 -491 -223 -642 103 -87 252 -88 378 -3 98 67 220 287 220 399 0 139 -240 296 -375 246z"></path>  <path d="M43625 677 c0 -31 16 -52 39 -52 24 0 36 17 32 42 -13 62 -71 71 -71 10z"></path> </g> </svg></a>
+  <a class="back" href="/">&larr; All gifts</a>
+</div></div>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="kicker">AI Gift Finder</span>
+    <h1>Gift This Room</h1>
+    <p class="lede">Snap a photo of their desk, bedroom, or living room — AI figures out what's there and finds gifts that actually fit the space.</p>
+  </div>
+
+  <div class="perm">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B2D8E" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <span><strong>Your photo stays yours.</strong> It's sent for one AI analysis and never stored, shared, or used for anything else. Only photograph spaces you have permission to share.</span>
+  </div>
+
+  <div class="upload-zone" id="dz">
+    <input type="file" id="file" accept="image/*">
+    <div class="uz-icon"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#5B2D8E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4"/><path d="M7 8.5 12 3.5l5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg></div>
+    <div class="uz-title">Upload or take a photo</div>
+    <div class="uz-sub">Tap to choose from your gallery or take a new photo</div>
+  </div>
+
+  <div id="preview-wrap">
+    <img id="preview" alt="Room photo preview">
+    <br>
+    <button class="btn" id="analyze-btn">Find gifts for this room</button>
+    <button class="btn btn-secondary" id="retake-btn">Retake</button>
+  </div>
+
+  <div id="error"></div>
+
+  <div id="analyzing">
+    <div class="spinner"></div>
+    <p><strong>Analyzing the room&hellip;</strong><br><span style="color:var(--ink2);font-size:.88rem">Spotting the space, style, and what's missing.</span></p>
+  </div>
+
+  <div id="results"></div>
+  <div id="room-toast"></div>
+
+  <footer>
+    <p class="aff-disclosure">As an Amazon Associate, Gifting Butler earns from qualifying purchases. AI suggestions are a starting point — always check the product page before buying.</p>
+  </footer>
+</div>
+
+<script>
+const FN_URL = 'https://us-central1-giftingbutler-74395.cloudfunctions.net/analyzeRoom';
+const VISUALIZE_URL = 'https://us-central1-giftingbutler-74395.cloudfunctions.net/visualizeInRoom';
+let imgData = null, imgMime = 'image/jpeg';
+let CATALOG = [];
+
+// Load catalog (visible products with direct links only)
+async function loadCatalog() {
+  try {
+    const t = await (await fetch('/index.html', {cache:'no-store'})).text();
+    const m = t.match(/const P=\[([\s\S]*?)\n\];/);
+    if (!m) return;
+    const P = eval('[' + m[1] + ']');
+    CATALOG = P.filter(p => !p._hidden && p.url && p.url.includes('/dp/'));
+  } catch(e) { console.warn('catalog load failed', e); }
+}
+loadCatalog();
+
+// ---- Wishlist: the SAME system as the main site (gb_fam in localStorage,
+// synced to the signed-in account's users/{uid} doc field `wishlists`) ----
+var roomDb = null, roomUid = null;
+let roomFam = [];
+try { roomFam = JSON.parse(localStorage.getItem('gb_fam') || '[]'); if (!Array.isArray(roomFam)) roomFam = []; } catch(e) { roomFam = []; }
+let roomActiveM = roomFam.length ? roomFam[0].id : null;
+function roomIsSaved(p){
+  if (!p) return false;
+  return roomFam.some(m => (m.wl || []).some(it => it.u === p.url || it.t === p.title));
+}
+function roomToast(msg){
+  const t = document.getElementById('room-toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function roomPersistFam(){
+  try { localStorage.setItem('gb_fam', JSON.stringify(roomFam)); } catch(e) {}
+  if (roomDb && roomUid){
+    roomDb.collection('users').doc(roomUid).set({wishlists: roomFam, updatedAt: Date.now()}, {merge:true}).catch(() => {});
+  }
+}
+function roomToggleSave(id){
+  const p = CATALOG.find(x => x.id === id); if (!p) return;
+  if (roomIsSaved(p)){
+    roomFam.forEach(m => { m.wl = (m.wl || []).filter(it => it.u !== p.url && it.t !== p.title); });
+    roomPersistFam(); paintSaveBtns(); roomToast('Removed from wishlist');
+  } else {
+    if (!roomActiveM){ const nid = roomFam.length ? Math.max(...roomFam.map(x => x.id)) + 1 : 1; roomFam.push({id: nid, name: 'My Wishlist', wl: []}); roomActiveM = nid; }
+    roomFam.find(x => x.id === roomActiveM).wl.push({t: p.title, u: p.url, i: p.img});
+    roomPersistFam(); paintSaveBtns(); roomToast('Saved to wishlist');
+  }
+}
+function paintSaveBtns(){
+  document.querySelectorAll('[data-save]').forEach(b => {
+    const p = CATALOG.find(x => String(x.id) === String(b.getAttribute('data-save')));
+    const sv = roomIsSaved(p);
+    b.classList.toggle('saved', sv);
+    const sp = b.querySelector('span'); if (sp) sp.textContent = sv ? 'Saved' : 'Save to wishlist';
+  });
+}
+
+const dz = document.getElementById('dz');
+const file = document.getElementById('file');
+dz.addEventListener('click', () => file.click());
+['dragover','dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
+dz.addEventListener('drop', e => { if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); });
+file.addEventListener('change', () => { if (file.files[0]) readFile(file.files[0]); });
+
+function readFile(f) {
+  if (!f.type.startsWith('image/')) { showError('Please choose an image file.'); return; }
+  const r = new FileReader();
+  r.onload = () => {
+    // Downscale to max 1280px to keep upload fast
+    const img = new Image();
+    img.onload = () => {
+      const max = 1280;
+      let w = img.width, h = img.height;
+      if (Math.max(w, h) > max) { const s = max / Math.max(w, h); w = Math.round(w*s); h = Math.round(h*s); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      const url = c.toDataURL('image/jpeg', 0.82);
+      imgData = url.split(',')[1]; imgMime = 'image/jpeg';
+      document.getElementById('preview').src = url;
+      document.getElementById('preview-wrap').style.display = 'block';
+      document.getElementById('results').style.display = 'none';
+      dz.style.display = 'none';
+      hideError();
+    };
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+
+document.getElementById('retake-btn').addEventListener('click', () => {
+  imgData = null; file.value = '';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  dz.style.display = 'block';
+});
+
+document.getElementById('analyze-btn').addEventListener('click', async () => {
+  if (!imgData) return;
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  document.getElementById('analyzing').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  hideError();
+  try {
+    const res = await fetch(FN_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({image: imgData, mimeType: imgMime})
+    });
+    const data = await res.json();
+    document.getElementById('analyzing').style.display = 'none';
+    btn.disabled = false;
+    if (!data.ok) {
+      if (data.code === 'not_configured') showError('Room AI is still being set up — check back soon!');
+      else if (data.code === 'quota_exceeded') showError('Lots of people are using this right now — please try again tomorrow!');
+      else showError('Could not analyze the photo. Please try another image.');
+      return;
+    }
+    renderResults(data.analysis);
+  } catch(e) {
+    document.getElementById('analyzing').style.display = 'none';
+    btn.disabled = false;
+    showError('Connection problem — please try again.');
+  }
+});
+
+function showError(m) { const e = document.getElementById('error'); e.textContent = m; e.style.display = 'block'; }
+function hideError() { document.getElementById('error').style.display = 'none'; }
+
+// Room-aware matching: suggestions must fit INSIDE the photographed room.
+let ROOMTYPE = '';
+const ROOM_INDOOR = /bedroom|living|kitchen|bathroom|office|dorm|dining|nursery|foyer|hallway/i;
+const ROOM_PLAY = /playroom/i;
+function roomBlocked(p){
+  const t = ((p.title||'') + ' ' + (p.desc||'')).toLowerCase();
+  if (/gift card/i.test(p.title||'')) return true; // gift cards don't belong in a room shot
+  const outdoor = /outdoor|backyard|playground|jungle gym/.test(t);
+  const vehicle = /scooter|bicycle|\bbike\b|tricycle|skateboard|roller skate/.test(t);
+  // Kids/baby products don't belong in adult rooms (kitchen, office, etc.)
+  const cats = (p.cats||[]).join(' ').toLowerCase();
+  const isKidsProd = /children|kids|baby|toddler|infant/.test(cats);
+  const rt = (ROOMTYPE||'').toLowerCase();
+  const isAdultRoom = /kitchen|office|living room|dining room|bedroom/.test(rt) && !/kid|child|nursery|playroom/.test(rt);
+  if (isKidsProd && isAdultRoom) return true;
+  if (ROOM_PLAY.test(ROOMTYPE)) return outdoor;
+  if (ROOM_INDOOR.test(ROOMTYPE)) return outdoor || vehicle;
+  return outdoor;
+}
+function scoreProd(p, words){
+  const hay = ((p.title||'') + ' ' + (p.desc||'') + ' ' + (p.cats||[]).join(' ')).toLowerCase();
+  let s = 0, hits = 0;
+  for (const w of words){
+    if (w.length > 2 && hay.includes(w)){ s += w.length > 5 ? 2 : 1; hits++; }
+  }
+  return {s, hits};
+}
+// Extract a usable item name from an opportunity (handles nested objects from the AI).
+function oppItemText(o){
+  if (!o) return '';
+  if (typeof o === 'string') return o;
+  if (typeof o === 'object'){
+    const it = o.item;
+    if (typeof it === 'string') return it;
+    if (it && typeof it === 'object'){
+      for (const v of Object.values(it)){
+        if (typeof v === 'string' && v.trim()) return v;
+      }
+    }
+    return '';
+  }
+  return String(o);
+}
+// Drop AI opportunities that are empty or generic ("object", "thing", ...).
+function isGenericOpp(o){
+  const t = oppItemText(o).trim().toLowerCase();
+  return !t || /^(objects?|items?|things?|stuff|products?|gifts?|decorations?)$/.test(t) || t === '[object object]';
+}
+// Block products clearly meant for a different room than the one photographed.
+function roomMismatch(p){
+  const t = ((p.title||'') + ' ' + (p.desc||'')).toLowerCase();
+  const rt = (ROOMTYPE||'').toLowerCase();
+  if (!rt) return false;
+  const roomWords = ['kitchen','bedroom','bathroom','living room','dining room','office','guest room','nursery','dorm room','dorm','hallway','foyer'];
+  for (const r of roomWords){
+    if (t.includes(r) && !rt.includes(r)) return true;
+  }
+  return false;
+}
+// Match the AI's per-room opportunities against catalog products (best match per idea),
+// topping up from keywords only if thin. Room-blocked products never show.
+function matchProducts(keywords, opportunities, observed){
+  const seen = new Set(); const out = [];
+  for (const p of CATALOG){ delete p._where; }
+  const consider = (p, where) => { if (p && !seen.has(p.id) && !roomBlocked(p) && !roomMismatch(p)){ seen.add(p.id); if (where) p._where = where; out.push(p); } };
+  const obsText = (observed || []).join(' ').toLowerCase();
+  const covered = new Map(); // opportunity index -> catalog product it produced
+  (opportunities||[]).forEach((opp, oi) => {
+    if (out.length >= 8) return;
+    if (isGenericOpp(opp)) return;
+    const oppText = oppItemText(opp);
+    const oppWhere = (opp && typeof opp === 'object') ? (opp.where || '') : '';
+    const words = String(oppText).toLowerCase().split(/[^a-z0-9]+/);
+    let best = null, bestS = 0;
+    for (const p of CATALOG){
+      if (seen.has(p.id) || roomBlocked(p)) continue;
+      const r = scoreProd(p, words);
+      if (r.hits >= 2 && r.s > bestS){ bestS = r.s; best = p; }
+    }
+    if (best){ consider(best, oppWhere); covered.set(oi, best); }
+  });
+  if (out.length < 4){
+    const words = [];
+    (keywords||[]).forEach(k => words.push(...String(k).toLowerCase().split(/\s+/)));
+    const scored = [];
+    for (const p of CATALOG){
+      if (seen.has(p.id) || roomBlocked(p) || roomMismatch(p)) continue;
+      const r = scoreProd(p, words);
+      if (r.hits >= 3 && r.s >= 4) scored.push({p, s:r.s});
+    }
+    scored.sort((a,b) => b.s - a.s);
+    for (const x of scored){ consider(x.p); if (out.length >= 8) break; }
+  }
+  // Room staples: the catalog's own room-fit products (kitchen appliances, moon
+  // lamps, globes, ...) should surface even when the AI's wording doesn't overlap
+  // with product titles. Only used when AI-grounded picks came up thin.
+  if (out.length < 4){
+    const rt = (ROOMTYPE||'').toLowerCase();
+    const STAPLES = [
+      { room: /kitchen/, terms: ['blender','ice maker','ice cream maker','frozen drink maker','mist fan','personal cooler'] },
+      { room: /dining room/, terms: ['tabletop fountain','globe','zen garden'] },
+      { room: /office|study/, terms: ['galaxy tab','ipad pro','globe','floating pen','cd player'] },
+      { room: /bedroom/, terms: ['moon lamp','cushion','massage chair pad','zen garden','tabletop fountain','roses'] },
+      { room: /living room/, terms: ['globe','moon lamp','tabletop fountain','zen garden','roses'] },
+      { room: /nursery|playroom|kid|child/, terms: ['magnetic tiles','slide','water table','laser pointer','spirograph'] },
+    ];
+    for (const s of STAPLES){
+      if (!s.room.test(rt)) continue;
+      for (const term of s.terms){
+        if (out.length >= 4) break;
+        if (obsText.includes(term)) continue; // already sitting in the room
+        const hit = CATALOG.find(p => !seen.has(p.id) && !roomBlocked(p) && !roomMismatch(p) &&
+          String(p.title||'').toLowerCase().includes(term));
+        if (hit) consider(hit);
+      }
+    }
+  }
+  return { picks: out, covered };
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+const AMZ_TAG = 'giftingbutler-20';
+// Opportunities the catalog can't cover get honest Amazon search links (affiliate-tagged).
+// Uses the same 2-hit bar as the picker so nothing falls through the cracks.
+function oppMatched(opp) {
+  const oppText = oppItemText(opp);
+  const words = String(oppText).toLowerCase().split(/[^a-z0-9]+/);
+  return CATALOG.some(p => {
+    if (roomBlocked(p) || roomMismatch(p)) return false;
+    const r = scoreProd(p, words);
+    return r.hits >= 2;
+  });
+}
+
+function renderResults(a) {
+  ROOMTYPE = a.roomType || '';
+  const mres = matchProducts(a.keywords || [], a.opportunities || [], a.observed || []);
+  const picks = mres.picks, covered = mres.covered;
+  const cards = picks.map(p => {
+    const sv = roomIsSaved(p);
+    return `
+    <div class="pick">
+      <img class="pick-img" src="${esc(p.img)}" alt="${esc(p.title)}" loading="lazy" draggable="false" onerror="this.style.display='none'">
+      <div class="pick-body">
+        <h2>${esc(p.title)}</h2>
+        <div class="why">${esc(p.desc || '')}</div>
+        <a class="amz-btn" href="${esc(p.url)}" target="_blank" rel="noopener sponsored">View on Amazon</a>
+        <button class="save-btn${sv ? ' saved' : ''}" data-save="${esc(String(p.id))}" aria-label="Save to wishlist" onclick="roomToggleSave(${esc(String(p.id))})"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>${sv ? 'Saved' : 'Save to wishlist'}</span></button>
+      </div>
+    </div>`;
+  }).join('');
+  const allExtra = (a.opportunities || []).filter((o, oi) => o && !isGenericOpp(o) && !covered.has(oi));
+  const extra = allExtra.slice(0, 6);
+  const hasMore = allExtra.length > 6;
+  const extraCards = extra.map(o => {
+    const oText = oppItemText(o);
+    const oObj = (o && typeof o === 'object') ? o : {};
+    const q = encodeURIComponent(oText);
+    return `
+    <div class="pick">
+      <div class="pick-body">
+        <h2>${esc(oText)}</h2>
+        <div class="why">${oObj.why ? esc(oObj.why) + ' ' : ''}${oObj.where ? '<em>(' + esc(oObj.where) + ')</em> ' : ''}Not in our curated catalog yet — browse matching picks on Amazon.</div>
+        <a class="amz-btn" href="https://www.amazon.com/s?k=${q}&tag=${AMZ_TAG}" target="_blank" rel="noopener sponsored">Search Amazon</a>
+      </div>
+    </div>`;
+  }).join('');
+  const moreCards = hasMore ? allExtra.slice(6).map(o => {
+    const oText = oppItemText(o);
+    const oObj = (o && typeof o === 'object') ? o : {};
+    const q = encodeURIComponent(oText);
+    return `
+    <div class="pick extra-hidden" style="display:none">
+      <div class="pick-body">
+        <h2>${esc(oText)}</h2>
+        <div class="why">${oObj.why ? esc(oObj.why) + ' ' : ''}${oObj.where ? '<em>(' + esc(oObj.where) + ')</em> ' : ''}Not in our curated catalog yet — browse matching picks on Amazon.</div>
+        <a class="amz-btn" href="https://www.amazon.com/s?k=${q}&tag=${AMZ_TAG}" target="_blank" rel="noopener sponsored">Search Amazon</a>
+      </div>
+    </div>`;
+  }).join('') : '';
+  // Layout per owner: (1) the room description line, (2) OUR catalog items,
+  // (3) the other ideas as ONE section of Amazon cards (list merged into the
+  // cards — same ideas were showing twice before).
+  document.getElementById('results').innerHTML = `
+    <div class="room-card">
+      <span class="style-tag">${esc(a.style || a.roomType || 'Room')}</span>
+      <h2>${esc(a.roomType ? 'Looks like a ' + a.roomType : 'Room analysis')}</h2>
+    </div>
+    ${cards ? `<div class="picks-head"><span>Gifts that fit this space</span></div>${cards}` : ''}
+    ${extraCards ? `<div class="picks-head"><span>More ideas on Amazon</span></div><p class="amz-note">These open Amazon search results, not a specific product — pick the one that fits best.</p><div id="extra-ideas">${extraCards}${moreCards}</div>${hasMore ? `<div style="text-align:center;margin:1rem 0"><button class="btn btn-plum" onclick="document.querySelectorAll('#extra-ideas .extra-hidden').forEach(e=>e.style.display='');this.style.display='none'">View more ideas</button></div>` : ''}` : ''}
+  `;
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  if (typeof firebase === 'undefined') return; // SDK blocked/offline: wishlist still works on this device
+  try {
+    if (!firebase.apps.length) firebase.initializeApp({
+      apiKey: "AIzaSyBVVwW2tmIR2HQCtHZ85cVBSsACE2Y1vVs",
+      authDomain: "giftingbutler-74395.firebaseapp.com",
+      projectId: "giftingbutler-74395",
+      storageBucket: "giftingbutler-74395.firebasestorage.app",
+      messagingSenderId: "37308175610",
+      appId: "1:37308175610:web:547281f014be448b292543",
+      measurementId: "G-KTPDVDSNWV"
+    });
+    roomDb = firebase.firestore();
+    firebase.auth().onAuthStateChanged(function(user){
+      roomUid = user ? user.uid : null;
+      if (!user) return;
+      roomDb.collection('users').doc(user.uid).get().then(function(snap){
+        const d = snap.data() || {};
+        if (Array.isArray(d.wishlists)){
+          roomFam = d.wishlists;
+          roomActiveM = roomFam.length ? roomFam[0].id : null;
+          try { localStorage.setItem('gb_fam', JSON.stringify(roomFam)); } catch(e) {}
+          if (typeof paintSaveBtns === 'function') paintSaveBtns();
+        }
+      }).catch(function(){});
+    });
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

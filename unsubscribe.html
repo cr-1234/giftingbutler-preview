@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unsubscribe | Gifting Butler</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f7f3fc;color:#2b2140;line-height:1.6;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem}
+.card{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:20px;padding:2.2rem;max-width:440px;width:100%;text-align:center;box-shadow:0 10px 34px rgba(40,20,70,.09)}
+.brand{font-family:Georgia,serif;font-style:italic;font-size:1.5rem;color:#5B2D8E;margin-bottom:1rem}
+h1{font-size:1.25rem;margin-bottom:.6rem}
+p{font-size:.9rem;color:#5c5470;margin-bottom:1.2rem}
+input{width:100%;border:1.5px solid rgba(91,45,142,.25);border-radius:999px;padding:.65rem 1.1rem;font-size:.9rem;margin-bottom:.8rem;outline:none}
+input:focus{border-color:#7C3AED}
+button{background:linear-gradient(135deg,#5B2D8E,#7C3AED);color:#fff;border:none;border-radius:999px;padding:.7rem 1.9rem;font-size:.92rem;font-weight:700;cursor:pointer;width:100%}
+button:disabled{opacity:.55;cursor:default}
+.ok{color:#1c7a3d;font-weight:600}
+.err{color:#b91c1c;font-weight:600}
+.back{display:inline-block;margin-top:1.2rem;font-size:.82rem;color:#5B2D8E;font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">Gifting Butler</div>
+  <div id="step-confirm">
+    <h1>Unsubscribe from emails?</h1>
+    <p id="conf-text">You'll stop receiving our weekly gift-idea emails.</p>
+    <input type="email" id="em" placeholder="you@example.com" autocomplete="email">
+    <button id="go" onclick="doUnsub()">Unsubscribe me</button>
+    <p id="msg" style="margin-top:.8rem"></p>
+  </div>
+  <div id="step-done" style="display:none">
+    <h1 class="ok">You're unsubscribed.</h1>
+    <p>No more weekly emails from us. Sorry to see you go — you can resubscribe anytime from the site.</p>
+  </div>
+  <a class="back" href="/">&larr; Back to Gifting Butler</a>
+</div>
+<script>
+var FN_URL='https://us-central1-giftingbutler-74395.cloudfunctions.net/unsubscribeNewsletter';
+(function(){
+  var q=new URLSearchParams(location.search).get('email');
+  if(q) document.getElementById('em').value=q;
+})();
+function doUnsub(){
+  var em=document.getElementById('em').value.trim().toLowerCase();
+  var msg=document.getElementById('msg'),btn=document.getElementById('go');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){msg.className='err';msg.textContent='Please enter a valid email address.';return;}
+  btn.disabled=true;btn.textContent='Working…';
+  fetch(FN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})})
+    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(res){
+      if(res.ok){document.getElementById('step-confirm').style.display='none';document.getElementById('step-done').style.display='block';}
+      else{msg.className='err';msg.textContent=(res.j&&res.j.error)||'Something went wrong — please try again.';btn.disabled=false;btn.textContent='Unsubscribe me';}
+    })
+    .catch(function(){msg.className='err';msg.textContent='Something went wrong — please try again.';btn.disabled=false;btn.textContent='Unsubscribe me';});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GiftingButler Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--plum:#5B2D8E;--plum-md:#7C3AED;--plum-lt:#EDE5F8;--ink:#1a1a2e;--muted:#6b7280;--brd:#e5e7eb;--bg:#f9f8ff;--white:#fff;--r:10px;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* ── Login ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:linear-gradient(135deg,#f0ebff,#fce7f3)}
+.login-card{background:var(--white);border-radius:20px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(91,45,142,.15)}
+.login-logo{text-align:center;margin-bottom:1.5rem}
+.login-logo svg{height:60px;width:auto}
+.login-card h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:.3rem;color:var(--plum)}
+.login-card p{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:1.8rem}
+.fld-wrap{margin-bottom:1rem}
+.fld-wrap label{display:block;font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.fld-wrap input{width:100%;padding:.72rem 1rem;border:1.5px solid var(--brd);border-radius:var(--r);font-size:.9rem;outline:none;transition:border .2s}
+.fld-wrap input:focus{border-color:var(--plum);box-shadow:0 0 0 3px var(--plum-lt)}
+.btn-primary{width:100%;padding:.8rem;background:var(--plum);color:#fff;border:none;border-radius:var(--r);font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s;margin-top:.5rem}
+.btn-primary:hover{background:var(--plum-md)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+#login-err{color:var(--red);font-size:.82rem;text-align:center;margin-top:.75rem;min-height:1.2em}
+.login-note{background:var(--plum-lt);border-radius:8px;padding:.9rem 1rem;margin-top:1.2rem;font-size:.78rem;color:var(--plum);line-height:1.6}
+
+/* ── Dashboard shell ── */
+#dashboard{display:none;min-height:100vh}
+.dash-header{background:var(--white);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 1.5rem;height:56px;position:sticky;top:0;z-index:100;gap:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.dash-header .dlogo{height:38px;width:auto}
+.dash-header h2{font-size:1rem;font-weight:700;color:var(--plum);flex:1}
+.dash-user{font-size:.8rem;color:var(--muted)}
+.btn-sm{padding:.42rem .9rem;border-radius:50px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .18s}
+.btn-outline{background:transparent;border:1.5px solid var(--brd);color:var(--ink)}
+.btn-outline:hover{border-color:var(--plum);color:var(--plum)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-green{background:var(--green);color:#fff}
+.btn-save{background:var(--plum);color:#fff;padding:.5rem 1.4rem}
+.btn-save:hover{background:var(--plum-md)}
+.save-pill{display:inline-flex;align-items:center;gap:.45rem;font-size:.8rem;font-weight:600;padding:.42rem .9rem;border-radius:50px;border:1.5px solid var(--brd);background:var(--white);color:var(--muted);white-space:nowrap}
+.save-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.save-pill[data-s="saving"] .dot{background:var(--amber);animation:savepulse 1s infinite}
+.save-pill[data-s="error"]{border-color:var(--red);color:var(--red)}
+.save-pill[data-s="error"] .dot{background:var(--red)}
+@keyframes savepulse{50%{opacity:.35}}
+
+.dash-body{display:flex;min-height:calc(100vh - 56px)}
+
+/* sidebar */
+.sidebar{width:200px;flex-shrink:0;background:var(--white);border-right:1px solid var(--brd);padding:1rem 0;display:flex;flex-direction:column;position:sticky;top:56px;height:calc(100vh - 56px);align-self:flex-start}
+.nav-item{display:flex;align-items:center;gap:.6rem;padding:.7rem 1.2rem;font-size:.88rem;font-weight:500;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .15s;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--plum-lt);color:var(--plum)}
+.nav-item.active{background:var(--plum-lt);color:var(--plum);border-left-color:var(--plum);font-weight:700}
+.nav-icon{font-size:1.1rem;width:20px;text-align:center}
+.sidebar-foot{margin-top:auto;padding:1rem}
+
+/* content */
+.content{flex:1;padding:1.5rem;overflow-y:auto}
+.panel{display:none}
+.panel.active{display:block}
+.panel-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.panel-head h1{font-size:1.3rem;font-weight:800;color:var(--ink);flex:1}
+.badge-count{background:var(--plum-lt);color:var(--plum);font-size:.75rem;font-weight:700;padding:.2rem .6rem;border-radius:50px}
+
+/* search & filters */
+.filters{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem}
+.filters input,.filters select{padding:.5rem .8rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;outline:none;background:var(--white)}
+.filters input:focus,.filters select:focus{border-color:var(--plum)}
+.filters input[type=search]{flex:1;min-width:200px}
+
+/* slim summary line (replaces stat cards) */
+.summary-line{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-bottom:1.1rem;padding:.55rem .95rem;background:var(--white);border:1px solid var(--brd);border-radius:var(--r)}
+.summary-line b{color:var(--ink);font-weight:700}
+.summary-line .sep{opacity:.35}
+
+/* bookmarklet — collapsed by default */
+.bookmarklet{margin-bottom:1rem;border:1px solid var(--brd);border-radius:var(--r);background:var(--white);overflow:hidden}
+.bookmarklet summary{cursor:pointer;padding:.65rem 1rem;font-size:.83rem;font-weight:600;color:var(--plum);list-style:none;display:flex;align-items:center;gap:.5rem}
+.bookmarklet summary::-webkit-details-marker{display:none}
+.bookmarklet summary::marker{display:none}
+.bookmarklet summary .chev{font-size:.62rem;transition:transform .2s;color:var(--muted)}
+.bookmarklet[open] summary .chev{transform:rotate(180deg)}
+.bookmarklet .bm-body{padding:.2rem 1rem 1rem;font-size:.8rem;line-height:1.6;border-top:1px solid #f3f4f6}
+
+/* carousel slide rows */
+#car-list{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.4rem}
+.slide-row{display:flex;align-items:center;gap:.7rem;background:var(--white);border:1px solid var(--brd);border-radius:12px;padding:.55rem .75rem;transition:border-color .15s,box-shadow .15s}
+.slide-row:hover{border-color:#c4b5fd;box-shadow:0 2px 10px rgba(91,45,142,.07)}
+.slide-row.dragging{opacity:.35}
+.slide-grip{cursor:grab;color:#c9ccd4;flex-shrink:0;display:flex;align-items:center;padding:.3rem .1rem;border-radius:6px;touch-action:none}
+.slide-grip:hover{color:var(--plum);background:var(--plum-lt)}
+.slide-grip:active{cursor:grabbing}
+.slide-pos{flex-shrink:0;min-width:26px;height:26px;padding:0 .3rem;border-radius:50%;background:var(--plum-lt);color:var(--plum);font-size:.74rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+/* numeric position input + per-slide visibility */
+.slide-pos-inp{flex-shrink:0;width:42px;height:26px;border:1px solid var(--brd);border-radius:8px;background:#fff;color:var(--plum);font-size:.76rem;font-weight:800;text-align:center;outline:none;padding:0}
+.slide-pos-inp:focus{border-color:var(--plum);box-shadow:0 0 0 2px var(--plum-lt)}
+.slide-pos-inp::-webkit-outer-spin-button,.slide-pos-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.slide-pos-inp{-moz-appearance:textfield;appearance:textfield}
+.slide-row.is-hidden{opacity:.5}
+.slide-thumb{width:52px;height:52px;object-fit:contain;background:#faf9ff;border-radius:10px;border:1px solid var(--brd);flex-shrink:0;padding:3px}
+.slide-main{flex:1;min-width:0}
+.slide-title{font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.custom-toggle{background:none;border:none;color:var(--muted);font-size:.74rem;font-weight:600;cursor:pointer;padding:.25rem 0 0;display:inline-flex;align-items:center;gap:.25rem}
+.custom-toggle:hover{color:var(--plum)}
+.custom-toggle .chev{font-size:.62rem;transition:transform .2s}
+.slide-row.open .custom-toggle .chev{transform:rotate(180deg)}
+.slide-custom{display:none;margin-top:.5rem;padding-top:.55rem;border-top:1px dashed var(--brd);grid-template-columns:1fr 1fr;gap:.55rem}
+.slide-row.open .slide-custom{display:grid}
+.slide-custom label{display:block;font-size:.66rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.slide-custom input{width:100%;margin-top:.25rem;padding:.4rem .6rem;border:1px solid var(--brd);border-radius:7px;font-size:.76rem;outline:none}
+.slide-custom input:focus{border-color:var(--plum)}
+.slide-actions{display:flex;align-items:center;gap:.28rem;flex-shrink:0}
+.icon-btn{width:28px;height:28px;border:1px solid var(--brd);background:var(--white);border-radius:8px;color:var(--muted);cursor:pointer;font-size:.7rem;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:all .15s}
+.icon-btn:hover:not(:disabled){border-color:var(--plum);color:var(--plum)}
+.icon-btn:disabled{opacity:.3;cursor:default}
+.icon-btn.danger:hover{border-color:var(--red);color:var(--red)}
+
+/* modal section headers */
+.msec{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--plum);margin:1.25rem 0 .7rem;padding-bottom:.35rem;border-bottom:1px solid var(--brd)}
+
+/* product table */
+.prod-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.prod-table th{background:#f5f3ff;text-align:left;padding:.65rem .9rem;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--brd)}
+.prod-table td{padding:.6rem .9rem;font-size:.85rem;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.prod-table tr:last-child td{border-bottom:none}
+.prod-table tr:hover td{background:#faf9ff}
+.prod-img{width:52px;height:52px;object-fit:contain;border-radius:8px;background:#f5f3ff;padding:2px}
+
+/* products tab cleanup: calm toolbar, quiet inline inputs, merged product cell */
+.toolbar{display:flex;gap:.6rem;align-items:center;margin-bottom:1rem}
+.toolbar input[type=search]{flex:1;min-width:180px;padding:.55rem .9rem;border:1.5px solid var(--brd);border-radius:9px;font-size:.85rem;outline:none;background:var(--white)}
+.toolbar input[type=search]:focus{border-color:var(--plum)}
+.toolbar select{padding:.55rem .7rem;border:1.5px solid var(--brd);border-radius:9px;font-size:.84rem;background:var(--white);outline:none;color:var(--ink);max-width:230px}
+.toolbar select:focus{border-color:var(--plum)}
+.quiet-inp{border:1px solid transparent;border-radius:6px;padding:4px 7px;font-size:.83rem;background:transparent;outline:none;color:var(--ink)}
+.quiet-inp:hover{border-color:var(--brd);background:var(--white)}
+.quiet-inp:focus{border-color:var(--plum);background:var(--white)}
+.prod-cell{display:flex;align-items:center;gap:.75rem;min-width:0}
+.prod-cell .prod-img{flex-shrink:0}
+.prod-cell .pt{font-weight:600;font-size:.85rem;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.prod-cell .pm{color:var(--muted);font-size:.75rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-table td{padding:.45rem .7rem}
+.prod-table th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+.prod-table th.sortable:hover{color:var(--plum);background:#efeafd}
+.prod-table th.sortable .sort-ind{display:inline-block;margin-left:.3em;font-size:.72em;color:var(--muted);opacity:0;transition:opacity .15s,color .15s}
+.prod-table th.sortable.sorted .sort-ind{opacity:1;color:var(--plum)}
+.prod-table th.sortable.sorted:hover{color:var(--ink)}
+.spons-toggle{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer}
+.toggle-track{width:36px;height:20px;border-radius:50px;background:#e5e7eb;position:relative;transition:background .2s}
+.toggle-track.on{background:var(--plum)}
+.toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-track.on .toggle-thumb{transform:translateX(16px)}
+.chip{display:inline-block;padding:2px 8px;border-radius:50px;font-size:.72rem;font-weight:700}
+.chip-purple{background:linear-gradient(135deg,var(--plum),var(--plum-md));color:#fff}
+.chip-gray{background:#e5e7eb;color:var(--muted)}
+.chip-green{background:#d1fae5;color:#065f46}
+.chip-red{background:#fee2e2;color:#991b1b}
+.badge-inp{border:1px solid var(--brd);border-radius:6px;padding:3px 7px;font-size:.78rem;width:90px;outline:none}
+.badge-inp:focus{border-color:var(--plum)}
+
+/* modal */
+#edit-modal{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
+#edit-modal.open{display:flex}
+.modal-card{background:var(--white);border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:1.8rem;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-card h2{font-size:1.1rem;font-weight:800;margin-bottom:1.4rem}
+.mfld{margin-bottom:1rem}
+.mfld label{display:block;font-size:.8rem;font-weight:600;margin-bottom:.3rem;color:var(--muted)}
+.mfld input,.mfld select,.mfld textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.88rem;outline:none}
+.mfld input:focus,.mfld select:focus{border-color:var(--plum)}
+.mfld textarea{min-height:60px;resize:vertical}
+.modal-foot{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.4rem}
+.modal-preview{width:70px;height:70px;object-fit:contain;border-radius:8px;background:#f5f3ff;padding:4px;border:1px solid var(--brd);margin-bottom:.5rem}
+
+/* giveaway */
+.gw-toggle{display:flex;align-items:center;gap:1rem;background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:1rem 1.4rem;margin-bottom:1rem}
+.gw-toggle label{font-weight:600;flex:1}
+.toggle-big{width:48px;height:26px;border-radius:50px;background:#e5e7eb;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle-big.on{background:var(--green)}
+.toggle-big .tb{position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle-big.on .tb{transform:translateX(22px)}
+.entries-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:1rem}
+.entries-table th{background:#f5f3ff;text-align:left;padding:.6rem .9rem;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--brd)}
+.entries-table td{padding:.55rem .9rem;font-size:.83rem;border-bottom:1px solid #f3f4f6}
+.entries-table tr:last-child td{border-bottom:none}
+.gw-status{font-size:.78rem;font-weight:600;white-space:nowrap}
+.gw-status.on{color:#15803d}
+.gw-status.off{color:#b91c1c}
+.gw-entries-bar{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.gw-entries-bar h3{flex:1;border:none;padding:0;margin:0}
+.gw-entries-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+#gw-entries-wrap{margin-top:.8rem}
+
+/* settings */
+.settings-group{background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
+.settings-group h3{font-size:.95rem;font-weight:700;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid var(--brd);color:var(--ink)}
+.sf{margin-bottom:.9rem}
+.sf label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.3rem}
+.sf input,.sf select,.sf textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.88rem;outline:none}
+.sf input:focus,.sf select:focus{border-color:var(--plum)}
+.field-help{font-size:.83rem;color:var(--muted);margin:-.3rem 0 1rem;line-height:1.55}
+.field-hint{font-size:.75rem;color:var(--muted);margin-top:.55rem}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.8rem;min-height:1.6rem}
+.spons-chip{display:inline-flex;align-items:center;gap:.5rem;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:50px;padding:.28rem .35rem .28rem .55rem;font-size:.78rem;font-weight:600;max-width:100%}
+.spons-chip img{width:24px;height:24px;object-fit:contain;border-radius:6px;background:#fff;flex-shrink:0}
+.spons-chip .sct{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spons-chip .sid{color:var(--muted);font-weight:400;font-size:.72rem;flex-shrink:0}
+.spons-chip button{border:none;background:#e9e4ff;color:var(--plum);border-radius:50%;width:19px;height:19px;font-size:.68rem;cursor:pointer;line-height:1;flex-shrink:0;padding:0}
+.spons-chip button:hover{background:var(--plum);color:#fff}
+.chip-addrow{display:flex;gap:.5rem}
+.chip-addrow input[type=text]{max-width:300px;padding:.6rem .85rem;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;outline:none}
+.chip-addrow input[type=text]:focus{border-color:var(--plum)}
+.spons-empty{font-size:.83rem;color:var(--muted)}
+.toast-adm{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a2e;color:#fff;padding:.7rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(10px);transition:all .3s;z-index:1000}
+.toast-adm.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:640px){
+  .sidebar{width:60px}
+  .nav-item span{display:none}
+  .nav-item{justify-content:center;padding:.7rem}
+  .dash-header h2{display:none}
+  .slide-custom{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800.000000 981.000000" preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,981.000000) scale(0.040000,-0.040000)" fill="#5B2D8E" stroke="none"> <path d="M10438 16811 c-69 -19 -154 -35 -188 -36 -34 -1 -141 -30 -237 -65 -97 -35 -204 -72 -240 -84 -35 -11 -86 -31 -112 -44 -27 -14 -166 -83 -309 -155 -250 -126 -386 -209 -671 -410 -268 -189 -705 -588 -895 -817 -81 -99 -175 -208 -206 -243 -32 -35 -87 -109 -123 -166 -35 -57 -95 -143 -132 -191 -78 -101 -170 -256 -264 -444 -98 -199 -121 -201 -325 -34 -195 162 -267 248 -387 466 -80 146 -82 157 -83 450 -1 390 64 546 353 847 99 103 307 247 398 275 65 20 100 108 60 148 -20 20 -50 19 -110 -3 -46 -16 -104 -30 -129 -30 -112 0 -428 -190 -594 -358 -266 -267 -349 -467 -350 -844 0 -360 50 -524 242 -785 116 -159 442 -438 512 -438 13 0 64 -23 112 -52 101 -60 96 -87 -76 -427 -19 -36 -34 -87 -34 -112 0 -26 -17 -79 -38 -118 -20 -39 -37 -96 -37 -125 0 -29 -16 -106 -36 -170 -79 -260 -72 -1018 12 -1246 129 -351 383 -676 613 -784 54 -26 120 -58 147 -72 221 -116 820 -118 1080 -3 44 18 94 34 113 34 43 0 474 218 621 313 401 261 751 581 1072 982 130 162 193 120 109 -74 -26 -60 -67 -159 -92 -221 -45 -113 -74 -182 -149 -357 -22 -52 -40 -110 -40 -129 0 -19 -16 -67 -36 -106 -19 -39 -54 -121 -77 -183 -23 -62 -50 -129 -60 -150 -18 -39 -147 -110 -428 -234 -189 -85 -928 -450 -1036 -514 -42 -24 -154 -86 -250 -138 -97 -52 -193 -111 -215 -129 -22 -19 -48 -35 -59 -35 -11 0 -62 -34 -114 -75 -52 -41 -102 -75 -111 -75 -35 0 -433 -316 -598 -473 -306 -294 -592 -709 -631 -919 -9 -46 -26 -90 -38 -97 -39 -25 -25 -567 16 -622 20 -27 37 -68 37 -93 0 -66 249 -307 375 -363 316 -139 836 -119 1125 43 21 12 94 51 163 88 300 160 686 518 973 904 90 121 175 233 189 250 14 16 25 37 25 46 0 9 31 63 70 120 38 57 78 120 88 141 10 21 39 71 65 113 101 159 397 778 526 1100 44 110 96 231 115 270 20 39 36 87 36 107 0 20 11 55 25 79 29 52 95 237 124 347 27 107 75 171 185 246 51 35 98 63 103 63 73 0 450 286 699 530 211 208 252 217 227 51 -92 -607 127 -924 575 -831 195 41 549 319 717 565 31 45 82 94 114 108 63 29 62 -3 -6 -198 -71 -202 -134 -397 -175 -537 -24 -83 -60 -187 -79 -233 -18 -45 -34 -110 -34 -144 0 -35 -17 -103 -38 -152 -20 -50 -37 -119 -37 -154 0 -35 -16 -120 -36 -190 -66 -230 -100 -690 -67 -891 109 -663 667 -735 1071 -136 141 208 330 638 385 875 12 55 33 122 46 150 12 27 27 83 33 125 6 41 23 125 38 187 69 291 105 566 105 798 l0 253 144 -5 c287 -10 549 116 812 389 79 82 151 141 161 132 9 -10 14 -134 11 -276 -9 -387 101 -577 386 -665 253 -78 514 7 824 270 96 81 236 233 312 338 184 254 200 249 200 -59 0 -345 88 -490 333 -552 309 -77 709 166 1041 633 47 66 99 119 118 119 43 0 43 -123 1 -188 -69 -105 -148 -340 -133 -394 40 -146 245 -242 374 -176 93 48 139 103 140 167 1 25 17 76 36 112 19 37 82 165 140 284 58 120 177 327 265 461 88 133 160 251 160 263 0 12 10 21 23 21 13 0 30 20 38 44 27 82 479 593 638 722 196 158 311 200 397 143 94 -61 66 -223 -94 -538 -136 -270 -160 -317 -202 -390 -14 -24 -31 -60 -39 -81 -7 -21 -30 -69 -50 -108 -20 -39 -36 -83 -36 -96 0 -14 -15 -61 -34 -105 -229 -530 54 -991 545 -889 258 53 636 367 838 695 46 77 108 9 91 -99 -40 -248 152 -551 369 -584 367 -55 736 201 1109 767 109 165 140 192 168 147 12 -21 -115 -397 -202 -594 -18 -44 -34 -95 -34 -114 0 -20 -17 -57 -37 -84 -20 -27 -37 -71 -37 -99 -2 -96 -80 -164 -334 -290 -140 -69 -294 -148 -342 -176 -716 -416 -1254 -840 -1469 -1157 -38 -56 -74 -107 -81 -114 -172 -172 -313 -777 -212 -911 20 -27 37 -67 37 -89 0 -70 173 -247 292 -300 205 -90 556 -66 758 53 21 12 60 32 88 45 204 92 744 696 895 1002 11 21 57 105 103 188 125 222 273 526 377 774 20 48 52 125 71 169 19 45 54 132 77 194 24 62 59 144 78 183 20 39 36 86 36 103 0 115 109 270 254 359 346 213 592 421 814 686 89 107 173 194 188 194 18 0 21 -80 9 -247 -27 -392 0 -566 102 -668 144 -145 254 -96 259 115 5 260 82 506 295 950 227 472 643 999 888 1127 288 150 404 -312 215 -852 -139 -394 -166 -440 -286 -486 -56 -21 -124 -39 -151 -39 -65 0 -275 -81 -427 -164 -286 -157 -397 -355 -304 -544 112 -227 472 -244 789 -37 59 38 116 70 126 70 51 0 527 554 530 618 1 34 93 132 124 132 27 0 117 42 225 104 21 11 60 31 88 44 27 12 106 63 174 112 161 116 191 116 160 4 -13 -48 -40 -118 -60 -156 -20 -39 -37 -89 -37 -111 0 -23 -17 -81 -37 -131 -24 -55 -38 -169 -38 -300 0 -156 10 -218 38 -241 20 -17 37 -45 37 -61 0 -55 137 -156 255 -188 133 -36 307 -7 481 80 186 94 620 578 697 778 40 106 72 6 55 -176 -39 -414 50 -619 298 -686 271 -74 712 195 983 600 111 165 185 253 212 253 10 0 19 -107 19 -238 0 -489 286 -722 745 -608 292 73 814 542 963 866 55 121 104 54 106 -145 4 -391 158 -653 435 -737 158 -48 209 -39 494 92 146 68 437 344 564 537 141 215 197 212 209 -11 5 -92 29 -196 57 -250 52 -101 186 -256 221 -256 11 0 34 -13 51 -30 38 -38 343 -118 453 -119 120 -1 335 66 540 168 423 211 794 573 1260 1231 83 117 163 226 177 243 14 16 25 35 25 42 0 7 34 63 75 124 41 61 75 120 76 132 2 61 122 167 156 139 20 -17 87 -37 149 -45 62 -9 144 -41 182 -71 80 -63 88 -39 -128 -395 -149 -247 -285 -525 -286 -588 0 -24 -17 -72 -36 -106 -53 -92 -49 -424 6 -542 64 -136 184 -245 326 -296 358 -129 943 297 1442 1051 55 82 106 155 113 162 116 114 165 276 104 351 -64 80 -123 40 -269 -182 -479 -727 -989 -1199 -1183 -1095 -109 58 -132 154 -85 356 23 100 57 200 75 222 18 22 33 47 33 55 0 18 165 361 201 418 191 303 249 432 249 559 0 201 -86 253 -581 356 -228 47 -227 47 -169 160 138 266 154 316 158 491 5 207 -31 268 -183 309 -139 37 -348 -40 -468 -173 -247 -273 -245 -652 3 -857 l88 -72 -178 -268 c-98 -147 -190 -279 -205 -292 -15 -14 -59 -71 -97 -128 -38 -56 -88 -123 -112 -150 -24 -26 -84 -99 -134 -160 -135 -168 -359 -387 -527 -516 -546 -421 -950 -395 -1079 67 -78 283 -54 336 184 400 308 83 735 348 949 590 290 329 337 600 142 822 l-110 125 -259 -3 c-244 -2 -269 -7 -409 -84 -241 -132 -429 -293 -585 -501 -36 -48 -72 -93 -80 -100 -8 -7 -22 -29 -31 -50 -10 -21 -40 -71 -67 -112 -27 -42 -56 -92 -65 -113 -16 -41 -54 -125 -136 -308 -97 -213 -598 -806 -786 -930 -401 -263 -568 6 -466 751 57 411 78 452 405 781 352 355 973 1101 973 1170 0 9 32 57 71 107 182 233 508 845 628 1179 77 218 104 554 54 675 -115 275 -446 298 -753 52 -193 -155 -536 -550 -609 -702 -10 -21 -32 -60 -49 -87 -76 -125 -157 -256 -184 -301 -33 -55 -269 -531 -322 -649 -18 -42 -68 -151 -110 -244 -42 -93 -76 -179 -76 -192 0 -13 -15 -55 -34 -94 -74 -152 -152 -354 -191 -495 -11 -42 -32 -109 -46 -150 -14 -42 -43 -137 -63 -213 -21 -76 -55 -200 -77 -277 -21 -77 -39 -168 -39 -203 0 -34 -34 -109 -75 -166 -41 -57 -75 -113 -75 -125 0 -12 -24 -43 -53 -69 -30 -26 -81 -92 -116 -145 -99 -157 -532 -574 -658 -635 -275 -133 -448 -39 -448 245 -1 158 51 460 105 613 14 41 32 108 39 150 7 41 28 97 47 124 19 27 34 69 34 93 0 24 16 80 35 125 19 46 52 128 72 183 53 141 192 483 238 587 21 48 55 127 76 175 80 190 129 263 184 279 119 33 541 22 659 -18 113 -39 118 -38 176 16 120 113 52 237 -142 262 -107 14 -451 -18 -567 -53 -49 -15 -56 -8 -56 59 0 42 10 80 22 84 13 5 58 75 102 156 165 307 206 380 252 453 152 238 97 404 -142 431 -101 12 -116 5 -199 -82 -49 -52 -100 -119 -113 -147 -13 -29 -61 -120 -108 -202 -46 -83 -109 -201 -138 -263 -30 -62 -65 -129 -78 -150 -25 -41 -41 -74 -121 -259 l-52 -121 -231 14 c-128 8 -264 17 -303 21 -93 10 -128 -45 -106 -162 22 -116 125 -155 341 -130 173 20 190 -11 101 -183 -26 -51 -67 -137 -90 -192 -24 -56 -59 -132 -78 -171 -19 -39 -34 -90 -34 -114 0 -24 -10 -54 -23 -67 -24 -24 -89 -191 -127 -323 -25 -92 -69 -218 -122 -350 -42 -106 -276 -438 -309 -438 -10 0 -19 -17 -19 -37 0 -21 -9 -38 -21 -38 -11 0 -56 -48 -99 -106 -344 -468 -695 -646 -745 -378 -31 169 93 676 230 938 19 36 35 79 35 95 0 27 199 466 250 551 105 175 178 364 159 412 -22 59 -170 138 -258 138 -169 0 -202 -44 -530 -698 -556 -1108 -1117 -1741 -1333 -1502 -52 57 -38 363 23 508 19 44 53 130 77 192 114 296 501 1115 538 1138 28 17 52 174 35 221 -25 63 -171 141 -265 141 -153 0 -221 -89 -435 -569 -107 -238 -140 -289 -269 -405 -150 -135 -357 -301 -376 -301 -7 0 -55 -28 -106 -62 -107 -73 -199 -85 -175 -23 8 22 22 70 30 106 8 37 31 110 50 163 65 170 53 652 -18 802 -130 273 -408 366 -672 226 -62 -33 -139 -72 -172 -86 -108 -49 -441 -409 -590 -638 -81 -124 -175 -268 -208 -319 -34 -52 -72 -94 -83 -94 -29 0 -28 168 1 186 12 8 30 60 40 116 9 56 33 132 52 169 19 36 35 90 35 119 0 57 65 126 288 302 421 335 815 738 1193 1221 375 480 617 999 618 1330 3 656 -627 599 -1227 -111 -166 -196 -386 -506 -431 -607 -9 -21 -39 -71 -65 -112 -27 -42 -78 -132 -114 -200 -35 -69 -74 -142 -87 -163 -37 -62 -216 -452 -275 -600 -31 -76 -70 -171 -88 -212 -53 -123 -155 -410 -187 -525 -20 -72 -41 -137 -103 -319 -15 -45 -36 -126 -46 -181 -11 -55 -32 -132 -48 -171 -15 -39 -28 -102 -28 -140 0 -73 -104 -236 -235 -367 -43 -43 -135 -139 -206 -213 -308 -323 -599 -572 -669 -572 -48 0 -51 65 -7 150 18 34 58 147 90 250 32 103 69 216 83 250 14 34 35 102 45 150 21 95 61 215 115 345 19 45 34 107 35 137 0 31 17 77 37 104 20 27 37 70 37 96 0 26 15 78 34 114 19 37 62 121 94 187 79 161 111 216 144 249 86 86 -44 218 -214 218 -120 0 -134 -7 -208 -100 -97 -122 -93 -122 -219 -3 -428 408 -1373 -107 -1807 -984 -156 -316 -618 -880 -878 -1073 -219 -162 -397 -132 -395 67 1 112 73 352 121 400 15 15 28 40 28 54 0 15 83 195 184 402 266 540 272 555 275 792 5 318 -114 445 -418 445 -158 0 -212 -15 -366 -104 -21 -11 -60 -31 -87 -44 -197 -89 -607 -550 -973 -1096 -40 -58 -82 -106 -93 -106 -29 0 -28 89 0 144 54 106 290 602 323 681 21 48 52 117 70 152 101 199 55 354 -124 418 -132 48 -249 -13 -316 -164 -28 -62 -50 -127 -50 -146 0 -18 -18 -76 -40 -128 -87 -203 -107 -251 -187 -444 -84 -204 -130 -284 -278 -491 -369 -516 -747 -891 -941 -934 -155 -34 -204 29 -204 264 0 111 13 226 29 256 17 30 38 94 48 142 19 92 59 211 113 338 46 109 335 718 361 762 84 144 149 309 137 349 -21 66 -175 151 -273 151 -119 0 -232 -127 -383 -431 -113 -229 -166 -343 -297 -641 -21 -47 -88 -150 -149 -230 -61 -79 -111 -152 -111 -162 0 -56 -537 -623 -687 -725 -119 -81 -281 -120 -361 -87 -243 101 -187 585 180 1564 138 367 153 403 352 839 68 150 102 197 163 222 100 41 637 27 682 -18 78 -78 221 1 221 123 0 152 -200 193 -681 139 -197 -23 -209 -5 -105 159 35 55 74 125 88 155 27 59 48 96 150 256 35 55 72 116 82 137 10 21 34 66 54 100 99 170 -29 366 -223 344 -96 -11 -215 -86 -215 -136 0 -9 -16 -34 -35 -56 -40 -44 -189 -318 -328 -602 -51 -103 -117 -238 -148 -300 l-55 -112 -311 0 -310 0 -8 -93 c-13 -150 111 -198 419 -164 94 10 90 -51 -20 -284 -54 -115 -117 -260 -141 -322 -44 -116 -77 -195 -147 -357 -22 -52 -41 -120 -42 -150 0 -31 -17 -77 -37 -104 -20 -27 -37 -75 -37 -108 0 -99 -430 -597 -595 -690 -29 -15 -95 -52 -148 -82 -181 -100 -432 -126 -524 -54 -16 12 -43 100 -60 194 -49 277 -177 383 -319 263 -154 -129 -136 -378 40 -566 l113 -122 -31 -281 c-18 -154 -40 -354 -50 -443 -10 -89 -30 -202 -45 -250 -26 -82 -50 -180 -107 -449 -14 -61 -36 -123 -49 -136 -14 -14 -25 -54 -25 -90 0 -36 -17 -87 -37 -114 -20 -27 -37 -62 -37 -79 -2 -61 -204 -452 -288 -560 -212 -266 -409 -106 -358 291 65 495 74 544 160 852 19 70 35 154 36 187 0 33 17 89 37 123 19 34 36 91 36 125 1 34 18 95 39 134 20 39 37 94 37 121 0 26 13 73 29 103 17 30 38 94 48 142 10 48 30 121 44 163 15 41 45 142 67 225 85 319 118 427 152 503 19 44 35 91 35 105 0 13 19 62 42 108 23 46 56 113 74 148 18 36 210 244 428 463 385 386 546 570 831 950 164 218 407 560 425 597 7 14 41 71 75 126 34 56 76 123 92 150 57 94 283 550 283 571 0 12 16 56 34 100 19 43 55 173 80 288 63 290 -4 495 -194 593 -316 163 -961 -368 -1371 -1127 -56 -104 -272 -512 -312 -588 -105 -200 -370 -790 -450 -1000 -24 -62 -58 -146 -75 -187 -31 -73 -77 -191 -155 -400 -20 -55 -53 -137 -72 -183 -19 -45 -35 -96 -35 -114 0 -174 -625 -975 -965 -1236 -139 -106 -281 -129 -348 -55 -60 66 -59 385 2 502 20 39 36 93 36 121 0 28 16 87 35 132 19 46 54 133 78 195 24 62 92 214 150 338 58 123 113 241 122 262 9 21 55 105 102 188 166 290 171 353 31 438 -179 109 -368 22 -490 -226 -30 -62 -65 -129 -76 -150 -12 -21 -39 -77 -60 -125 -56 -128 -191 -424 -239 -523 -94 -196 -957 -978 -1145 -1037 -61 -19 -100 22 -63 67 14 17 36 70 50 118 15 48 50 149 80 225 30 76 64 175 75 222 12 46 33 96 48 111 15 15 27 52 27 84 0 31 16 93 35 138 19 46 53 144 77 220 101 329 189 512 326 676 62 75 123 149 136 165 12 16 30 68 39 117 51 271 -420 297 -541 30 -13 -28 -45 -84 -72 -125 -27 -42 -61 -98 -75 -125 -14 -28 -48 -84 -75 -125 -27 -42 -61 -98 -74 -125 -51 -101 -254 -372 -447 -596 -692 -803 -1488 -1292 -2102 -1292 -189 0 -420 58 -483 121 -16 16 -43 29 -60 29 -39 0 -187 185 -239 300 -104 229 -120 290 -134 506 -15 245 15 632 64 819 71 270 196 645 250 750 23 44 142 39 348 -14 163 -43 865 -49 1007 -10 51 14 163 36 250 49 225 32 588 127 753 196 39 16 79 29 91 29 21 0 234 92 439 189 194 93 594 338 728 447 173 141 659 640 659 677 0 17 16 44 36 61 88 72 248 463 277 672 72 518 -135 833 -638 974 -190 53 -748 63 -912 16z m873 -316 c215 -86 382 -339 352 -532 -85 -561 -564 -1175 -1251 -1606 -97 -61 -560 -282 -592 -283 -18 0 -54 -17 -81 -37 -27 -20 -69 -37 -93 -37 -24 0 -81 -16 -126 -35 -86 -37 -259 -83 -557 -149 -406 -90 -1413 -82 -1413 11 0 116 483 828 845 1246 389 448 980 942 1368 1140 68 35 141 74 162 85 63 36 178 83 413 167 215 78 238 81 550 76 225 -5 355 -19 423 -46z m4366 -796 c147 -79 -30 -660 -376 -1236 -41 -69 -87 -148 -101 -175 -128 -248 -1034 -1456 -1168 -1557 -123 -92 -104 1 83 412 20 45 53 118 73 163 41 93 232 508 336 732 116 248 251 516 341 675 46 82 94 172 107 200 13 27 52 92 88 144 36 53 65 101 65 108 0 34 310 414 392 483 108 88 97 85 160 51z m11388 -36 c41 -63 39 -115 -10 -325 -23 -97 -205 -470 -306 -625 -27 -42 -56 -92 -66 -113 -15 -32 -182 -262 -389 -537 -95 -125 -395 -462 -623 -700 -169 -176 -224 -219 -247 -196 -24 24 -19 56 25 150 54 116 105 226 252 546 120 260 322 659 382 756 32 51 66 110 75 131 152 329 691 975 815 975 28 0 69 -28 92 -62z m7405 -107 c4 -56 -10 -143 -31 -194 -22 -51 -39 -113 -39 -138 0 -25 -16 -77 -35 -116 -19 -39 -93 -189 -164 -333 -71 -144 -151 -296 -177 -337 -27 -42 -60 -101 -73 -132 -23 -53 -68 -122 -302 -468 -94 -140 -519 -710 -561 -753 -15 -15 -71 -85 -125 -156 -169 -222 -230 -158 -110 113 26 58 47 116 47 130 0 13 16 56 36 95 53 104 114 250 114 273 0 10 22 65 48 121 26 56 106 225 178 377 221 469 321 669 411 825 48 82 95 166 105 187 30 61 160 253 278 407 213 281 383 323 400 99z m2487 -1939 c17 -43 -15 -214 -53 -284 -16 -30 -29 -77 -29 -105 0 -51 -80 -93 -125 -66 -43 27 -30 319 17 389 71 102 164 135 190 66z m-13519 -564 c224 -102 225 -207 7 -578 -28 -48 -79 -138 -112 -200 -34 -62 -83 -146 -109 -187 -27 -42 -56 -92 -66 -113 -88 -192 -611 -760 -778 -846 -144 -73 -269 -26 -295 112 -84 446 450 1499 878 1729 234 126 339 145 475 83z m11875 7 c129 -85 72 -305 -142 -548 -77 -88 -417 -359 -496 -395 -21 -10 -87 -46 -148 -80 -112 -63 -202 -81 -202 -39 0 21 50 130 104 227 12 21 27 52 34 69 32 81 41 98 87 169 27 41 60 100 74 131 43 98 359 397 476 450 140 65 139 64 213 16z m-9313 -1641 c-1 -48 -159 -237 -278 -331 -165 -131 -372 -140 -372 -16 0 70 83 136 313 247 291 140 337 154 337 100z m-16281 -966 c-30 -59 -207 -436 -249 -528 -114 -254 -470 -948 -557 -1087 -333 -532 -509 -766 -757 -1008 -218 -213 -518 -429 -598 -431 -25 0 -74 -17 -108 -36 -92 -53 -385 -49 -482 6 -673 381 -76 1516 1210 2301 83 51 181 112 217 136 37 24 90 55 118 68 27 14 117 64 200 112 82 48 240 133 350 190 221 113 255 132 400 223 137 87 289 119 256 54z m13043 -143 c0 -20 -333 -717 -387 -810 -12 -21 -62 -116 -110 -212 -49 -97 -140 -252 -202 -347 -62 -94 -113 -176 -113 -183 0 -21 -229 -316 -323 -417 -223 -239 -511 -367 -676 -301 -390 156 -180 854 415 1375 254 223 825 634 947 682 13 6 64 41 112 77 48 37 104 76 125 85 21 10 66 34 100 54 65 38 113 37 112 -3z" class="" stroke-width="1"></path> <path d="M6050 16498 c0 -61 58 -52 71 10 4 25 -8 42 -32 42 -23 0 -39 -21 -39 -52z" class="" stroke-width="1"></path> <path d="M12908 14526 c-263 -44 -428 -436 -259 -620 155 -171 430 -71 557 202 63 134 55 217 -30 321 -79 96 -140 118 -268 97z" class=""></path> <path d="M18350 14532 c-267 -100 -403 -491 -223 -642 103 -87 252 -88 378 -3 98 67 220 287 220 399 0 139 -240 296 -375 246z"></path>  <path d="M43625 677 c0 -31 16 -52 39 -52 24 0 36 17 32 42 -13 62 -71 71 -71 10z"></path> </g> </svg>
+    </div>
+    <h1>GiftingButler Admin</h1>
+    <p>Sign in to manage your store</p>
+    <div class="fld-wrap">
+      <label>Email</label>
+      <input type="email" id="adm-email" placeholder="admin@example.com" autocomplete="email">
+    </div>
+    <div class="fld-wrap">
+      <label>Password</label>
+      <input type="password" id="adm-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div id="login-err"></div>
+    <div class="login-note">
+      <strong>First time?</strong> Go to Firebase Console → Authentication → Sign-in method → enable <em>Email/Password</em>, then click <em>Add user</em> and enter your email &amp; password.
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <svg class="dlogo" version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800.000000 981.000000" preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,981.000000) scale(0.040000,-0.040000)" fill="#5B2D8E" stroke="none"> <path d="M10438 16811 c-69 -19 -154 -35 -188 -36 -34 -1 -141 -30 -237 -65 -97 -35 -204 -72 -240 -84 -35 -11 -86 -31 -112 -44 -27 -14 -166 -83 -309 -155 -250 -126 -386 -209 -671 -410 -268 -189 -705 -588 -895 -817 -81 -99 -175 -208 -206 -243 -32 -35 -87 -109 -123 -166 -35 -57 -95 -143 -132 -191 -78 -101 -170 -256 -264 -444 -98 -199 -121 -201 -325 -34 -195 162 -267 248 -387 466 -80 146 -82 157 -83 450 -1 390 64 546 353 847 99 103 307 247 398 275 65 20 100 108 60 148 -20 20 -50 19 -110 -3 -46 -16 -104 -30 -129 -30 -112 0 -428 -190 -594 -358 -266 -267 -349 -467 -350 -844 0 -360 50 -524 242 -785 116 -159 442 -438 512 -438 13 0 64 -23 112 -52 101 -60 96 -87 -76 -427 -19 -36 -34 -87 -34 -112 0 -26 -17 -79 -38 -118 -20 -39 -37 -96 -37 -125 0 -29 -16 -106 -36 -170 -79 -260 -72 -1018 12 -1246 129 -351 383 -676 613 -784 54 -26 120 -58 147 -72 221 -116 820 -118 1080 -3 44 18 94 34 113 34 43 0 474 218 621 313 401 261 751 581 1072 982 130 162 193 120 109 -74 -26 -60 -67 -159 -92 -221 -45 -113 -74 -182 -149 -357 -22 -52 -40 -110 -40 -129 0 -19 -16 -67 -36 -106 -19 -39 -54 -121 -77 -183 -23 -62 -50 -129 -60 -150 -18 -39 -147 -110 -428 -234 -189 -85 -928 -450 -1036 -514 -42 -24 -154 -86 -250 -138 -97 -52 -193 -111 -215 -129 -22 -19 -48 -35 -59 -35 -11 0 -62 -34 -114 -75 -52 -41 -102 -75 -111 -75 -35 0 -433 -316 -598 -473 -306 -294 -592 -709 -631 -919 -9 -46 -26 -90 -38 -97 -39 -25 -25 -567 16 -622 20 -27 37 -68 37 -93 0 -66 249 -307 375 -363 316 -139 836 -119 1125 43 21 12 94 51 163 88 300 160 686 518 973 904 90 121 175 233 189 250 14 16 25 37 25 46 0 9 31 63 70 120 38 57 78 120 88 141 10 21 39 71 65 113 101 159 397 778 526 1100 44 110 96 231 115 270 20 39 36 87 36 107 0 20 11 55 25 79 29 52 95 237 124 347 27 107 75 171 185 246 51 35 98 63 103 63 73 0 450 286 699 530 211 208 252 217 227 51 -92 -607 127 -924 575 -831 195 41 549 319 717 565 31 45 82 94 114 108 63 29 62 -3 -6 -198 -71 -202 -134 -397 -175 -537 -24 -83 -60 -187 -79 -233 -18 -45 -34 -110 -34 -144 0 -35 -17 -103 -38 -152 -20 -50 -37 -119 -37 -154 0 -35 -16 -120 -36 -190 -66 -230 -100 -690 -67 -891 109 -663 667 -735 1071 -136 141 208 330 638 385 875 12 55 33 122 46 150 12 27 27 83 33 125 6 41 23 125 38 187 69 291 105 566 105 798 l0 253 144 -5 c287 -10 549 116 812 389 79 82 151 141 161 132 9 -10 14 -134 11 -276 -9 -387 101 -577 386 -665 253 -78 514 7 824 270 96 81 236 233 312 338 184 254 200 249 200 -59 0 -345 88 -490 333 -552 309 -77 709 166 1041 633 47 66 99 119 118 119 43 0 43 -123 1 -188 -69 -105 -148 -340 -133 -394 40 -146 245 -242 374 -176 93 48 139 103 140 167 1 25 17 76 36 112 19 37 82 165 140 284 58 120 177 327 265 461 88 133 160 251 160 263 0 12 10 21 23 21 13 0 30 20 38 44 27 82 479 593 638 722 196 158 311 200 397 143 94 -61 66 -223 -94 -538 -136 -270 -160 -317 -202 -390 -14 -24 -31 -60 -39 -81 -7 -21 -30 -69 -50 -108 -20 -39 -36 -83 -36 -96 0 -14 -15 -61 -34 -105 -229 -530 54 -991 545 -889 258 53 636 367 838 695 46 77 108 9 91 -99 -40 -248 152 -551 369 -584 367 -55 736 201 1109 767 109 165 140 192 168 147 12 -21 -115 -397 -202 -594 -18 -44 -34 -95 -34 -114 0 -20 -17 -57 -37 -84 -20 -27 -37 -71 -37 -99 -2 -96 -80 -164 -334 -290 -140 -69 -294 -148 -342 -176 -716 -416 -1254 -840 -1469 -1157 -38 -56 -74 -107 -81 -114 -172 -172 -313 -777 -212 -911 20 -27 37 -67 37 -89 0 -70 173 -247 292 -300 205 -90 556 -66 758 53 21 12 60 32 88 45 204 92 744 696 895 1002 11 21 57 105 103 188 125 222 273 526 377 774 20 48 52 125 71 169 19 45 54 132 77 194 24 62 59 144 78 183 20 39 36 86 36 103 0 115 109 270 254 359 346 213 592 421 814 686 89 107 173 194 188 194 18 0 21 -80 9 -247 -27 -392 0 -566 102 -668 144 -145 254 -96 259 115 5 260 82 506 295 950 227 472 643 999 888 1127 288 150 404 -312 215 -852 -139 -394 -166 -440 -286 -486 -56 -21 -124 -39 -151 -39 -65 0 -275 -81 -427 -164 -286 -157 -397 -355 -304 -544 112 -227 472 -244 789 -37 59 38 116 70 126 70 51 0 527 554 530 618 1 34 93 132 124 132 27 0 117 42 225 104 21 11 60 31 88 44 27 12 106 63 174 112 161 116 191 116 160 4 -13 -48 -40 -118 -60 -156 -20 -39 -37 -89 -37 -111 0 -23 -17 -81 -37 -131 -24 -55 -38 -169 -38 -300 0 -156 10 -218 38 -241 20 -17 37 -45 37 -61 0 -55 137 -156 255 -188 133 -36 307 -7 481 80 186 94 620 578 697 778 40 106 72 6 55 -176 -39 -414 50 -619 298 -686 271 -74 712 195 983 600 111 165 185 253 212 253 10 0 19 -107 19 -238 0 -489 286 -722 745 -608 292 73 814 542 963 866 55 121 104 54 106 -145 4 -391 158 -653 435 -737 158 -48 209 -39 494 92 146 68 437 344 564 537 141 215 197 212 209 -11 5 -92 29 -196 57 -250 52 -101 186 -256 221 -256 11 0 34 -13 51 -30 38 -38 343 -118 453 -119 120 -1 335 66 540 168 423 211 794 573 1260 1231 83 117 163 226 177 243 14 16 25 35 25 42 0 7 34 63 75 124 41 61 75 120 76 132 2 61 122 167 156 139 20 -17 87 -37 149 -45 62 -9 144 -41 182 -71 80 -63 88 -39 -128 -395 -149 -247 -285 -525 -286 -588 0 -24 -17 -72 -36 -106 -53 -92 -49 -424 6 -542 64 -136 184 -245 326 -296 358 -129 943 297 1442 1051 55 82 106 155 113 162 116 114 165 276 104 351 -64 80 -123 40 -269 -182 -479 -727 -989 -1199 -1183 -1095 -109 58 -132 154 -85 356 23 100 57 200 75 222 18 22 33 47 33 55 0 18 165 361 201 418 191 303 249 432 249 559 0 201 -86 253 -581 356 -228 47 -227 47 -169 160 138 266 154 316 158 491 5 207 -31 268 -183 309 -139 37 -348 -40 -468 -173 -247 -273 -245 -652 3 -857 l88 -72 -178 -268 c-98 -147 -190 -279 -205 -292 -15 -14 -59 -71 -97 -128 -38 -56 -88 -123 -112 -150 -24 -26 -84 -99 -134 -160 -135 -168 -359 -387 -527 -516 -546 -421 -950 -395 -1079 67 -78 283 -54 336 184 400 308 83 735 348 949 590 290 329 337 600 142 822 l-110 125 -259 -3 c-244 -2 -269 -7 -409 -84 -241 -132 -429 -293 -585 -501 -36 -48 -72 -93 -80 -100 -8 -7 -22 -29 -31 -50 -10 -21 -40 -71 -67 -112 -27 -42 -56 -92 -65 -113 -16 -41 -54 -125 -136 -308 -97 -213 -598 -806 -786 -930 -401 -263 -568 6 -466 751 57 411 78 452 405 781 352 355 973 1101 973 1170 0 9 32 57 71 107 182 233 508 845 628 1179 77 218 104 554 54 675 -115 275 -446 298 -753 52 -193 -155 -536 -550 -609 -702 -10 -21 -32 -60 -49 -87 -76 -125 -157 -256 -184 -301 -33 -55 -269 -531 -322 -649 -18 -42 -68 -151 -110 -244 -42 -93 -76 -179 -76 -192 0 -13 -15 -55 -34 -94 -74 -152 -152 -354 -191 -495 -11 -42 -32 -109 -46 -150 -14 -42 -43 -137 -63 -213 -21 -76 -55 -200 -77 -277 -21 -77 -39 -168 -39 -203 0 -34 -34 -109 -75 -166 -41 -57 -75 -113 -75 -125 0 -12 -24 -43 -53 -69 -30 -26 -81 -92 -116 -145 -99 -157 -532 -574 -658 -635 -275 -133 -448 -39 -448 245 -1 158 51 460 105 613 14 41 32 108 39 150 7 41 28 97 47 124 19 27 34 69 34 93 0 24 16 80 35 125 19 46 52 128 72 183 53 141 192 483 238 587 21 48 55 127 76 175 80 190 129 263 184 279 119 33 541 22 659 -18 113 -39 118 -38 176 16 120 113 52 237 -142 262 -107 14 -451 -18 -567 -53 -49 -15 -56 -8 -56 59 0 42 10 80 22 84 13 5 58 75 102 156 165 307 206 380 252 453 152 238 97 404 -142 431 -101 12 -116 5 -199 -82 -49 -52 -100 -119 -113 -147 -13 -29 -61 -120 -108 -202 -46 -83 -109 -201 -138 -263 -30 -62 -65 -129 -78 -150 -25 -41 -41 -74 -121 -259 l-52 -121 -231 14 c-128 8 -264 17 -303 21 -93 10 -128 -45 -106 -162 22 -116 125 -155 341 -130 173 20 190 -11 101 -183 -26 -51 -67 -137 -90 -192 -24 -56 -59 -132 -78 -171 -19 -39 -34 -90 -34 -114 0 -24 -10 -54 -23 -67 -24 -24 -89 -191 -127 -323 -25 -92 -69 -218 -122 -350 -42 -106 -276 -438 -309 -438 -10 0 -19 -17 -19 -37 0 -21 -9 -38 -21 -38 -11 0 -56 -48 -99 -106 -344 -468 -695 -646 -745 -378 -31 169 93 676 230 938 19 36 35 79 35 95 0 27 199 466 250 551 105 175 178 364 159 412 -22 59 -170 138 -258 138 -169 0 -202 -44 -530 -698 -556 -1108 -1117 -1741 -1333 -1502 -52 57 -38 363 23 508 19 44 53 130 77 192 114 296 501 1115 538 1138 28 17 52 174 35 221 -25 63 -171 141 -265 141 -153 0 -221 -89 -435 -569 -107 -238 -140 -289 -269 -405 -150 -135 -357 -301 -376 -301 -7 0 -55 -28 -106 -62 -107 -73 -199 -85 -175 -23 8 22 22 70 30 106 8 37 31 110 50 163 65 170 53 652 -18 802 -130 273 -408 366 -672 226 -62 -33 -139 -72 -172 -86 -108 -49 -441 -409 -590 -638 -81 -124 -175 -268 -208 -319 -34 -52 -72 -94 -83 -94 -29 0 -28 168 1 186 12 8 30 60 40 116 9 56 33 132 52 169 19 36 35 90 35 119 0 57 65 126 288 302 421 335 815 738 1193 1221 375 480 617 999 618 1330 3 656 -627 599 -1227 -111 -166 -196 -386 -506 -431 -607 -9 -21 -39 -71 -65 -112 -27 -42 -78 -132 -114 -200 -35 -69 -74 -142 -87 -163 -37 -62 -216 -452 -275 -600 -31 -76 -70 -171 -88 -212 -53 -123 -155 -410 -187 -525 -20 -72 -41 -137 -103 -319 -15 -45 -36 -126 -46 -181 -11 -55 -32 -132 -48 -171 -15 -39 -28 -102 -28 -140 0 -73 -104 -236 -235 -367 -43 -43 -135 -139 -206 -213 -308 -323 -599 -572 -669 -572 -48 0 -51 65 -7 150 18 34 58 147 90 250 32 103 69 216 83 250 14 34 35 102 45 150 21 95 61 215 115 345 19 45 34 107 35 137 0 31 17 77 37 104 20 27 37 70 37 96 0 26 15 78 34 114 19 37 62 121 94 187 79 161 111 216 144 249 86 86 -44 218 -214 218 -120 0 -134 -7 -208 -100 -97 -122 -93 -122 -219 -3 -428 408 -1373 -107 -1807 -984 -156 -316 -618 -880 -878 -1073 -219 -162 -397 -132 -395 67 1 112 73 352 121 400 15 15 28 40 28 54 0 15 83 195 184 402 266 540 272 555 275 792 5 318 -114 445 -418 445 -158 0 -212 -15 -366 -104 -21 -11 -60 -31 -87 -44 -197 -89 -607 -550 -973 -1096 -40 -58 -82 -106 -93 -106 -29 0 -28 89 0 144 54 106 290 602 323 681 21 48 52 117 70 152 101 199 55 354 -124 418 -132 48 -249 -13 -316 -164 -28 -62 -50 -127 -50 -146 0 -18 -18 -76 -40 -128 -87 -203 -107 -251 -187 -444 -84 -204 -130 -284 -278 -491 -369 -516 -747 -891 -941 -934 -155 -34 -204 29 -204 264 0 111 13 226 29 256 17 30 38 94 48 142 19 92 59 211 113 338 46 109 335 718 361 762 84 144 149 309 137 349 -21 66 -175 151 -273 151 -119 0 -232 -127 -383 -431 -113 -229 -166 -343 -297 -641 -21 -47 -88 -150 -149 -230 -61 -79 -111 -152 -111 -162 0 -56 -537 -623 -687 -725 -119 -81 -281 -120 -361 -87 -243 101 -187 585 180 1564 138 367 153 403 352 839 68 150 102 197 163 222 100 41 637 27 682 -18 78 -78 221 1 221 123 0 152 -200 193 -681 139 -197 -23 -209 -5 -105 159 35 55 74 125 88 155 27 59 48 96 150 256 35 55 72 116 82 137 10 21 34 66 54 100 99 170 -29 366 -223 344 -96 -11 -215 -86 -215 -136 0 -9 -16 -34 -35 -56 -40 -44 -189 -318 -328 -602 -51 -103 -117 -238 -148 -300 l-55 -112 -311 0 -310 0 -8 -93 c-13 -150 111 -198 419 -164 94 10 90 -51 -20 -284 -54 -115 -117 -260 -141 -322 -44 -116 -77 -195 -147 -357 -22 -52 -41 -120 -42 -150 0 -31 -17 -77 -37 -104 -20 -27 -37 -75 -37 -108 0 -99 -430 -597 -595 -690 -29 -15 -95 -52 -148 -82 -181 -100 -432 -126 -524 -54 -16 12 -43 100 -60 194 -49 277 -177 383 -319 263 -154 -129 -136 -378 40 -566 l113 -122 -31 -281 c-18 -154 -40 -354 -50 -443 -10 -89 -30 -202 -45 -250 -26 -82 -50 -180 -107 -449 -14 -61 -36 -123 -49 -136 -14 -14 -25 -54 -25 -90 0 -36 -17 -87 -37 -114 -20 -27 -37 -62 -37 -79 -2 -61 -204 -452 -288 -560 -212 -266 -409 -106 -358 291 65 495 74 544 160 852 19 70 35 154 36 187 0 33 17 89 37 123 19 34 36 91 36 125 1 34 18 95 39 134 20 39 37 94 37 121 0 26 13 73 29 103 17 30 38 94 48 142 10 48 30 121 44 163 15 41 45 142 67 225 85 319 118 427 152 503 19 44 35 91 35 105 0 13 19 62 42 108 23 46 56 113 74 148 18 36 210 244 428 463 385 386 546 570 831 950 164 218 407 560 425 597 7 14 41 71 75 126 34 56 76 123 92 150 57 94 283 550 283 571 0 12 16 56 34 100 19 43 55 173 80 288 63 290 -4 495 -194 593 -316 163 -961 -368 -1371 -1127 -56 -104 -272 -512 -312 -588 -105 -200 -370 -790 -450 -1000 -24 -62 -58 -146 -75 -187 -31 -73 -77 -191 -155 -400 -20 -55 -53 -137 -72 -183 -19 -45 -35 -96 -35 -114 0 -174 -625 -975 -965 -1236 -139 -106 -281 -129 -348 -55 -60 66 -59 385 2 502 20 39 36 93 36 121 0 28 16 87 35 132 19 46 54 133 78 195 24 62 92 214 150 338 58 123 113 241 122 262 9 21 55 105 102 188 166 290 171 353 31 438 -179 109 -368 22 -490 -226 -30 -62 -65 -129 -76 -150 -12 -21 -39 -77 -60 -125 -56 -128 -191 -424 -239 -523 -94 -196 -957 -978 -1145 -1037 -61 -19 -100 22 -63 67 14 17 36 70 50 118 15 48 50 149 80 225 30 76 64 175 75 222 12 46 33 96 48 111 15 15 27 52 27 84 0 31 16 93 35 138 19 46 53 144 77 220 101 329 189 512 326 676 62 75 123 149 136 165 12 16 30 68 39 117 51 271 -420 297 -541 30 -13 -28 -45 -84 -72 -125 -27 -42 -61 -98 -75 -125 -14 -28 -48 -84 -75 -125 -27 -42 -61 -98 -74 -125 -51 -101 -254 -372 -447 -596 -692 -803 -1488 -1292 -2102 -1292 -189 0 -420 58 -483 121 -16 16 -43 29 -60 29 -39 0 -187 185 -239 300 -104 229 -120 290 -134 506 -15 245 15 632 64 819 71 270 196 645 250 750 23 44 142 39 348 -14 163 -43 865 -49 1007 -10 51 14 163 36 250 49 225 32 588 127 753 196 39 16 79 29 91 29 21 0 234 92 439 189 194 93 594 338 728 447 173 141 659 640 659 677 0 17 16 44 36 61 88 72 248 463 277 672 72 518 -135 833 -638 974 -190 53 -748 63 -912 16z m873 -316 c215 -86 382 -339 352 -532 -85 -561 -564 -1175 -1251 -1606 -97 -61 -560 -282 -592 -283 -18 0 -54 -17 -81 -37 -27 -20 -69 -37 -93 -37 -24 0 -81 -16 -126 -35 -86 -37 -259 -83 -557 -149 -406 -90 -1413 -82 -1413 11 0 116 483 828 845 1246 389 448 980 942 1368 1140 68 35 141 74 162 85 63 36 178 83 413 167 215 78 238 81 550 76 225 -5 355 -19 423 -46z m4366 -796 c147 -79 -30 -660 -376 -1236 -41 -69 -87 -148 -101 -175 -128 -248 -1034 -1456 -1168 -1557 -123 -92 -104 1 83 412 20 45 53 118 73 163 41 93 232 508 336 732 116 248 251 516 341 675 46 82 94 172 107 200 13 27 52 92 88 144 36 53 65 101 65 108 0 34 310 414 392 483 108 88 97 85 160 51z m11388 -36 c41 -63 39 -115 -10 -325 -23 -97 -205 -470 -306 -625 -27 -42 -56 -92 -66 -113 -15 -32 -182 -262 -389 -537 -95 -125 -395 -462 -623 -700 -169 -176 -224 -219 -247 -196 -24 24 -19 56 25 150 54 116 105 226 252 546 120 260 322 659 382 756 32 51 66 110 75 131 152 329 691 975 815 975 28 0 69 -28 92 -62z m7405 -107 c4 -56 -10 -143 -31 -194 -22 -51 -39 -113 -39 -138 0 -25 -16 -77 -35 -116 -19 -39 -93 -189 -164 -333 -71 -144 -151 -296 -177 -337 -27 -42 -60 -101 -73 -132 -23 -53 -68 -122 -302 -468 -94 -140 -519 -710 -561 -753 -15 -15 -71 -85 -125 -156 -169 -222 -230 -158 -110 113 26 58 47 116 47 130 0 13 16 56 36 95 53 104 114 250 114 273 0 10 22 65 48 121 26 56 106 225 178 377 221 469 321 669 411 825 48 82 95 166 105 187 30 61 160 253 278 407 213 281 383 323 400 99z m2487 -1939 c17 -43 -15 -214 -53 -284 -16 -30 -29 -77 -29 -105 0 -51 -80 -93 -125 -66 -43 27 -30 319 17 389 71 102 164 135 190 66z m-13519 -564 c224 -102 225 -207 7 -578 -28 -48 -79 -138 -112 -200 -34 -62 -83 -146 -109 -187 -27 -42 -56 -92 -66 -113 -88 -192 -611 -760 -778 -846 -144 -73 -269 -26 -295 112 -84 446 450 1499 878 1729 234 126 339 145 475 83z m11875 7 c129 -85 72 -305 -142 -548 -77 -88 -417 -359 -496 -395 -21 -10 -87 -46 -148 -80 -112 -63 -202 -81 -202 -39 0 21 50 130 104 227 12 21 27 52 34 69 32 81 41 98 87 169 27 41 60 100 74 131 43 98 359 397 476 450 140 65 139 64 213 16z m-9313 -1641 c-1 -48 -159 -237 -278 -331 -165 -131 -372 -140 -372 -16 0 70 83 136 313 247 291 140 337 154 337 100z m-16281 -966 c-30 -59 -207 -436 -249 -528 -114 -254 -470 -948 -557 -1087 -333 -532 -509 -766 -757 -1008 -218 -213 -518 -429 -598 -431 -25 0 -74 -17 -108 -36 -92 -53 -385 -49 -482 6 -673 381 -76 1516 1210 2301 83 51 181 112 217 136 37 24 90 55 118 68 27 14 117 64 200 112 82 48 240 133 350 190 221 113 255 132 400 223 137 87 289 119 256 54z m13043 -143 c0 -20 -333 -717 -387 -810 -12 -21 -62 -116 -110 -212 -49 -97 -140 -252 -202 -347 -62 -94 -113 -176 -113 -183 0 -21 -229 -316 -323 -417 -223 -239 -511 -367 -676 -301 -390 156 -180 854 415 1375 254 223 825 634 947 682 13 6 64 41 112 77 48 37 104 76 125 85 21 10 66 34 100 54 65 38 113 37 112 -3z" class="" stroke-width="1"></path> <path d="M6050 16498 c0 -61 58 -52 71 10 4 25 -8 42 -32 42 -23 0 -39 -21 -39 -52z" class="" stroke-width="1"></path> <path d="M12908 14526 c-263 -44 -428 -436 -259 -620 155 -171 430 -71 557 202 63 134 55 217 -30 321 -79 96 -140 118 -268 97z" class=""></path> <path d="M18350 14532 c-267 -100 -403 -491 -223 -642 103 -87 252 -88 378 -3 98 67 220 287 220 399 0 139 -240 296 -375 246z"></path>  <path d="M43625 677 c0 -31 16 -52 39 -52 24 0 36 17 32 42 -13 62 -71 71 -71 10z"></path> </g> </svg>
+    <h2>GiftingButler Admin</h2>
+    <span class="dash-user" id="dash-email"></span>
+    <a href="/" target="_blank" class="btn-sm btn-outline">View Site</a>
+    <button class="btn-sm btn-danger" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="dash-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="nav-item active" onclick="openTab('products',this)">
+        <span class="nav-icon">🛍️</span><span>Products</span>
+      </button>
+      <button class="nav-item" onclick="openTab('order',this)">
+        <span class="nav-icon">🔢</span><span>Order</span>
+      </button>
+      <button class="nav-item" onclick="openTab('carousel',this)">
+        <span class="nav-icon">🎠</span><span>Carousel</span>
+      </button>
+      <button class="nav-item" onclick="openTab('giveaway',this)">
+        <span class="nav-icon">🎁</span><span>Giveaway</span>
+      </button>
+      <button class="nav-item" onclick="openTab('settings',this)">
+        <span class="nav-icon">⚙️</span><span>Settings</span>
+      </button>
+      <button class="nav-item" onclick="openTab('stats',this)">
+        <span class="nav-icon">📊</span><span>Stats</span>
+      </button>
+      <button class="nav-item" onclick="openTab('suggestions',this)">
+        <span class="nav-icon">💡</span><span>Suggestions</span>
+      </button>
+      <div class="sidebar-foot">
+        <button class="btn-sm btn-outline" style="width:100%" onclick="window.open('https://console.firebase.google.com/project/giftingbutler-74395','_blank')">Firebase</button>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ── STATS TAB ── -->
+      <div id="tab-stats" class="panel">
+        <div class="panel-head">
+          <h1>Product stats</h1>
+          <button class="btn-sm btn-outline" onclick="loadGbStats()">Refresh</button>
+        </div>
+        <p style="color:#6b6480;font-size:.9rem;margin:.2rem 0 1rem">Views = someone opened the product window (interest). Clicks = tapped through to the store (the ones that can turn into sales). Counting started 2026-11-13.</p>
+        <div id="gb-stats-msg" style="margin-bottom:.6rem"></div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.92rem">
+          <thead><tr>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Product</th>
+            <th style="padding:.5rem;border-bottom:2px solid #e7e2f2">Views (opened)</th>
+            <th style="padding:.5rem;border-bottom:2px solid #e7e2f2">Clicks to store</th>
+            <th style="padding:.5rem;border-bottom:2px solid #e7e2f2">Store today</th>
+            <th style="padding:.5rem;border-bottom:2px solid #e7e2f2">Last click</th>
+          </tr></thead>
+          <tbody id="gb-stats-body"><tr><td colspan="5" style="padding:.6rem">Open this tab to load stats.</td></tr></tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- ── PRODUCTS TAB ── -->
+      <div id="tab-products" class="panel active">
+        <div class="panel-head">
+          <h1>Products</h1>
+          <span class="badge-count" id="prod-count-badge">126</span>
+          <span class="save-pill" id="save-status" data-s="ok" title="Product edits save automatically"><span class="dot"></span>All changes saved</span>
+          <button class="btn-sm btn-save" onclick="saveNow()">Save now</button>
+          <button class="btn-sm btn-green" onclick="openAddModal()">+ Add Product</button>
+        </div>
+        <details class="bookmarklet">
+          <summary><span class="chev">▾</span> 📦 One-click add — bookmarklet for adding products from any store</summary>
+          <div class="bm-body">
+          Drag this button to your browser's bookmarks bar —
+          <a id="amazon-bookmarklet" href="#" style="display:inline-block;background:var(--plum);color:#fff;padding:.3rem .8rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.78rem;margin:0 .3rem;cursor:grab" onclick="alert('Drag this button up to your bookmarks bar instead of clicking it — clicking only works once it\\'s saved there and you use it from an actual product page.');return false" title="Drag me to your bookmarks bar">📦 Add to GiftingButler</a>
+          then, while viewing any single product's page — on Amazon, Walmart, Target, or most other stores — click it to open this admin with the title, price, photo, and description already filled in. Works best tuned for Amazon; other sites use each store's standard product data, so results may vary a bit by site.
+          <div style="margin-top:.5rem">
+            If dragging doesn't work (common on mobile, or some browsers block it): <button class="btn-sm btn-outline" onclick="copyBookmarkletCode()" style="font-size:.74rem;padding:.25rem .6rem">Copy bookmarklet code</button>
+            <details style="margin-top:.4rem"><summary style="cursor:pointer;color:var(--plum);font-weight:600">Manual setup instructions</summary>
+              <ol style="margin:.4rem 0 0 1.1rem;padding:0">
+                <li>Bookmark any page in your browser (e.g. the star icon in the address bar).</li>
+                <li>Edit that new bookmark and click into its URL/Location field. Clear whatever's there.</li>
+                <li><b>Type the letters <code>javascript:</code> yourself</b> (don't paste it — this part matters, see warning below).</li>
+                <li>Click "Copy bookmarklet code" above, then paste (Ctrl+V) right after the <code>javascript:</code> you typed.</li>
+                <li>Rename the bookmark to something like "Add to GiftingButler" and save.</li>
+              </ol>
+              <p style="margin:.5rem 0 0;color:#b91c1c;font-weight:600">⚠️ Important: most browsers auto-delete the word "javascript:" if you paste it — that's a security feature to stop malicious links. You must type those 11 characters yourself, then paste only the part after it. If your bookmark ends up opening a Google search instead of doing anything, this is why — redo it, typing "javascript:" by hand this time.</p>
+              <p style="margin:.5rem 0 0">On a phone, this only works in browsers that let you edit a bookmark's URL (Safari and Chrome both do, under bookmark edit).</p>
+            </details>
+          </div>
+          </div>
+        </details>
+        <div id="catalog-error" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1rem;font-size:.85rem">
+          <strong>&#9888;&#65039; Couldn't load the site catalog.</strong><span class="ce-msg"></span>
+          <button class="btn-sm btn-outline" style="margin-left:.6rem" onclick="loadAll()">Retry</button>
+        </div>
+        <div class="summary-line" id="prod-stats"></div>
+        <div class="toolbar">
+          <input type="search" id="prod-search" placeholder="Search products…" oninput="renderProdTable()" aria-label="Search products">
+          <select id="cat-filter" onchange="window._adminCat=this.value;document.getElementById('prod-search').value='';renderProdTable()" aria-label="Filter by category"></select>
+          <select id="spons-filter" onchange="renderProdTable()" aria-label="Filter by status">
+            <option value="">All</option>
+            <option value="spons">Sponsored only</option>
+            <option value="active">Active only</option>
+            <option value="inactive">Hidden only</option>
+            <option value="deleted">Deleted only</option>
+          </select>
+        </div>
+        <!-- Bulk action bar -->
+        <div id="bulk-bar" style="display:none;align-items:center;gap:.6rem;background:#faf9ff;border:1px solid #ddd6fe;border-radius:10px;padding:.55rem .9rem;margin-bottom:1rem;flex-wrap:wrap">
+          <span id="bulk-count" style="font-size:.85rem;font-weight:700;color:var(--plum)"></span>
+          <button class="btn-sm" style="background:var(--plum);color:#fff;border:none" onclick="bulkTziut()">Set Tziut</button>
+          <button class="btn-sm" style="background:#dc2626;color:#fff;border:none" onclick="bulkDelete()">Delete Selected</button>
+          <button class="btn-sm btn-outline" onclick="clearSelection()">Clear</button>
+        </div>
+
+        <table class="prod-table">
+          <thead>
+            <tr>
+              <th style="width:32px"><input type="checkbox" id="chk-all" onchange="toggleSelectAll(this.checked)" style="accent-color:#5B2D8E;width:15px;height:15px;cursor:pointer"></th>
+              <th>Product</th>
+              <th class="sortable" onclick="toggleSort('active')" id="th-active">Visible</th>
+              <th class="sortable" onclick="toggleSort('spons')" id="th-spons">Sponsored</th>
+              <th class="sortable" onclick="toggleSort('carousel')" id="th-carousel">Carousel</th>
+              <th class="sortable" onclick="toggleSort('store')" id="th-store">Sold At</th>
+              <th class="sortable" onclick="toggleSort('price')" id="th-price">Price</th>
+            </tr>
+          </thead>
+          <tbody id="prod-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- ── ORDER TAB ── -->
+      <div id="tab-order" class="panel">
+        <div class="panel-head">
+          <h1>Category Order</h1>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 1rem;max-width:640px">Pick a category, then drag products (or use the arrows / position box) to set the order they appear on the site. Changes save automatically.</p>
+        <div class="filters">
+          <select id="ord-cat" onchange="renderOrder()" style="min-width:220px"></select>
+          <button class="btn-save btn-sm" onclick="saveOrder()">Save Order</button>
+          <span id="ord-status" style="font-size:.82rem;color:var(--muted)"></span>
+        </div>
+        <div id="ord-list" style="display:flex;flex-direction:column;gap:.55rem"></div>
+      </div>
+
+      <!-- ── CAROUSEL TAB ── -->
+      <div id="tab-carousel" class="panel">
+        <div class="panel-head">
+          <h1>Carousel</h1>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin:.2rem 0 1rem;max-width:640px">These tiles scroll across the top of the homepage. Drag a row, use the arrows, or type a position number to reorder — changes save automatically.</p>
+        <div id="car-list"></div>
+        <h3 style="font-size:.95rem;margin-bottom:.4rem">Add a product to the carousel</h3>
+        <input id="car-search" placeholder="Type to search products…" aria-label="Search products to add to the carousel" oninput="renderCarAdd()" style="width:100%;max-width:420px;padding:.5rem .8rem;border:1px solid var(--brd);border-radius:8px;font-size:.85rem;margin-bottom:.5rem">
+        <div id="car-add-list" style="display:flex;flex-direction:column;gap:.3rem;max-height:300px;overflow-y:auto"></div>
+      </div>
+
+      <!-- ── GIVEAWAY TAB ── -->
+      <div id="tab-giveaway" class="panel">
+        <div class="panel-head">
+          <h1>Giveaway</h1>
+          <span class="save-pill" id="gw-save-pill" data-s="ok" title="Giveaway edits save automatically"><span class="dot"></span>All changes saved</span>
+        </div>
+        <div class="summary-line">
+          <span>🎟️ <b id="gw-count">—</b> entries</span><span class="sep">·</span>
+          <span>📅 Week <b id="gw-week">—</b></span><span class="sep">·</span>
+          <span>🏆 Last winner: <b id="gw-winner">—</b></span>
+        </div>
+
+        <div class="gw-toggle">
+          <label>Giveaway Active</label>
+          <span id="gw-status" class="gw-status" title="Changes save automatically"></span>
+          <div class="toggle-big" id="gw-active-toggle" onclick="toggleGiveawayActive()">
+            <div class="tb"></div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Prize & Description</h3>
+          <p class="field-help">The prize <em>amount</em> on the site scales automatically with entry count ($5 → $100). Set the <strong>prize type</strong> below (what they win) and the <strong>fine print</strong> rules.</p>
+          <div class="sf"><label>Prize Type (shown in the giveaway modal)</label><input type="text" id="gw-prize-desc" value="Amazon Gift Card" placeholder="Amazon Gift Card"></div>
+          <div class="sf"><label>Fine Print / Rules (shown in the giveaway modal)</label><textarea id="gw-fine-print" rows="4">1 entry per week · Winner announced every Sunday · By entering you agree to receive one confirmation email from us which may include a special offer. We never send unsolicited emails.</textarea></div>
+        </div>
+
+        <div class="settings-group gw-entries-bar">
+          <h3>Entries</h3>
+          <div class="gw-entries-actions">
+            <button class="btn-sm btn-outline" onclick="exportEntriesCSV()">⬇ Export CSV</button>
+            <button class="btn-sm btn-green" onclick="pickWinner()">🏆 Pick Random Winner</button>
+          </div>
+        </div>
+        <div id="gw-entries-wrap">
+          <p style="color:var(--muted);font-size:.85rem">Loading entries…</p>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS TAB ── -->
+      <div id="tab-settings" class="panel">
+        <div class="panel-head">
+          <h1>Site Settings</h1>
+          <button class="btn-sm btn-save" onclick="saveSettings()">Save Settings</button>
+        </div>
+
+        <div class="settings-group">
+          <h3>Contact & Identity</h3>
+          <div class="sf"><label>Contact Email</label><input type="email" id="s-email" value="giftingbutler.help@gmail.com"></div>
+          <div class="sf"><label>Site Tagline</label><input type="text" id="s-tagline" value="Your personal gift concierge — curated picks, smart reminders, and family registries for every occasion."></div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Reminder Channels</h3>
+          <div class="sf"><label style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="s-sms-enabled" style="width:auto"> Enable SMS text reminders (requires Twilio, costs ~$0.01/msg)</label>
+          <p style="font-size:.75rem;color:#888;margin:.3rem 0 0">Turn on when revenue justifies the cost. Emails and push notifications are always free.</p></div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Social Links</h3>
+          <div class="sf"><label>X (Twitter) URL</label><input type="url" id="s-twitter" placeholder="https://x.com/yourhandle"></div>
+          <div class="sf"><label>TikTok URL</label><input type="url" id="s-tiktok" placeholder="https://tiktok.com/@yourhandle"></div>
+          <div class="sf"><label>YouTube URL</label><input type="url" id="s-youtube" placeholder="https://youtube.com/@yourchannel"></div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Announcement Banner</h3>
+          <div class="sf"><label>Banner Text (leave blank to hide)</label><input type="text" id="s-banner" placeholder="🎉 Free gift wrapping this week only!"></div>
+          <div class="sf"><label>Banner Color</label>
+            <select id="s-banner-color">
+              <option value="purple">Purple</option>
+              <option value="green">Green</option>
+              <option value="amber">Amber</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Sponsored Products</h3>
+          <p class="field-help">Pick the products you want to <strong>promote</strong> on the site. A sponsored product gets a purple <em>Sponsored</em> badge, jumps to the <strong>top of category listings</strong>, and fills the <strong>homepage carousel</strong> whenever you haven't set custom slides.</p>
+          <div id="spons-chips" class="chip-wrap" aria-live="polite"></div>
+          <div class="chip-addrow">
+            <input type="text" id="spons-add" inputmode="numeric" placeholder="Type a product ID and press Enter…" aria-label="Add a sponsored product by ID">
+          </div>
+          <input type="hidden" id="s-spons-ids">
+          <p class="field-hint">Tip: a product's ID number is shown on the Products tab.</p>
+        </div>
+      </div>
+
+      <!-- ── SUGGESTIONS TAB ── -->
+      <div id="tab-suggestions" class="panel">
+        <div class="panel-head">
+          <h1>Gift suggestions</h1>
+          <button class="btn-sm btn-outline" onclick="loadGbSuggestions()">Refresh</button>
+        </div>
+        <p style="color:#6b6480;font-size:.9rem;margin:.2rem 0 1rem">Gifts readers suggested on the Suggest a Gift page — the ones still waiting sit on top. Nothing is ever added automatically. <strong>Posted</strong> means you've added it to the catalog: it marks the suggestion done and sends the suggester a “your gift is live” note (only when they sent it while signed in, so we know who they are). <strong>Passed</strong> files it away.</p>
+        <div id="gb-sug-msg" style="margin-bottom:.6rem"></div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.92rem">
+          <thead><tr>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">From</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Gift</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Why</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Date</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Status</th>
+            <th style="padding:.5rem;border-bottom:2px solid #e7e2f2"></th>
+          </tr></thead>
+          <tbody id="gb-sug-body"><tr><td colspan="6" style="padding:.6rem">Open this tab to load suggestions.</td></tr></tbody>
+        </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── EDIT MODAL ── -->
+<div id="edit-modal">
+  <div class="modal-card">
+    <h2 id="modal-title">Edit Product</h2>
+    <input type="hidden" id="modal-id">
+    <img id="modal-preview" class="modal-preview" src="" alt="preview">
+    <div class="msec">Photos &amp; video</div>
+    <div class="mfld"><label>Images <span style="font-weight:400;font-size:.72rem;color:var(--muted)">(paste one or more URLs — click a thumbnail to make it the main photo)</span></label>
+      <div id="modal-imgs-wrap" style="display:flex;flex-wrap:wrap;gap:.45rem;margin:.4rem 0"></div>
+      <input type="url" id="modal-img-add" placeholder="Paste image URL(s) here, press Enter to add" onkeydown="if(event.key==='Enter'){event.preventDefault();addModalImgs(this.value);this.value=''}" onpaste="const el=this;setTimeout(function(){addModalImgs(el.value);el.value=''},60)">
+      <input type="hidden" id="modal-img">
+    </div>
+    <div class="mfld"><label>Video URL <span style="font-weight:400;font-size:.72rem;color:var(--muted)">(optional — YouTube, mp4, etc. Shows as a thumbnail alongside the images above.)</span></label><input type="url" id="modal-video" placeholder="https://www.youtube.com/embed/..." oninput="renderModalImgs()">
+      <label style="display:flex;align-items:center;gap:.4rem;margin-top:.4rem;font-weight:400;font-size:.78rem;cursor:pointer"><input type="checkbox" id="modal-video-first" style="width:auto"> Show the video first, instead of clicking to reveal it</label>
+    </div>
+    <div class="msec">Product details</div>
+    <div class="mfld"><label>Product Title</label><input type="text" id="modal-title-inp"></div>
+    <div class="mfld"><label>Sold At (store name, e.g. Amazon)</label><input type="text" id="modal-store" placeholder="Amazon"></div>
+    <div class="mfld"><label>Brand / Company (optional)</label><input type="text" id="modal-brand"></div>
+    <div class="mfld"><label>Description</label><textarea id="modal-desc" rows="3" placeholder="Short product description shown on the site…"></textarea></div>
+    <div class="mfld"><label>Price ($)</label><input type="number" id="modal-price" step="0.01" min="0"></div>
+    <div class="mfld"><label>Badge (short label, e.g. "Bestseller")</label><input type="text" id="modal-badge" placeholder="Bestseller"></div>
+    <div class="mfld"><label>Shop URL</label><input type="url" id="modal-url"></div>
+    <div class="mfld"><label>Categories <span style="font-weight:400;font-size:.72rem;color:var(--muted)">(tap to toggle)</span></label>
+      <div id="modal-cats-wrap" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem"></div>
+    </div>
+    <div class="msec">Visibility</div>
+    <div class="mfld" style="padding:.7rem 1rem;background:#fff5f5;border:1px solid #fca5a5;border-radius:8px">
+      <label style="display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-weight:600;color:#b91c1c">
+        <input type="checkbox" id="modal-tziut" style="margin-top:2px;accent-color:#ef4444;width:16px;height:16px;flex-shrink:0">
+        <span>⚠️ Tzniut Warning — show a notice on this card that the image may not meet tzniut standards</span>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-danger" onclick="deleteProductPermanently()" title="Permanently removes from site (stored in Firestore)">🗑 Delete</button>
+      <button class="btn-sm btn-outline" style="color:var(--amber);border-color:var(--amber)" onclick="hideProduct()" title="Hide from site — can be unhidden later">Hide</button>
+      <button class="btn-sm btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn-sm btn-save" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="adm-toast" class="toast-adm"></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── Firebase init ──
+firebase.initializeApp({
+  apiKey:"AIzaSyBPvwf-ilWhc5G_jAEaRDwlom0jJY678w4",
+  authDomain:"giftingbutler-74395.firebaseapp.com",
+  projectId:"giftingbutler-74395",
+  storageBucket:"giftingbutler-74395.firebasestorage.app",
+  messagingSenderId:"37308175610",
+  appId:"1:37308175610:web:547281f014be448b292543"
+});
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Product catalog: single source of truth ──
+// The catalog lives ONLY in index.html (const P + const REAL). This admin page
+// fetches index.html at load, parses the catalog out of it, and applies the
+// site's own normalization below. There is intentionally no product list
+// embedded here -- that duplication is what let the admin drift out of sync
+// (ghost products, stale titles). If the fetch fails, the product tab shows
+// an error banner instead of a stale catalog.
+let PRODUCTS = [];
+
+// --- Catalog helpers: copied verbatim from index.html so normalization is identical ---
+// -- Amazon affiliate search link: sorted by customer review, filtered to 4? & up, with associate tag --
+function amzn(kw){return 'https://www.amazon.com/s?k='+encodeURIComponent(kw)+'&i=aps&s=review-rank&rh=p_72%3A1248882011&tag=giftingbutler-20';}
+// Any real Amazon product-photo CDN host qualifies for the white-background-removal
+// blend trick -- covers media-amazon.com, ssl-images-amazon.com, images-na., etc.
+function isAmazonImg(url){return !!url && /amazon\.com/i.test(url);}
+// -- Real, people-free product photos (verified Unsplash). Each new item maps to the closest by theme. --
+function ip(id){return 'https://images.unsplash.com/photo-'+id+'?w=1000&auto=format&fit=crop&crop=entropy&q=85';}
+const IMG={
+  mirror:ip('1618220179428-22790b461013'),swaddle:ip('1586015555751-63bb77f4322a'),kiddushcup:ip('1544716278-ca5e3f4abd8c'),
+  giftbox:ip('1513201099705-a9746e1e201f'),mezuzah:ip('1513519245088-0e12902e5a38'),keyboard:ip('1587829741301-dc798b83add3'),
+  serving:ip('1506880018603-83d5b814b5a6'),lamp:ip('1565814329452-e1efa11c5b89'),playgym:ip('1515488042361-ee00e0ddd4e4'),
+  robot:ip('1485827404703-89b55fcc595e'),sketch:ip('1611532736597-de2d4265fba3'),havdalah:ip('1617791160536-598cf32026fb'),
+  honeybox:ip('1568624586078-baf1f9d7dc17'),spa:ip('1608248543803-ba4f8c70ae0b'),menorah:ip('1512389142860-9c449e58a543'),
+  jewelry:ip('1599643478518-a784e5dc4c8f'),frame:ip('1444703686981-a3abbc4d4fe3'),audio:ip('1505740420928-5e560c06d30e'),
+  books:ip('1481627834876-b7833e8f5570'),chocolate:ip('1549007994-cb92caebd54b'),journal:ip('1519791883288-dc8bd696e667'),
+  lego:ip('1619946794135-5bc917a27793'),costume:ip('1606791422814-be32c8209616'),candlesticks:ip('1558618666-fcd25c85cd64')
+};
+function pickImg(p){
+  var t=(p.title+' '+(p.cats||[]).join(' ')).toLowerCase();
+  var has=function(){for(var i=0;i<arguments.length;i++){if(t.indexOf(arguments[i])>=0)return true;}return false;};
+  if(has('jewel','ring','bangle','bracelet','earring','pendant','necklace','watch','crystal')) return IMG.jewelry;
+  if(has('keyboard')) return IMG.keyboard;
+  if(has('headphone','earbud','speaker','audio','radio','music')) return IMG.audio;
+  if(has('robot','microscope','dance','3d printer','printer','scooter','car','tracker','airtag')) return IMG.robot;
+  if(has('tablet','computer','phone','projector','camera','tech','gadget')) return IMG.keyboard;
+  if(has('lamp','clock','countdown')) return IMG.lamp;
+  if(has('mirror')) return IMG.mirror;
+  if(has('frame','painting','picture','photo','art ','star map')) return IMG.frame;
+  if(has('mezuzah')) return IMG.mezuzah;
+  if(has('menorah','chanukah','butterfly','plant','waterdale','decor')) return IMG.menorah;
+  if(has('kiddush')) return IMG.kiddushcup;
+  if(has('havdalah','silver','sterling','shtender')) return IMG.havdalah;
+  if(has('candlestick')) return IMG.candlesticks;
+  if(has('candle','diffuser','reed','scent','plug-in','plugin','spa','massage','bath','body','perfume','cologne','cosmetic','robe','towel','blanket','wellness','flower','rose')) return IMG.spa;
+  if(has('sefor','torah','mishn','book','magazine','ami','mishpacha','24six','newspaper')) return IMG.books;
+  if(has('stationery','pen','journal','wallet','belt','tie','valet','suit','purse','handbag','bag','shoe','sunglass','leather')) return IMG.journal;
+  if(has('chocolate','schnapps','aperitif','wine','liquor')) return IMG.chocolate;
+  if(has('coffee','espresso','grill','meat','board','ice','kitchen','food','platter')) return IMG.serving;
+  if(has('honey','rosh')) return IMG.honeybox;
+  if(has('lego','magnet','truck','lincoln','block','etch','jack','rope','jump','sticker','prize','flashlight','tool','game','chess','puzzle')) return IMG.lego;
+  if(has('craft','sketch','draw','paint','color')) return IMG.sketch;
+  if(has('purim','costume','crown')) return IMG.costume;
+  if(has('swing','slide','pool','bike','play')) return IMG.playgym;
+  if(has('baby','pacifier','stroller','doona','elephant','carriage','swaddle','infant','toddler','under 3')) return IMG.swaddle;
+  return IMG.giftbox;
+}
+async function loadSiteCatalog(){
+  const res = await fetch('index.html',{cache:'no-store'});
+  if(!res.ok) throw new Error('Could not load the site catalog (HTTP '+res.status+').');
+  const txt = await res.text();
+  const pMark = 'const P=[';
+  const pStart = txt.indexOf(pMark);
+  if(pStart < 0) throw new Error('Catalog block (const P) not found in index.html.');
+  const pEnd = txt.indexOf('\n];', pStart);
+  if(pEnd < 0) throw new Error('Catalog block in index.html looks malformed.');
+  const seg = txt.slice(pStart, pEnd);
+  const rm = txt.match(/const REAL=(\{.*?\});\n/);
+  if(!rm) throw new Error('Image map (const REAL) not found in index.html.');
+  let REAL;
+  try { REAL = (new Function('return '+rm[1]))(); }
+  catch(e){ throw new Error('Could not parse the image map in index.html.'); }
+  const out = [];
+  const re = /\{id:(\d+),/g;
+  let m;
+  while((m = re.exec(seg))){
+    const s = m.index, e = seg.indexOf('}', s);
+    if(e < 0) break;
+    const objSrc = seg.slice(s, e+1);
+    if(objSrc.indexOf('title:') < 0) continue; // not a product object
+    try { out.push((new Function('return '+objSrc))()); } catch(err){ /* skip */ }
+  }
+  if(!out.length) throw new Error('No products could be parsed from the site catalog.');
+  // Site-identical normalization (mirrors index.html)
+  out.forEach(function(p){
+    var rr = REAL[p.id];
+    if(rr){ p.url='https://www.amazon.com/dp/'+rr.asin+'?tag=giftingbutler-20'; p.img=rr.im; p.prod=true; }
+    else if(p.url && p.url.indexOf('/dp/')>-1){ if(isAmazonImg(p.img))p.prod=true; }
+    else { p.url=amzn(p.kw||p.title); if(!p.img)p.img=pickImg(p); }
+  });
+  return out;
+}
+
+// Default sponsored IDs
+const DEFAULT_SPONS = new Set([52,57,49,87,85,102,58,50,125,126,83,48]);
+
+// ── State ──
+let overrides = {};   // {id: {spons, badge, price, img, url, active}}
+let siteSettings = {};
+let gwSettings = {};
+let gwActive = false; // site default is OFF until Firestore enables it
+
+// ── Amazon "add product" bookmarklet ──
+// Runs on the Amazon product page itself (no CORS issue, it's the user's own
+// browser), pulls the title/price/image/description off the rendered DOM,
+// and hands it to this admin via a URL param -- no server-side scraping needed.
+(function setupBookmarklet(){
+  const adminUrl = window.location.origin + '/admin.html';
+  const src = `(function(){
+    function q(s){var e=document.querySelector(s);return e?e.textContent.trim():''}
+    function attr(s,a){var e=document.querySelector(s);return e?e.getAttribute(a):''}
+    function fullRes(u){return u?u.replace(/\\._[A-Z0-9,_]+_\\.(jpg|png)/i,'.\$1'):u}
+    function imgKey(u){var m=u&&u.match(/\\/images\\/I\\/([A-Za-z0-9+]+)/);return m?m[1]:u}
+    function host(){return location.hostname.replace(/^www\\./,'')}
+    function storeName(){var h=host().split('.')[0];return h.charAt(0).toUpperCase()+h.slice(1)}
+
+    function extractAmazon(){
+      var title=q('#productTitle')||q('h1');
+      var priceEl=document.querySelector('.a-price .a-offscreen')||document.querySelector('#priceblock_ourprice')||document.querySelector('#priceblock_dealprice')||document.querySelector('.a-price-whole');
+      var price=priceEl?priceEl.textContent.replace(/[^0-9.]/g,''):'';
+      var desc='';
+      var bullets=[].slice.call(document.querySelectorAll('#feature-bullets li span')).map(function(e){return e.textContent.trim()}).filter(function(t){return t&&t.toLowerCase().indexOf('make sure this fits')===-1});
+      if(bullets.length)desc=bullets.slice(0,3).join(' ');
+      if(!desc){var pd=q('#productDescription');if(pd)desc=pd.slice(0,400)}
+      if(!desc)desc=attr('meta[name=\\"description\\"]','content')||'';
+      var seen={};var images=[];
+      // The thumbnail rail's first entry (class "variant-MAIN") IS the main photo,
+      // but Amazon renders #landingImage under a *different* image id for the same
+      // picture -- so pulling both duplicated the first photo. The rail is the
+      // reliable source; only fall back to #landingImage when there's no rail at all.
+      [].slice.call(document.querySelectorAll('#altImages img, #imageBlockThumbs img, li.imageThumbnail img')).forEach(function(t){
+        var u=fullRes(t.getAttribute('src'));
+        var k=imgKey(u);
+        var isPlayIcon=/play-button|play-icon/i.test(u||'');
+        if(u&&!seen[k]&&u.indexOf('data:')!==0&&u.indexOf('/images/I/')>-1&&!isPlayIcon){seen[k]=true;images.push(u)}
+      });
+      if(!images.length){
+        var mainImg=fullRes(attr('#landingImage','src')||attr('#imgTagWrapperId img','src')||'');
+        if(mainImg){images.push(mainImg);seen[imgKey(mainImg)]=true}
+      }
+      if(!images.length){var og=attr('meta[property=\\"og:image\\"]','content');if(og)images.push(og)}
+      var brand=q('#bylineInfo');
+      brand=brand.replace(/^(Visit the|Brand:|Store:)\\s*/i,'').replace(/\\s*Store$/i,'').trim();
+      return {title:title,price:price,images:images,desc:desc,brand:brand,store:'Amazon'};
+    }
+
+    function extractGeneric(){
+      var product=null;
+      var scripts=[].slice.call(document.querySelectorAll('script[type=\\"application/ld+json\\"]'));
+      for(var i=0;i<scripts.length;i++){
+        try{
+          var parsed=JSON.parse(scripts[i].textContent);
+          var candidates=Array.isArray(parsed)?parsed:(parsed['@graph']||[parsed]);
+          for(var j=0;j<candidates.length;j++){
+            var c=candidates[j];
+            var type=c&&c['@type'];
+            var isProduct=type==='Product'||(Array.isArray(type)&&type.indexOf('Product')>-1);
+            if(isProduct){product=c;break}
+          }
+        }catch(e){}
+        if(product)break;
+      }
+      var title='',price='',desc='',brand='',images=[];
+      if(product){
+        title=product.name||'';
+        desc=product.description||'';
+        if(product.brand)brand=(typeof product.brand==='string')?product.brand:(product.brand.name||'');
+        var offers=product.offers;
+        if(offers){
+          var offer=Array.isArray(offers)?offers[0]:offers;
+          if(offer&&offer.price)price=String(offer.price).replace(/[^0-9.]/g,'');
+        }
+        // image can be a plain URL string, an array of URL strings, a single
+        // ImageObject ({contentURL/url}), or (as on Etsy) an array of ImageObjects.
+        function imgUrlOf(x){
+          if(!x)return null;
+          if(typeof x==='string')return x;
+          return x.contentURL||x.url||null;
+        }
+        var imgField=product.image;
+        if(imgField){
+          if(Array.isArray(imgField))images=imgField.map(imgUrlOf).filter(Boolean);
+          else{var single=imgUrlOf(imgField);if(single)images=[single]}
+        }
+      }
+      if(!title)title=attr('meta[property=\\"og:title\\"]','content')||q('h1')||document.title;
+      if(!desc)desc=attr('meta[property=\\"og:description\\"]','content')||attr('meta[name=\\"description\\"]','content')||'';
+      if(!images.length){var og=attr('meta[property=\\"og:image\\"]','content');if(og)images=[og]}
+      if(!price){var pm=attr('meta[property=\\"product:price:amount\\"]','content')||attr('meta[property=\\"og:price:amount\\"]','content');if(pm)price=pm.replace(/[^0-9.]/g,'')}
+      return {title:title,price:price,images:images,desc:desc,brand:brand,store:storeName()};
+    }
+
+    var result=host().indexOf('amazon.')>-1?extractAmazon():extractGeneric();
+    var url=location.href.split('?')[0];
+    if(host().indexOf('amazon.')>-1)url+='?tag=giftingbutler-20';
+    if(!result.title){alert('Could not find a product on this page ('+host()+'). This works best on a single product\\'s page, not a search or category listing.');return}
+    var data={title:result.title,price:result.price,img:result.images[0]||'',images:result.images,desc:result.desc,brand:result.brand,url:url,store:result.store};
+    var target='${adminUrl}?prefill='+encodeURIComponent(JSON.stringify(data));
+    var w=window.open(target,'_blank');
+    if(!w){ location.href=target; }
+  })();`;
+  const link = document.getElementById('amazon-bookmarklet');
+  if (link) link.href = 'javascript:' + encodeURIComponent(src);
+  window._bookmarkletHref = link ? link.href : '';
+})();
+function copyBookmarkletCode() {
+  // Copy only what comes AFTER "javascript:" -- most browsers strip that word on
+  // paste as an anti-XSS measure, so the user must type it by hand and paste the rest.
+  const href = window._bookmarkletHref || '';
+  const codeOnly = href.slice(href.indexOf(':') + 1);
+  navigator.clipboard.writeText(codeOnly)
+    .then(() => toast('✅ Copied — type javascript: yourself first, then paste this after it'))
+    .catch(() => alert('Could not copy automatically. Right-click the button above and use "Copy Link", then remove the "javascript:" prefix and type it back in by hand.'));
+}
+
+// ── Auth ──
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('dash-email').textContent = user.email;
+    loadAll();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+});
+
+function doLogin() {
+  const email = document.getElementById('adm-email').value.trim();
+  const pass  = document.getElementById('adm-pass').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-err');
+  if (!email || !pass) { err.textContent = 'Enter email and password.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…'; err.textContent = '';
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => {
+      err.textContent = e.message.replace('Firebase: ','').replace(/\(auth\/.*\)/,'').trim();
+      btn.disabled = false; btn.textContent = 'Sign In';
+    });
+}
+
+function doLogout() {
+  auth.signOut();
+}
+
+// ── Load everything ──
+async function loadAll() {
+  let catalogOk = false;
+  try {
+    PRODUCTS = await loadSiteCatalog();
+    catalogOk = true;
+    document.getElementById('catalog-error').style.display = 'none';
+  } catch(e) {
+    console.error('catalog:', e);
+    const eb = document.getElementById('catalog-error');
+    eb.style.display = 'block';
+    eb.querySelector('.ce-msg').textContent = ' ' + e.message;
+  }
+  await loadOverrides();
+  await loadCustomProducts();
+  await loadSettings();
+  await loadGWSettings();
+  if (catalogOk) {
+    renderStats();
+    initCatBubbles();
+    paintSortHeaders();
+    renderProdTable();
+  }
+  loadGiveawayEntries();
+  checkPrefillFromBookmarklet();
+  updateSavePill();
+}
+
+async function loadOverrides() {
+  try {
+    const snap = await db.collection('product_overrides').get();
+    snap.forEach(doc => { overrides[parseInt(doc.id)] = doc.data(); });
+  } catch(e) { console.warn('overrides:', e); }
+}
+
+// Products added via the Add Product modal (or the Amazon bookmarklet) live in their
+// own 'custom_products' collection, not the static PRODUCTS array. Pull them in here
+// so they show up, can be searched, and can be toggled/edited like any other product.
+// A stable hash of the Firestore doc id keeps the same numeric id across reloads.
+window._customDocIds = {};
+function hashId(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return 900000 + (h % 90000);
+}
+function refFor(id) {
+  const docId = window._customDocIds[id];
+  return docId ? db.collection('custom_products').doc(docId) : db.collection('product_overrides').doc(String(id));
+}
+async function loadCustomProducts() {
+  try {
+    // Idempotent: drop any custom entries from a previous call before re-adding,
+    // so calling this again after adding a product doesn't duplicate the list.
+    for (let i = PRODUCTS.length - 1; i >= 0; i--) if (PRODUCTS[i]._custom) PRODUCTS.splice(i, 1);
+    const snap = await db.collection('custom_products').get();
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.deleted === true) return;
+      const id = hashId(doc.id);
+      window._customDocIds[id] = doc.id;
+      PRODUCTS.push({
+        id, title: d.title||'', brand: d.brand||'', store: d.store||'Amazon', price: d.price||0,
+        badge: d.badge||'', img: d.img||'', images: d.images||[], video: d.video||'', videoFirst: !!d.videoFirst,
+        url: d.url||'', desc: d.desc||'', cats: d.cats||[], tziut: !!d.tziut,
+        active: d.active !== false, spons: !!d.spons, carousel: !!d.carousel, carouselOrder: d.carouselOrder||999,
+        carouselImg: d.carouselImg||'', carouselVideo: d.carouselVideo||'', _custom: true
+      });
+    });
+  } catch(e) { console.warn('custom products:', e); }
+}
+
+async function loadSettings() {
+  try {
+    const doc = await db.collection('site_settings').doc('main').get();
+    if (doc.exists) {
+      siteSettings = doc.data();
+      if (siteSettings.twitter) document.getElementById('s-twitter').value = siteSettings.twitter;
+      if (siteSettings.smsEnabled !== undefined) document.getElementById('s-sms-enabled').checked = !!siteSettings.smsEnabled;
+      if (siteSettings.tiktok)  document.getElementById('s-tiktok').value  = siteSettings.tiktok;
+      if (siteSettings.youtube) document.getElementById('s-youtube').value = siteSettings.youtube;
+      if (siteSettings.tagline) document.getElementById('s-tagline').value = siteSettings.tagline;
+      if (siteSettings.email)   document.getElementById('s-email').value   = siteSettings.email;
+      if (siteSettings.banner)  document.getElementById('s-banner').value  = siteSettings.banner;
+      if (siteSettings.bannerColor) document.getElementById('s-banner-color').value = siteSettings.bannerColor;
+      if (siteSettings.sponsIds) document.getElementById('s-spons-ids').value = siteSettings.sponsIds;
+      renderSponsChips();
+    }
+  } catch(e) { console.warn('settings:', e); }
+}
+
+async function loadGWSettings() {
+  try {
+    const now = new Date();
+    const week = now.getFullYear()+'-W'+String(Math.ceil((now - new Date(now.getFullYear(),0,1))/(7*86400000))).padStart(2,'0');
+    document.getElementById('gw-week').textContent = week;
+
+    // Load prize/fine-print from site_settings/giveaway (same place the site reads)
+    const settDoc = await db.collection('site_settings').doc('giveaway').get();
+    if (settDoc.exists) {
+      gwSettings = settDoc.data();
+      gwActive = gwSettings.active === true; // match the site: only an explicit true enables it
+      const fpEl = document.getElementById('gw-fine-print');
+      if (gwSettings.finePrint && !gwSettings.finePrint.includes('Must be 18')) fpEl.value = gwSettings.finePrint;
+      if (gwSettings.prizeDesc) document.getElementById('gw-prize-desc').value = gwSettings.prizeDesc;
+    }
+    document.getElementById('gw-active-toggle').classList.toggle('on', gwActive);
+    paintGwStatus();
+
+    // Last winner
+    const winnerDoc = await db.collection('giveaway_meta').doc('lastWinner').get();
+    document.getElementById('gw-winner').textContent = winnerDoc.exists ? (winnerDoc.data().email || '—') : '—';
+  } catch(e) { console.warn('gw:', e); }
+  _gwLoaded = true; // initial load done — user changes now autosave
+}
+
+// ── Products ──
+function getProductState(p) {
+  const ov = overrides[p.id] || {};
+  const url = ov.url || p.url || '';
+  const defaultStore = url.toLowerCase().includes('amazon') ? 'Amazon' : '';
+  return {
+    ...p,
+    title:   ov.title   || p.title,
+    brand:   ov.brand   || p.brand  || '',
+    store:   ov.store   !== undefined ? ov.store : defaultStore,
+    price:   ov.price   ?? p.price,
+    badge:   ov.badge   ?? p.badge,
+    img:     ov.img     || p.img    || '',
+    url,
+    desc:    ov.desc    || p.desc   || '',
+    cats:    ov.cats    || p.cats   || [],
+    spons:   ov.spons !== undefined ? ov.spons : (p.spons !== undefined ? p.spons : DEFAULT_SPONS.has(p.id)),
+    tziut:   ov.tziut === true || p.tziut === true,
+    images:  ov.images || p.images || [],
+    video:   ov.video ?? p.video ?? '',
+    videoFirst: ov.videoFirst ?? p.videoFirst ?? false,
+    carousel: ov.carousel !== undefined ? ov.carousel === true : p.carousel === true,
+    carouselOrder: ov.carouselOrder || p.carouselOrder || 999,
+    carouselImg: ov.carouselImg ?? p.carouselImg ?? '',
+    carouselVideo: ov.carouselVideo ?? p.carouselVideo ?? '',
+    carouselHidden: ov.carouselHidden !== undefined ? ov.carouselHidden === true : p.carouselHidden === true,
+    active:  (ov.active !== undefined ? ov.active !== false : p.active !== false) && ov.deleted !== true && p.deleted !== true,
+    deleted: ov.deleted === true || p.deleted === true
+  };
+}
+
+function renderStats() {
+  // Count the same way the product list filters: deleted products are NOT
+  // part of the product count and are NOT "hidden" -- they get their own
+  // number. (Before this fix the stats counted every deleted product as
+  // hidden while the Hidden view excludes deleted items, so the numbers
+  // never added up against the list.)
+  const states  = PRODUCTS.map(p => getProductState(p));
+  const total   = states.filter(p => !p.deleted).length;
+  const spons   = states.filter(p => !p.deleted && p.spons).length;
+  const hidden  = states.filter(p => !p.deleted && !p.active).length;
+  const deleted = states.filter(p => p.deleted).length;
+  document.getElementById('prod-stats').innerHTML =
+    `<span>📦 <b>${total}</b> products</span><span class="sep">·</span>` +
+    `<span>💜 <b>${spons}</b> sponsored</span><span class="sep">·</span>` +
+    `<span>🙈 <b>${hidden}</b> hidden</span>` +
+    (deleted ? `<span class="sep">·</span><span>🗑 <b>${deleted}</b> deleted</span>` : '');
+}
+
+const ADMIN_CATS = [
+  {id:'anniversary',label:'💑 Anniversary'},{id:'baby',label:'🍼 Baby'},{id:'bar-mitzvah',label:'📖 Bar Mitzvah'},{id:'bat-mitzvah',label:'✡️ Bat Mitzvah'},
+  {id:'birthday',label:'🎂 Birthday'},{id:'books',label:'📚 Books'},{id:'chanukah',label:'🕎 Chanukah'},
+  {id:'christmas',label:'🎄 Christmas'},
+  {id:'kids',label:'🧸 Kids (general)'},{id:'children-u3',label:'🍼 Under 3'},{id:'children-4-8',label:'🎮 Ages 4–8'},{id:'children-9-12',label:'🎨 Ages 9–12'},
+  {id:'cool-find',label:'✨ Cool Finds'},{id:'decor',label:'🏡 Décor'},{id:'easter',label:'🐣 Easter'},{id:"fathers-day",label:"🧔 Father's Day"},{id:'food',label:'🍰 Food'},
+  {id:'get-well',label:'🌻 Get Well'},{id:'grandchildren',label:'👪 Grandkids'},{id:'graduation',label:'🎓 Graduation'},
+  {id:'her',label:'👜 For Her'},{id:'him',label:'👔 For Him'},{id:'hostess',label:'💐 Hostess'},
+  {id:'housewarming',label:'🏠 Housewarming'},{id:'jewelry',label:'💎 Jewelry'},{id:'jewish-occasions',label:'✡️ Jewish Occasions'},{id:"lchaim-vort",label:"🥂 L'Chaim/Vort"},
+  {id:'last-minute',label:'⚡ Last Minute'},{id:"mothers-day",label:"🌷 Mother's Day"},
+  {id:'personalized',label:'✏️ Personalized'},{id:'purim',label:'🎭 Purim'},{id:'rosh-hashana',label:'🍎 Rosh Hashana'},
+  {id:'teacher',label:'🍎 Teacher'},{id:'tech',label:'💻 Tech'},{id:'thank-you',label:'🙏 Thank You'},
+  {id:'upsherin',label:'✂️ Upsherin'},{id:"valentines-day",label:"💘 Valentine's Day"},
+  {id:'wedding',label:'💍 Wedding'},{id:'wedding-shower',label:'🥂 Wedding Shower'},{id:'wellness',label:'🧘 Wellness'},{id:'yomtov',label:'🍷 Yom Tov'}
+];
+window._adminCat = '';
+window._sortField = '';
+window._sortDir = 1;
+function toggleSort(field) {
+  if (window._sortField === field) window._sortDir *= -1;
+  else { window._sortField = field; window._sortDir = 1; }
+  paintSortHeaders();
+  renderProdTable();
+}
+// Subtle sort indicator: the span stays empty until a column is sorted, then
+// shows ▲/▼. Hovering a header just tints it (no glyph); clicking toggles sort.
+function paintSortHeaders() {
+  const labels = {price:'Price', spons:'Sponsored', store:'Sold At', carousel:'Carousel', active:'Visible'};
+  ['price','spons','store','active','carousel'].forEach(f => {
+    const th = document.getElementById('th-'+f);
+    if (!th) return;
+    const on = window._sortField === f;
+    th.classList.toggle('sorted', on);
+    th.innerHTML = esc(labels[f]) + '<span class="sort-ind" aria-hidden="true">' +
+      (on ? (window._sortDir === 1 ? '▲' : '▼') : '') + '</span>';
+  });
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function initCatBubbles() {
+  const sel = document.getElementById('cat-filter');
+  if (!sel) return;
+  sel.innerHTML = [''].concat(ADMIN_CATS.map(c=>c.id)).map((id,i) => {
+    const label = i===0 ? 'All categories' : ADMIN_CATS[i-1].label;
+    return `<option value="${id}"${window._adminCat===id?' selected':''}>${label}</option>`;
+  }).join('');
+}
+
+function renderProdTable() {
+  const q     = document.getElementById('prod-search').value.toLowerCase();
+  const cat   = window._adminCat || '';
+  const filt  = document.getElementById('spons-filter').value;
+
+  let list = PRODUCTS.map(p => getProductState(p));
+  // Deleted items are hidden from the default view -- they still exist in
+  // Firestore (soft-deleted, recoverable), but shouldn't clutter the list
+  // forever. Only show them when the "Deleted only" filter is picked.
+  list = filt === 'deleted' ? list.filter(p => p.deleted) : list.filter(p => !p.deleted);
+  if (q)   list = list.filter(p => p.title.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
+  if (cat) list = list.filter(p => p.cats.includes(cat));
+  if (filt === 'spons')    list = list.filter(p => p.spons);
+  if (filt === 'active')   list = list.filter(p => p.active);
+  if (filt === 'inactive') list = list.filter(p => !p.active);
+
+  // Sort
+  if (window._sortField) {
+    list.sort((a, b) => {
+      let av = a[window._sortField], bv = b[window._sortField];
+      if (typeof av === 'boolean') av = av ? 1 : 0;
+      if (typeof bv === 'boolean') bv = bv ? 1 : 0;
+      if (typeof av === 'string') return window._sortDir * av.localeCompare(bv);
+      return window._sortDir * ((av||0) - (bv||0));
+    });
+  }
+
+  document.getElementById('prod-count-badge').textContent = list.length;
+
+  const rows = list.map(p => `
+    <tr style="cursor:pointer;${p.deleted?'opacity:.45':p.active?'':'background:#fff5f5'}" onclick="openModal(${p.id})">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="row-chk" data-id="${p.id}" onchange="updateBulkBar()" style="accent-color:#5B2D8E;width:15px;height:15px;cursor:pointer"></td>
+      <td><div class="prod-cell">
+        <img class="prod-img" src="${p.img || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23EDE5F8%22/%3E%3Ctext x=%2220%22 y=%2226%22 font-size=%2216%22 text-anchor=%22middle%22%3E🎁%3C/text%3E%3C/svg%3E'}" alt="" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23EDE5F8%22/%3E%3C/svg%3E'">
+        <div style="min-width:0">
+          <div class="pt">${p.deleted?'<span style="color:var(--red);font-size:.72rem">DELETED</span> ':''}<span style="${p.deleted?'text-decoration:line-through':''}">${p.title}</span></div>
+          <div class="pm">${p.store?p.store+' · ':''}${p.brand?p.brand+' · ':''}ID ${p.id}</div>
+        </div>
+      </div></td>
+      <td onclick="event.stopPropagation()">
+        ${p.deleted
+          ? `<span style="font-size:.75rem;color:var(--red);font-weight:700">Deleted</span>`
+          : `<div class="spons-toggle" onclick="toggleActive(${p.id})" title="Toggle visibility">
+              <div class="toggle-track${p.active?' on':''}" id="at-${p.id}" style="${p.active?'background:var(--green)':''}"><div class="toggle-thumb"></div></div>
+            </div>`
+        }
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div class="spons-toggle" onclick="toggleSpons(${p.id})" title="Toggle sponsored">
+          <div class="toggle-track${p.spons?' on':''}" id="st-${p.id}"><div class="toggle-thumb"></div></div>
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <div class="spons-toggle" onclick="setOverride(${p.id},'carousel',!${p.carousel}).then(()=>{renderProdTable();renderStats()})" title="Toggle carousel">
+            <div class="toggle-track${p.carousel?' on':''}" id="cr-${p.id}" style="${p.carousel?'background:var(--amber)':''}"><div class="toggle-thumb"></div></div>
+          </div>
+          ${p.carousel?`<input type="number" min="1" max="99" value="${p.carouselOrder||''}" placeholder="#" title="Position in carousel (1=first)" style="width:38px;padding:2px 4px;border:1px solid var(--brd);border-radius:5px;font-size:.75rem;text-align:center" onchange="setOverride(${p.id},'carouselOrder',parseInt(this.value)||999)">`:``}
+        </div>
+      </td>
+      <td onclick="event.stopPropagation()"><input class="quiet-inp" style="width:92px" value="${p.store||''}" placeholder="Amazon" onchange="setOverride(${p.id},'store',this.value.trim())"></td>
+      <td onclick="event.stopPropagation()"><input class="quiet-inp" type="number" value="${p.price}" step="0.01" min="0" style="width:80px" onchange="setOverride(${p.id},'price',parseFloat(this.value)||${p.price})"></td>
+    </tr>`).join('');
+
+  document.getElementById('prod-tbody').innerHTML = rows || '<tr><td colspan="7" style="padding:1.5rem;text-align:center;color:var(--muted)">No products found</td></tr>';
+}
+
+// ── Unified save pipeline: debounced autosave ──
+// EVERY product edit (table toggles, carousel, edit modal, bulk actions)
+// funnels through setOverride(). Edits apply to local state instantly and
+// persist to Firestore on a short debounce -- the old mix of "writes
+// immediately" vs "only when you click Save Changes" (and its lost edits)
+// is gone. The #save-status pill always shows the truth: saving / saved /
+// error (click the pill to retry).
+const _dirty = new Map();   // id -> timeout handle for a pending write
+const _failed = new Set();  // ids whose last write failed
+let _writing = 0;           // in-flight write count (bulk actions)
+
+function updateSavePill() {
+  const pill = document.getElementById('save-status');
+  if (!pill) return;
+  if (_failed.size) {
+    pill.dataset.s = 'error';
+    pill.innerHTML = '<span class="dot"></span>Save failed &mdash; click to retry';
+    pill.onclick = function(){ saveNow(); };
+    pill.style.cursor = 'pointer';
+  } else if (_dirty.size || _writing) {
+    pill.dataset.s = 'saving';
+    pill.innerHTML = '<span class="dot"></span>Saving&hellip;';
+    pill.onclick = null;
+    pill.style.cursor = 'default';
+  } else {
+    pill.dataset.s = 'ok';
+    pill.innerHTML = '<span class="dot"></span>All changes saved';
+    pill.onclick = null;
+    pill.style.cursor = 'default';
+  }
+}
+
+function setOverride(id, field, value) {
+  if (!overrides[id]) overrides[id] = {};
+  overrides[id][field] = value;
+  _failed.delete(id);
+  if (_dirty.has(id)) clearTimeout(_dirty.get(id));
+  _dirty.set(id, setTimeout(function(){ flushSave(id); }, 900));
+  updateSavePill();
+  return Promise.resolve(); // keeps existing .then() chains working
+}
+
+async function flushSave(id) {
+  if (_dirty.has(id)) { clearTimeout(_dirty.get(id)); _dirty.delete(id); }
+  const data = overrides[id];
+  if (!data) { updateSavePill(); return; }
+  _writing++; updateSavePill();
+  try {
+    await refFor(id).set(data, { merge: true });
+  } catch(e) {
+    _failed.add(id);
+    toast('❌ Save failed: ' + e.message);
+  } finally {
+    _writing--; updateSavePill();
+  }
+}
+
+// Flush every pending write right now (the "Save now" button).
+async function saveNow() {
+  const ids = [..._dirty.keys(), ..._failed];
+  _failed.clear();
+  await Promise.all(ids.map(function(id){ return flushSave(id); }));
+  if (!_failed.size) toast('✅ All changes saved!');
+  updateSavePill();
+}
+
+// Don't let unsaved edits vanish on navigation.
+window.addEventListener('beforeunload', function(e){
+  if (_dirty.size || _failed.size || _writing || _gwSaveTimer || _gwWriting || _gwSaveFailed) { e.preventDefault(); e.returnValue = ''; }
+});
+
+
+
+function toggleSpons(id) {
+  const cur = getProductState(PRODUCTS.find(p=>p.id===id)).spons;
+  setOverride(id, 'spons', !cur);
+  renderProdTable();
+  renderStats();
+}
+
+function toggleActive(id) {
+  const cur = getProductState(PRODUCTS.find(p=>p.id===id)).active;
+  setOverride(id, 'active', !cur);
+  renderProdTable();
+  renderStats();
+}
+
+// ── Edit Modal: multi-image manager ──
+window._modalImgs = [];
+function addModalImgs(text) {
+  (text||'').split(/[\s,]+/).map(s=>s.trim())
+    .filter(s=>/^https?:\/\//i.test(s)||s.startsWith('data:image'))
+    .forEach(u=>{ if(!window._modalImgs.includes(u)) window._modalImgs.push(u); });
+  renderModalImgs();
+}
+function setPrimaryImg(i) { const [u]=window._modalImgs.splice(i,1); window._modalImgs.unshift(u); renderModalImgs(); }
+function removeModalImg(i) { window._modalImgs.splice(i,1); renderModalImgs(); }
+window._modalDragIdx = null;
+function modalImgDragStart(e,i){ window._modalDragIdx=i; e.dataTransfer.effectAllowed='move'; setTimeout(()=>e.currentTarget.style.opacity='0.35',0); }
+function modalImgDragOver(e,i){ e.preventDefault(); if(i===window._modalDragIdx)return; e.currentTarget.style.outline='2px solid var(--plum)'; }
+function modalImgDragLeave(e){ e.currentTarget.style.outline=''; }
+function modalImgDrop(e,i){
+  e.preventDefault(); e.currentTarget.style.outline='';
+  const from=window._modalDragIdx;
+  if(from===null||from===i)return;
+  const [u]=window._modalImgs.splice(from,1);
+  window._modalImgs.splice(i,0,u);
+  window._modalDragIdx=null;
+  renderModalImgs();
+}
+function modalImgDragEnd(e){ e.currentTarget.style.opacity=''; window._modalDragIdx=null; }
+function renderModalImgs() {
+  const wrap = document.getElementById('modal-imgs-wrap');
+  document.getElementById('modal-img').value = window._modalImgs[0]||'';
+  document.getElementById('modal-preview').src = window._modalImgs[0]||'';
+  const videoUrl = (document.getElementById('modal-video')||{}).value || '';
+  wrap.innerHTML = window._modalImgs.map((u,i)=>
+    `<div draggable="true" ondragstart="modalImgDragStart(event,${i})" ondragover="modalImgDragOver(event,${i})" ondragleave="modalImgDragLeave(event)" ondrop="modalImgDrop(event,${i})" ondragend="modalImgDragEnd(event)" style="position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:2px solid ${i===0?'var(--plum)':'var(--brd)'};cursor:grab;flex-shrink:0" title="${i===0?'Main photo — drag to reorder':'Click to make this the main photo, or drag to reorder'}">`+
+    `<img src="${u}" onclick="setPrimaryImg(${i})" style="width:100%;height:100%;object-fit:cover;pointer-events:auto">`+
+    (i===0?'<span style="position:absolute;top:1px;left:3px;font-size:11px">⭐</span>':'')+
+    `<button onclick="event.stopPropagation();removeModalImg(${i})" style="position:absolute;top:0;right:0;background:rgba(0,0,0,.55);color:#fff;border:none;width:16px;height:16px;font-size:10px;line-height:1;cursor:pointer;border-radius:0 0 0 6px">×</button>`+
+    `</div>`
+  ).join('')
+  + (videoUrl ? `<div style="position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:2px solid var(--brd);flex-shrink:0;background:#111 url('${window._modalImgs[0]||''}') center/cover" title="Video — shown as a thumbnail with the images on the site">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+    </div>` : '')
+  || '<span style="font-size:.75rem;color:var(--muted)">No images yet — paste an image URL below</span>';
+}
+
+// ── Edit Modal ──
+window._modalCats = [];
+function renderModalCats() {
+  const wrap = document.getElementById('modal-cats-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = ADMIN_CATS.map(c => {
+    const on = window._modalCats.includes(c.id);
+    return `<button type="button" onclick="toggleModalCat('${c.id}')" style="padding:4px 11px;border-radius:50px;border:1.5px solid ${on?'var(--plum)':'var(--brd)'};background:${on?'var(--plum)':'#fff'};color:${on?'#fff':'var(--ink)'};font-size:.76rem;font-weight:${on?700:500};cursor:pointer;white-space:nowrap">${c.label}</button>`;
+  }).join('');
+}
+function toggleModalCat(id) {
+  const i = window._modalCats.indexOf(id);
+  if (i === -1) window._modalCats.push(id); else window._modalCats.splice(i, 1);
+  renderModalCats();
+}
+
+function openAddModal(prefill) {
+  prefill = prefill || {};
+  document.getElementById('modal-id').value = 'NEW';
+  document.getElementById('modal-title').textContent = 'Add New Product';
+  const prefillImgs = (prefill.images && prefill.images.length) ? prefill.images : (prefill.img ? [prefill.img] : []);
+  document.getElementById('modal-preview').src = prefillImgs[0] || '';
+  window._modalImgs = [...prefillImgs]; renderModalImgs();
+  document.getElementById('modal-title-inp').value  = prefill.title || '';
+  document.getElementById('modal-store').value      = prefill.store || 'Amazon';
+  document.getElementById('modal-brand').value      = prefill.brand || '';
+  document.getElementById('modal-desc').value       = prefill.desc || '';
+  document.getElementById('modal-price').value      = prefill.price || '';
+  document.getElementById('modal-badge').value      = '';
+  document.getElementById('modal-url').value        = prefill.url || '';
+  window._modalCats = []; renderModalCats();
+  document.getElementById('modal-tziut').checked    = false;
+  document.getElementById('edit-modal').classList.add('open');
+  if (prefill.title) toast('✅ Pulled from Amazon — check it over, then Save');
+}
+
+// Bookmarklet handoff: /admin.html?prefill=<url-encoded JSON> opens Add Product pre-filled
+function checkPrefillFromBookmarklet() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('prefill');
+  if (!raw) return;
+  try {
+    // URLSearchParams.get() already URL-decodes the value -- decoding it again here
+    // throws "URI malformed" whenever the product title/desc contains a literal '%'
+    // (percentages, discounts, etc. -- extremely common on Amazon listings).
+    const data = JSON.parse(raw);
+    openAddModal(data);
+  } catch(e) {
+    console.error('Bookmarklet prefill failed:', e, raw);
+    alert('The Amazon bookmarklet sent data back, but this page could not read it. Details: ' + e.message);
+  }
+  history.replaceState(null, '', window.location.pathname);
+}
+
+function openModal(id) {
+  const p = getProductState(PRODUCTS.find(x => x.id === id));
+  document.getElementById('modal-id').value = id;
+  document.getElementById('modal-title').textContent = 'Edit: ' + p.title;
+  document.getElementById('modal-preview').src = p.img || '';
+  window._modalImgs = (p.images && p.images.length ? [...p.images] : (p.img ? [p.img] : []));
+  renderModalImgs();
+  document.getElementById('modal-title-inp').value  = p.title || '';
+  document.getElementById('modal-store').value      = p.store || 'Amazon';
+  document.getElementById('modal-brand').value      = p.brand || '';
+  document.getElementById('modal-desc').value       = p.desc  || '';
+  document.getElementById('modal-price').value      = p.price || '';
+  document.getElementById('modal-badge').value      = p.badge || '';
+  document.getElementById('modal-url').value        = p.url   || '';
+  document.getElementById('modal-video').value      = p.video || '';
+  document.getElementById('modal-video-first').checked = !!p.videoFirst;
+  renderModalImgs();
+  window._modalCats = [...(p.cats || [])]; renderModalCats();
+  document.getElementById('modal-tziut').checked    = !!p.tziut;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+async function saveModal() {
+  const rawId = document.getElementById('modal-id').value;
+  const cats = [...(window._modalCats || [])];
+
+  if (rawId === 'NEW') {
+    const newDoc = {
+      title: document.getElementById('modal-title-inp').value.trim(),
+      store: document.getElementById('modal-store').value.trim() || 'Amazon',
+      brand: document.getElementById('modal-brand').value.trim(),
+      desc:  document.getElementById('modal-desc').value.trim(),
+      price: parseFloat(document.getElementById('modal-price').value) || 0,
+      badge: document.getElementById('modal-badge').value.trim(),
+      url:   document.getElementById('modal-url').value.trim(),
+      img:   (window._modalImgs[0]||'').trim(),
+      images: [...window._modalImgs],
+      video: document.getElementById('modal-video').value.trim(),
+      videoFirst: document.getElementById('modal-video-first').checked,
+      cats,
+      tziut: document.getElementById('modal-tziut').checked,
+      active: true,
+      createdAt: Date.now()
+    };
+    if (!newDoc.title) { toast('❌ Title is required'); return; }
+    try {
+      await db.collection('custom_products').add(newDoc);
+      closeModal();
+      await loadCustomProducts();
+      renderProdTable();
+      renderStats();
+      toast('✅ Product added and live on site!');
+    } catch(e) { toast('❌ ' + e.message); }
+    return;
+  }
+
+  const id = parseInt(rawId);
+  setOverride(id, 'img',   (window._modalImgs[0]||'').trim());
+  setOverride(id, 'images', [...window._modalImgs]);
+  setOverride(id, 'title', document.getElementById('modal-title-inp').value.trim());
+  setOverride(id, 'store', document.getElementById('modal-store').value.trim());
+  setOverride(id, 'brand', document.getElementById('modal-brand').value.trim());
+  setOverride(id, 'desc',  document.getElementById('modal-desc').value.trim());
+  setOverride(id, 'price', parseFloat(document.getElementById('modal-price').value) || 0);
+  setOverride(id, 'badge', document.getElementById('modal-badge').value.trim());
+  setOverride(id, 'url',   document.getElementById('modal-url').value.trim());
+  setOverride(id, 'video', document.getElementById('modal-video').value.trim());
+  setOverride(id, 'videoFirst', document.getElementById('modal-video-first').checked);
+  setOverride(id, 'cats', cats);
+  setOverride(id, 'tziut', document.getElementById('modal-tziut').checked);
+  closeModal();
+  renderProdTable();
+  toast('✅ Product updated — saving…');
+}
+
+function hideProduct() {
+  const id = parseInt(document.getElementById('modal-id').value);
+  if (!confirm('Hide this product? It stays in your list and can be unhidden any time via the Visible toggle.')) return;
+  setOverride(id, 'active', false);
+  closeModal();
+  renderProdTable();
+  renderStats();
+  toast('✅ Product hidden — saving…');
+}
+
+function getSelectedIds() {
+  return [...document.querySelectorAll('.row-chk:checked')].map(c => parseInt(c.dataset.id));
+}
+function updateBulkBar() {
+  const ids = getSelectedIds();
+  const bar = document.getElementById('bulk-bar');
+  bar.style.display = ids.length ? 'flex' : 'none';
+  document.getElementById('bulk-count').textContent = `${ids.length} selected`;
+  document.getElementById('chk-all').indeterminate = ids.length > 0 && ids.length < document.querySelectorAll('.row-chk').length;
+  document.getElementById('chk-all').checked = ids.length > 0 && ids.length === document.querySelectorAll('.row-chk').length;
+}
+function toggleSelectAll(checked) {
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = checked);
+  updateBulkBar();
+}
+function clearSelection() {
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
+  document.getElementById('chk-all').checked = false;
+  updateBulkBar();
+}
+async function bulkDelete() {
+  const ids = getSelectedIds();
+  if (!ids.length) return;
+  if (!confirm(`Permanently delete ${ids.length} product${ids.length>1?'s':''}?\n\nThey will be removed from the site immediately.`)) return;
+  _writing++; updateSavePill();
+  try {
+    const batch = db.batch();
+    ids.forEach(id => {
+      batch.set(refFor(id), { deleted: true, active: false }, { merge: true });
+      if (!overrides[id]) overrides[id] = {};
+      overrides[id].deleted = true;
+      overrides[id].active = false;
+    });
+    await batch.commit();
+    clearSelection();
+    renderProdTable();
+    renderStats();
+    toast(`✅ ${ids.length} product${ids.length>1?'s':''} deleted!`);
+  } catch(e) { toast('❌ ' + e.message); } finally { _writing--; updateSavePill(); }
+}
+async function bulkTziut() {
+  const ids = getSelectedIds();
+  if (!ids.length) return;
+  if (!confirm(`Set tziut warning on ${ids.length} product${ids.length>1?'s':''}?`)) return;
+  _writing++; updateSavePill();
+  try {
+    const batch = db.batch();
+    ids.forEach(id => {
+      batch.set(refFor(id), { tziut: true }, { merge: true });
+      if (!overrides[id]) overrides[id] = {};
+      overrides[id].tziut = true;
+    });
+    await batch.commit();
+    clearSelection();
+    renderProdTable();
+    toast(`✅ Tziut warning set on ${ids.length} product${ids.length>1?'s':''}!`);
+  } catch(e) { toast('❌ ' + e.message); } finally { _writing--; updateSavePill(); }
+}
+
+async function deleteProductPermanently() {
+  const id = parseInt(document.getElementById('modal-id').value);
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!confirm(`Permanently delete "${p ? p.title : 'this product'}"?\n\nIt will be removed from the site immediately and won't come back unless you clear the delete flag in Firestore.`)) return;
+  _writing++; updateSavePill();
+  try {
+    await refFor(id).set({ deleted: true, active: false }, { merge: true });
+    if (!overrides[id]) overrides[id] = {};
+    overrides[id].deleted = true;
+    overrides[id].active  = false;
+    closeModal();
+    renderProdTable();
+    renderStats();
+    toast('✅ Product deleted from site!');
+  } catch(e) { toast('❌ ' + e.message); } finally { _writing--; updateSavePill(); }
+}
+
+document.getElementById('edit-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('edit-modal')) closeModal();
+});
+
+// ── Giveaway ──
+function toggleGiveawayActive() {
+  gwActive = !gwActive;
+  document.getElementById('gw-active-toggle').classList.toggle('on', gwActive);
+  paintGwStatus();
+  scheduleGwSave();
+}
+function paintGwStatus(){
+  const el = document.getElementById('gw-status');
+  if (!el) return;
+  el.textContent = gwActive ? '● On' : '● Off';
+  el.classList.toggle('on', gwActive);
+  el.classList.toggle('off', !gwActive);
+}
+
+// Debounced giveaway autosave (mirrors the products save pipeline): the toggle
+// and the prize/fine-print fields schedule a write ~800ms after the last change.
+// The #gw-save-pill always shows the truth: saving / saved / error (click the
+// pill to retry). No write fires on initial page load — only on user changes.
+let _gwSaveTimer = null;
+let _gwWriting = false;
+let _gwSaveFailed = false;
+let _gwLoaded = false;
+
+function updateGwSavePill() {
+  const pill = document.getElementById('gw-save-pill');
+  if (!pill) return;
+  if (_gwSaveFailed) {
+    pill.dataset.s = 'error';
+    pill.innerHTML = '<span class="dot"></span>Save failed &mdash; click to retry';
+    pill.onclick = function(){ flushGwSave(); };
+    pill.style.cursor = 'pointer';
+  } else if (_gwSaveTimer || _gwWriting) {
+    pill.dataset.s = 'saving';
+    pill.innerHTML = '<span class="dot"></span>Saving&hellip;';
+    pill.onclick = null;
+    pill.style.cursor = 'default';
+  } else {
+    pill.dataset.s = 'ok';
+    pill.innerHTML = '<span class="dot"></span>All changes saved';
+    pill.onclick = null;
+    pill.style.cursor = 'default';
+  }
+}
+
+function scheduleGwSave() {
+  if (!_gwLoaded) return; // never fire on initial load
+  _gwSaveFailed = false;
+  if (_gwSaveTimer) clearTimeout(_gwSaveTimer);
+  _gwSaveTimer = setTimeout(function(){ _gwSaveTimer = null; flushGwSave(); }, 800);
+  updateGwSavePill();
+}
+
+async function flushGwSave() {
+  if (_gwSaveTimer) { clearTimeout(_gwSaveTimer); _gwSaveTimer = null; }
+  _gwWriting = true; updateGwSavePill();
+  try {
+    await db.collection('site_settings').doc('giveaway').set({
+      active:    gwActive,
+      finePrint: document.getElementById('gw-fine-print').value.trim(),
+      prizeDesc: document.getElementById('gw-prize-desc').value.trim() || 'Amazon Gift Card'
+    }, { merge: true });
+    _gwSaveFailed = false;
+  } catch(e) {
+    _gwSaveFailed = true;
+    toast('❌ Giveaway save failed: ' + e.message);
+  } finally {
+    _gwWriting = false; updateGwSavePill();
+  }
+}
+// Field edits autosave too (debounced, not per keystroke).
+document.getElementById('gw-prize-desc').addEventListener('input', scheduleGwSave);
+document.getElementById('gw-fine-print').addEventListener('input', scheduleGwSave);
+
+let _allEntries = [];
+
+async function exportEntriesCSV() {
+  if (!_allEntries.length) { toast('No entries loaded yet.'); return; }
+  const rows = [['Email','Name','Week','Date']].concat(
+    _allEntries.map(e => [
+      e.email||'',
+      e.name||'',
+      e.week||'',
+      e.ts ? new Date(e.ts).toLocaleDateString() : ''
+    ])
+  );
+  const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'giveaway-entries-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+async function pickWinner() {
+  if (!_allEntries.length) { toast('No entries loaded yet.'); return; }
+  const winner = _allEntries[Math.floor(Math.random() * _allEntries.length)];
+  const date = winner.ts ? new Date(winner.ts).toLocaleDateString() : '—';
+  if (confirm(`🏆 Random winner:\n\n${winner.email||'—'}\nWeek: ${winner.week||'—'}\nEntered: ${date}\n\nSave this as the last winner in Firestore?`)) {
+    try {
+      await db.collection('giveaway_meta').doc('lastWinner').set({ email: winner.email, week: winner.week, ts: Date.now() }, { merge: true });
+      document.getElementById('gw-winner').textContent = winner.email || '—';
+      toast('✅ Winner saved!');
+    } catch(e) { toast('❌ ' + e.message); }
+  }
+}
+
+async function loadGiveawayEntries() {
+  const wrap = document.getElementById('gw-entries-wrap');
+  try {
+    // No orderBy — avoids Firestore index requirement; ts is a JS number so we sort in JS
+    const snap = await db.collection('giveaway_entries').get();
+    if (snap.empty) {
+      document.getElementById('gw-count').textContent = 0;
+      wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem">No entries yet.</p>';
+      return;
+    }
+    document.getElementById('gw-count').textContent = snap.size;
+    _allEntries = snap.docs.map(d => d.data());
+    const sorted = [..._allEntries].sort((a,b) => (b.ts||0) - (a.ts||0)).slice(0,50);
+    const rows = sorted.map(e => {
+      const date = e.ts ? new Date(e.ts).toLocaleDateString() : '—';
+      return `<tr><td>${e.email||'—'}</td><td>${e.name||'—'}</td><td>${e.week||'—'}</td><td>${date}</td></tr>`;
+    }).join('');
+    wrap.innerHTML = `<table class="entries-table"><thead><tr><th>Email</th><th>Name</th><th>Week</th><th>Date</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {
+    wrap.innerHTML = `<p style="color:var(--red);font-size:.84rem">⚠️ Can't load entries: ${e.message}</p>`;
+  }
+}
+
+// ── Settings ──
+async function saveSettings() {
+  try {
+    const sponsIdsRaw = document.getElementById('s-spons-ids').value;
+    await db.collection('site_settings').doc('main').set({
+      email:       document.getElementById('s-email').value.trim(),
+      tagline:     document.getElementById('s-tagline').value.trim(),
+      twitter:     document.getElementById('s-twitter').value.trim(),
+      tiktok:      document.getElementById('s-tiktok').value.trim(),
+      youtube:     document.getElementById('s-youtube').value.trim(),
+      banner:      document.getElementById('s-banner').value.trim(),
+      bannerColor: document.getElementById('s-banner-color').value,
+      sponsIds:    sponsIdsRaw,
+      smsEnabled:  document.getElementById('s-sms-enabled').checked
+    }, {merge: true});
+    toast('✅ Settings saved!');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+// ── Sponsored product chips ──
+// The raw comma-separated value lives in the hidden #s-spons-ids input so
+// saveSettings() keeps working unchanged; these helpers render it as chips.
+function sponsIdList(){
+  return document.getElementById('s-spons-ids').value.split(',')
+    .map(s => parseInt(s.trim(), 10)).filter(n => n > 0);
+}
+function setSponsIdList(ids){
+  document.getElementById('s-spons-ids').value = ids.join(',');
+  renderSponsChips();
+}
+function renderSponsChips(){
+  const wrap = document.getElementById('spons-chips');
+  if (!wrap) return;
+  const ids = sponsIdList();
+  if (!ids.length) {
+    wrap.innerHTML = '<span class="spons-empty">No sponsored products yet — the site is using its default picks.</span>';
+    return;
+  }
+  wrap.innerHTML = ids.map(id => {
+    const p = (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []).find(x => x.id === id);
+    const t = p ? p.title : 'Unknown product';
+    const img = p && p.img ? '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
+    return '<span class="spons-chip">' + img + '<span class="sct">' + esc(t) + '</span>' +
+      '<span class="sid">#' + id + '</span>' +
+      '<button type="button" onclick="removeSponsId(' + id + ')" aria-label="Remove ' + esc(t) + '">✕</button></span>';
+  }).join('');
+}
+function removeSponsId(id){
+  setSponsIdList(sponsIdList().filter(x => x !== id));
+}
+function addSponsId(raw){
+  const id = parseInt(String(raw).trim(), 10);
+  if (!(id > 0)) { toast('Type a numeric product ID'); return; }
+  const ids = sponsIdList();
+  if (ids.indexOf(id) !== -1) { toast('That product is already sponsored'); return; }
+  const catalog = (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []);
+  if (!catalog.some(x => x.id === id)) { toast('No product with ID ' + id + ' in the catalog'); return; }
+  setSponsIdList(ids.concat([id]));
+}
+(function wireSponsAdd(){
+  const add = document.getElementById('spons-add');
+  if (!add) return;
+  add.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); addSponsId(add.value); add.value = ''; }
+  });
+})();
+
+// ── Tab nav ──
+function openTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'carousel') { renderCarousel(); renderCarAdd(); }
+  if (name === 'order') { initOrderTab(); }
+  if (name === 'stats') { loadGbStats(); }
+  if (name === 'suggestions') { loadGbSuggestions(); }
+}
+
+// ── Gift suggestions queue (engagement plan D) ──
+// The endpoints are owner-only on the SERVER (gbListSuggestions /
+// gbSetSuggestionStatus verify the token's email before returning
+// anything); this tab just renders what comes back.
+const GB_SUG_FN = 'https://us-central1-giftingbutler-74395.cloudfunctions.net/';
+function gbSugEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+async function gbSugCall(name, body) {
+  const u = auth.currentUser;
+  if (!u) throw new Error('not signed in');
+  const tok = await u.getIdToken();
+  const r = await fetch(GB_SUG_FN + name, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+    body: JSON.stringify(body || {})
+  });
+  return r.json();
+}
+async function loadGbSuggestions() {
+  const body = document.getElementById('gb-sug-body');
+  const msg = document.getElementById('gb-sug-msg');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="6" style="padding:.6rem">Loading…</td></tr>';
+  try {
+    const res = await gbSugCall('gbListSuggestions', {});
+    if (!res || !res.ok || !Array.isArray(res.suggestions)) throw new Error('bad response');
+    if (msg) msg.textContent = res.suggestions.length + ' suggestion' + (res.suggestions.length === 1 ? '' : 's') + ' in the queue.';
+    if (!res.suggestions.length) {
+      body.innerHTML = '<tr><td colspan="6" style="padding:.6rem">No suggestions yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = res.suggestions.map(function (s) {
+      const who = '<strong>' + gbSugEsc(s.username || s.name || '—') + '</strong>' +
+        (s.username
+          ? (s.name && s.name !== s.username ? '<br><span style="color:#6b6480;font-size:.82rem">' + gbSugEsc(s.name) + '</span>' : '')
+          : '<br><span style="color:#6b6480;font-size:.82rem">not signed in</span>');
+      const gift = '<strong>' + gbSugEsc(s.gift || '') + '</strong>' +
+        (s.url ? '<br><a href="' + gbSugEsc(s.url).replace(/"/g, '&quot;') + '" target="_blank" rel="noopener" style="font-size:.82rem;word-break:break-all">' + gbSugEsc(s.url) + '</a>' : '');
+      const when = s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+      const st = s.status === 'posted' ? '<span style="color:#15803d;font-weight:600">Posted</span>'
+        : s.status === 'passed' ? '<span style="color:#b45309;font-weight:600">Passed</span>'
+        : (s.status === 'new' || s.status === 'pending') ? '<strong>Waiting</strong>'
+        : gbSugEsc(s.status || '');
+      let acts = '';
+      if (s.status === 'new' || s.status === 'pending') {
+        acts = '<button class="btn-sm btn-outline" onclick="gbSugSet(\'' + s.id + '\',\'posted\')">Posted</button> ' +
+               '<button class="btn-sm btn-outline" onclick="gbSugSet(\'' + s.id + '\',\'passed\')">Passed</button>';
+      }
+      return '<tr>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + who + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;max-width:300px">' + gift + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + gbSugEsc(s.why || '—') + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + when + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + st + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;white-space:nowrap">' + acts + '</td></tr>';
+    }).join('');
+  } catch (e) {
+    body.innerHTML = '<tr><td colspan="6" style="padding:.6rem">Could not load suggestions.</td></tr>';
+  }
+}
+async function gbSugSet(id, status) {
+  try {
+    const res = await gbSugCall('gbSetSuggestionStatus', { id: id, status: status });
+    if (res && res.ok) loadGbSuggestions();
+    else alert('That did not save — try again.');
+  } catch (e) { alert('That did not save — try again.'); }
+}
+
+// ── Category Order manager ──
+let ORD_CAT = '';
+function ordCategories() {
+  // Use master category list so ALL categories show, including Jewish ones
+  // even if their products are currently hidden
+  if (typeof ADMIN_CATS !== 'undefined') {
+    return ADMIN_CATS.map(c => c.id).sort();
+  }
+  const cats = {};
+  PRODUCTS.map(p => getProductState(p)).forEach(p => {
+    (p.cats || []).forEach(c => { cats[c] = (cats[c] || 0) + 1; });
+  });
+  return Object.keys(cats).sort();
+}
+function initOrderTab() {
+  const sel = document.getElementById('ord-cat');
+  const cats = ordCategories();
+  if (!ORD_CAT || !cats.includes(ORD_CAT)) ORD_CAT = cats[0] || '';
+  sel.innerHTML = cats.map(c => `<option value="${c}"${c===ORD_CAT?' selected':''}>${c} (${PRODUCTS.map(p=>getProductState(p)).filter(p=>!p.deleted&&!p._hidden&&(p.cats||[]).includes(c)).length})</option>`).join('');
+  sel.onchange = function() { ORD_CAT = this.value; renderOrder(); };
+  renderOrder();
+}
+function ordItems() {
+  if (!ORD_CAT) return [];
+  return PRODUCTS.map(p => getProductState(p))
+    .filter(p => !p.deleted && !p._hidden && (p.cats || []).includes(ORD_CAT))
+    .sort((a, b) => {
+      const ra = a.catRanks && ORD_CAT in a.catRanks ? a.catRanks[ORD_CAT] : 9999;
+      const rb = b.catRanks && ORD_CAT in b.catRanks ? b.catRanks[ORD_CAT] : 9999;
+      return ra - rb;
+    });
+}
+function renderOrder() {
+  const list = document.getElementById('ord-list');
+  const items = ordItems();
+  document.getElementById('ord-status').textContent = items.length + ' products';
+  if (!items.length) { list.innerHTML = '<span style="font-size:.82rem;color:var(--muted)">No products in this category.</span>'; return; }
+  list.innerHTML = items.map((p, i) => `
+    <div class="slide-row" draggable="true" data-id="${p.id}" ondragstart="ordDragStart(event)" ondragover="ordDragOver(event)" ondragleave="ordDragLeave(event)" ondrop="ordDrop(event)" ondragend="ordDragEnd(event)">
+      <div class="slide-grip" title="Drag to reorder">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="currentColor" aria-hidden="true"><circle cx="2.6" cy="2.6" r="1.5"/><circle cx="7.4" cy="2.6" r="1.5"/><circle cx="2.6" cy="9" r="1.5"/><circle cx="7.4" cy="9" r="1.5"/><circle cx="2.6" cy="15.4" r="1.5"/><circle cx="7.4" cy="15.4" r="1.5"/></svg>
+      </div>
+      <input class="slide-pos-inp" type="number" min="1" value="${i + 1}" data-id="${p.id}" onchange="ordSetPos(this)" title="Type position number">
+      ${p.img ? `<img src="${p.img}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;flex-shrink:0;border:1px solid var(--brd)" alt="">` : '<div style="width:64px;height:64px;border-radius:10px;background:var(--plum-lt);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem">🎁</div>'}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title || '(no title)'}</div>
+        <div style="font-size:.74rem;color:var(--muted)">ID ${p.id}${p._custom ? ' · custom' : ''}</div>
+      </div>
+      <button class="btn-outline btn-sm" onclick="ordMove(${p.id},-1)" title="Move up">↑</button>
+      <button class="btn-outline btn-sm" onclick="ordMove(${p.id},1)" title="Move down">↓</button>
+      <button class="btn-outline btn-sm" onclick="ordToggleCats('${p.id}',this)" title="Edit categories">🏷️</button>
+    </div>
+    <div class="ord-cats" id="ord-cats-${p.id}" style="display:none;flex-wrap:wrap;gap:.35rem;padding:.5rem .75rem;background:#faf9ff;border:1px solid var(--brd);border-radius:8px;margin:-.3rem 0 .3rem"></div>`).join('');
+}
+let ordDragId = null;
+function ordDragStart(e) { ordDragId = e.currentTarget.dataset.id; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function ordDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragging'); }
+function ordDragLeave(e) { e.currentTarget.classList.remove('dragging'); }
+function ordDragEnd(e) { document.querySelectorAll('#ord-list .slide-row').forEach(r => r.classList.remove('dragging')); }
+function ordDrop(e) {
+  e.preventDefault();
+  const targetId = e.currentTarget.dataset.id;
+  if (!ordDragId || ordDragId === targetId) return;
+  const list = document.getElementById('ord-list');
+  const rows = Array.from(list.querySelectorAll('.slide-row'));
+  const fromIdx = rows.findIndex(r => r.dataset.id === ordDragId);
+  const toIdx = rows.findIndex(r => r.dataset.id === targetId);
+  if (fromIdx < 0 || toIdx < 0) return;
+  const [moved] = rows.splice(fromIdx, 1);
+  rows.splice(toIdx, 0, moved);
+  rows.forEach(r => list.appendChild(r));
+  // Renumber positions
+  Array.from(list.querySelectorAll('.slide-row')).forEach((r, i) => {
+    r.querySelector('.slide-pos-inp').value = i + 1;
+  });
+  scheduleOrderSave();
+  ordDragId = null;
+}
+function ordMove(id, dir) {
+  const list = document.getElementById('ord-list');
+  const rows = Array.from(list.querySelectorAll('.slide-row'));
+  const idx = rows.findIndex(r => r.dataset.id === String(id));
+  const newIdx = idx + dir;
+  if (idx < 0 || newIdx < 0 || newIdx >= rows.length) return;
+  const [moved] = rows.splice(idx, 1);
+  rows.splice(newIdx, 0, moved);
+  rows.forEach(r => list.appendChild(r));
+  Array.from(list.querySelectorAll('.slide-row')).forEach((r, i) => {
+    r.querySelector('.slide-pos-inp').value = i + 1;
+  });
+  scheduleOrderSave();
+}
+function ordSetPos(inp) {
+  const list = document.getElementById('ord-list');
+  const rows = Array.from(list.querySelectorAll('.slide-row'));
+  const row = inp.closest('.slide-row');
+  const fromIdx = rows.indexOf(row);
+  let toIdx = parseInt(inp.value, 10) - 1;
+  if (isNaN(toIdx)) { inp.value = fromIdx + 1; return; }
+  toIdx = Math.max(0, Math.min(rows.length - 1, toIdx));
+  const [moved] = rows.splice(fromIdx, 1);
+  rows.splice(toIdx, 0, moved);
+  rows.forEach(r => list.appendChild(r));
+  Array.from(list.querySelectorAll('.slide-row')).forEach((r, i) => {
+    r.querySelector('.slide-pos-inp').value = i + 1;
+  });
+  scheduleOrderSave();
+}
+function ordToggleCats(id) {
+  const panel = document.getElementById('ord-cats-' + id);
+  if (!panel) return;
+  if (panel.style.display === 'none') {
+    const p = PRODUCTS.map(x => getProductState(x)).find(x => String(x.id) === String(id));
+    if (!p) return;
+    const allCats = ordCategories();
+    const cur = new Set(p.cats || []);
+    panel.innerHTML = allCats.map(c => '<button onclick="ordToggleCat(\'' + id + '\',\'' + c + '\')" style="padding:.3rem .7rem;border-radius:50px;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid ' + (cur.has(c) ? 'var(--plum)' : 'var(--brd)') + ';background:' + (cur.has(c) ? 'var(--plum-lt)' : '#fff') + ';color:' + (cur.has(c) ? 'var(--plum)' : 'var(--muted)') + '">' + c + '</button>').join('');
+    panel.style.display = 'flex';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+async function ordToggleCat(id, cat) {
+  const p = PRODUCTS.map(x => getProductState(x)).find(x => String(x.id) === String(id));
+  if (!p) return;
+  const cats = new Set(p.cats || []);
+  if (cats.has(cat)) cats.delete(cat); else cats.add(cat);
+  try {
+    const ref = (typeof refFor === 'function') ? refFor(id) : db.collection('product_overrides').doc(String(id));
+    await ref.set({ cats: Array.from(cats) }, { merge: true });
+    if (typeof loadSiteCatalog === 'function') { PRODUCTS = await loadSiteCatalog(); }
+    if (typeof loadCustomProducts === 'function') { await loadCustomProducts(); }
+    renderOrder();
+    document.getElementById('ord-status').textContent = 'Categories updated for ID ' + id;
+  } catch (e) {
+    document.getElementById('ord-status').textContent = 'Error: ' + e.message;
+  }
+}
+// Auto-save: every reorder action (drag, arrows, position box) saves without a button press.
+// Debounced so rapid successive moves collapse into one Firestore write batch.
+let ordSaveTimer = null, ordSaving = false, ordSaveQueued = false;
+function scheduleOrderSave() {
+  const status = document.getElementById('ord-status');
+  if (status) status.textContent = 'Saving…';
+  clearTimeout(ordSaveTimer);
+  ordSaveTimer = setTimeout(runOrderSave, 700);
+}
+async function runOrderSave() {
+  if (ordSaving) { ordSaveQueued = true; return; }
+  ordSaving = true;
+  try { await saveOrder(); }
+  finally {
+    ordSaving = false;
+    if (ordSaveQueued) { ordSaveQueued = false; scheduleOrderSave(); }
+  }
+}
+async function saveOrder() {
+  const list = document.getElementById('ord-list');
+  const rows = Array.from(list.querySelectorAll('.slide-row'));
+  const status = document.getElementById('ord-status');
+  status.textContent = 'Saving...';
+  try {
+    for (let i = 0; i < rows.length; i++) {
+      const id = rows[i].dataset.id;
+      const rank = i + 1;
+      // Save via correct Firestore ref (custom_products for custom, product_overrides for regular)
+      const ref = (typeof refFor === 'function') ? refFor(id) : db.collection('product_overrides').doc(String(id));
+      await ref.set({
+        catRanks: { [ORD_CAT]: rank }
+      }, { merge: true });
+    }
+    status.textContent = 'Saved! Order updated for ' + ORD_CAT;
+    // Refresh local state
+    if (typeof loadSiteCatalog === 'function') { PRODUCTS = await loadSiteCatalog(); }
+    renderOrder();
+  } catch (e) {
+    status.textContent = 'Error saving: ' + e.message;
+  }
+}
+
+// ── Carousel manager ──
+function carItems() {
+  return PRODUCTS.map(p => getProductState(p)).filter(p => p.carousel && !p.deleted)
+    .sort((a,b) => (a.carouselOrder||999) - (b.carouselOrder||999));
+}
+function renderCarousel() {
+  const list = document.getElementById('car-list');
+  const items = carItems();
+  if (!items.length) { list.innerHTML = '<span style="font-size:.82rem;color:var(--muted)">No carousel tiles yet — the site falls back to showing Sponsored products. Add some below.</span>'; return; }
+  list.innerHTML = items.map((p,i) => `
+    <div class="slide-row${p.carouselHidden?' is-hidden':''}" draggable="true" data-id="${p.id}" ondragstart="carDragStart(event)" ondragover="carDragOver(event)" ondragleave="carDragLeave(event)" ondrop="carDrop(event)" ondragend="carDragEnd(event)">
+      <div class="slide-grip" title="Drag to reorder">
+        <svg width="10" height="18" viewBox="0 0 10 18" fill="currentColor" aria-hidden="true"><circle cx="2.6" cy="2.6" r="1.5"/><circle cx="7.4" cy="2.6" r="1.5"/><circle cx="2.6" cy="9" r="1.5"/><circle cx="7.4" cy="9" r="1.5"/><circle cx="2.6" cy="15.4" r="1.5"/><circle cx="7.4" cy="15.4" r="1.5"/></svg>
+      </div>
+      <input class="slide-pos-inp" type="number" min="1" max="${items.length}" value="${i+1}" title="Type a position (1–${items.length}) and press Enter" onchange="carMoveTo(${p.id},this.value)">
+      <img class="slide-thumb" src="${p.carouselImg||p.img}" onerror="this.style.visibility='hidden'" alt="">
+      <div class="slide-main">
+        <div class="slide-title">${p.title}</div>
+        <button class="custom-toggle" onclick="this.closest('.slide-row').classList.toggle('open')">Customize picture / video <span class="chev">▾</span></button>
+        <div class="slide-custom">
+          <label>Carousel picture<input type="url" value="${p.carouselImg||''}" placeholder="Optional — different picture just for the carousel" onchange="setOverride(${p.id},'carouselImg',this.value.trim()).then(()=>{renderCarousel();toast('✅ Saved')})"></label>
+          <label>Video<input type="url" value="${p.carouselVideo||''}" placeholder="Optional — direct .mp4 link" onchange="setOverride(${p.id},'carouselVideo',this.value.trim()).then(()=>{renderCarousel();toast('✅ Saved')})"></label>
+        </div>
+      </div>
+      <div class="slide-actions">
+        <button class="icon-btn" onclick="carMove(${p.id},-1)" ${i===0?'disabled':''} title="Move up">▲</button>
+        <button class="icon-btn" onclick="carMove(${p.id},1)" ${i===items.length-1?'disabled':''} title="Move down">▼</button>
+        <button class="icon-btn" onclick="toggleCarVisible(${p.id})" title="${p.carouselHidden?'Show in the site carousel':'Hide from the site carousel (stays in admin)'}">${p.carouselHidden?'🙈':'👁'}</button>
+        <button class="icon-btn danger" onclick="setOverride(${p.id},'carousel',false).then(()=>{renderCarousel();renderCarAdd()})" title="Remove from carousel">✕</button>
+      </div>
+    </div>`).join('');
+}
+function carMove(id, dir) {
+  const items = carItems();
+  const from = items.findIndex(p => p.id === id);
+  const to = from + dir;
+  if (from === -1 || to < 0 || to >= items.length) return;
+  const [moved] = items.splice(from, 1);
+  items.splice(to, 0, moved);
+  Promise.all(items.map((p,k) => setOverride(p.id, 'carouselOrder', k+1))).then(renderCarousel);
+}
+// Move a slide to an exact typed position (1..N); the others shift.
+// Out-of-range input is clamped; same number or garbage just resets the field.
+function carMoveTo(id, raw) {
+  const items = carItems();
+  let pos = parseInt(raw, 10);
+  if (isNaN(pos)) { renderCarousel(); return; }
+  pos = Math.max(1, Math.min(items.length, pos));
+  const from = items.findIndex(p => p.id === id);
+  const to = pos - 1;
+  if (from === -1 || from === to) { renderCarousel(); return; }
+  const [moved] = items.splice(from, 1);
+  items.splice(to, 0, moved);
+  Promise.all(items.map((p,k) => setOverride(p.id, 'carouselOrder', k+1))).then(renderCarousel);
+}
+// Per-slide visibility: hide from the live site carousel without deleting.
+// Persists as product_overrides/{id}.carouselHidden via the unified autosave.
+function toggleCarVisible(id) {
+  const cur = getProductState(PRODUCTS.find(p => p.id === id)).carouselHidden;
+  setOverride(id, 'carouselHidden', !cur).then(() => { renderCarousel(); });
+}
+function carAdd(id) {
+  setOverride(id,'carousel',true).then(()=>setOverride(id,'carouselOrder',carItems().length+1)).then(()=>{
+    renderCarousel();
+    renderCarAdd();
+  });
+}
+// ── drag-and-drop reorder ──
+window._carDragId = null;
+function carDragStart(e) {
+  window._carDragId = parseInt(e.currentTarget.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(()=>e.currentTarget.classList.add('dragging'), 0);
+}
+function carDragOver(e) {
+  e.preventDefault();
+  const row = e.currentTarget;
+  if (parseInt(row.dataset.id) === window._carDragId) return;
+  row.style.borderTop = '3px solid var(--plum)';
+}
+function carDragLeave(e) { e.currentTarget.style.borderTop = ''; }
+function carDrop(e) {
+  e.preventDefault();
+  e.currentTarget.style.borderTop = '';
+  const targetId = parseInt(e.currentTarget.dataset.id);
+  const dragId = window._carDragId;
+  if (!dragId || dragId === targetId) return;
+  const items = carItems();
+  const from = items.findIndex(p => p.id === dragId);
+  const to = items.findIndex(p => p.id === targetId);
+  if (from === -1 || to === -1) return;
+  const [moved] = items.splice(from, 1);
+  items.splice(to, 0, moved);
+  items.forEach((p,k) => setOverride(p.id, 'carouselOrder', k+1));
+  renderCarousel();
+}
+function carDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.slide-row').forEach(r => r.style.borderTop = '');
+  window._carDragId = null;
+}
+function renderCarAdd() {
+  const q = (document.getElementById('car-search').value||'').toLowerCase();
+  const wrap = document.getElementById('car-add-list');
+  const inCar = new Set(carItems().map(p=>p.id));
+  const hits = PRODUCTS.map(p=>getProductState(p))
+    .filter(p => p.active && !inCar.has(p.id) && (!q || p.title.toLowerCase().includes(q)))
+    .slice(0, q ? 12 : 6);
+  wrap.innerHTML = hits.map(p => `
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.3rem .5rem;border:1px solid var(--brd);border-radius:8px;background:var(--white)">
+      <img src="${p.img}" style="width:34px;height:34px;object-fit:contain;background:#fff;border-radius:6px" onerror="this.style.visibility='hidden'">
+      <span style="flex:1;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</span>
+      <button onclick="carAdd(${p.id})" style="border:1px solid var(--plum);background:var(--plum);color:#fff;border-radius:7px;cursor:pointer;font-size:.74rem;padding:.3rem .65rem">+ Add</button>
+    </div>`).join('') || '<span style="font-size:.78rem;color:var(--muted)">No matches.</span>';
+}
+
+// ── Toast ──
+function toast(msg) {
+  const el = document.getElementById('adm-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+<script>
+// ── Product stats (views/clicks, added 2026-11-13) ──
+async function loadGbStats(){
+  const msg=document.getElementById('gb-stats-msg'), body=document.getElementById('gb-stats-body');
+  if(!msg||!body) return;
+  msg.textContent='Loading\u2026';
+  try{
+    const FN='https://us-central1-giftingbutler-74395.cloudfunctions.net/';
+    const [vr,cr]=await Promise.all([fetch(FN+'gbGetViews').then(r=>r.json()),fetch(FN+'gbGetClicks').then(r=>r.json())]);
+    const views=(vr&&vr.views)||{}, clicks=(cr&&cr.clicks)||{};
+    const names={}; (typeof PRODUCTS!=='undefined'?PRODUCTS:[]).forEach(p=>{ names[String(p.id)]=p.title; });
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York'}).format(new Date());
+    const ids=new Set([...Object.keys(views),...Object.keys(clicks)]);
+    ids.delete('999999');
+    const rows=[...ids].map(id=>({id:id, name:names[id]||('Product '+id), v:(views[id]||{}).total||0, c:(clicks[id]||{}).total||0, ct:((clicks[id]||{}).days||{})[today]||0, last:(clicks[id]||{}).lastAt||null}));
+    rows.sort((a,b)=>b.v-a.v);
+    let tv=0,tc=0; rows.forEach(r=>{tv+=r.v;tc+=r.c;});
+    msg.textContent='Totals so far \u2014 views: '+tv+' \u00B7 clicks to store: '+tc+' (across '+rows.length+' products).';
+    body.innerHTML= rows.length? rows.map(r=>'<tr><td style="padding:.45rem .5rem;border-bottom:1px solid #eee">'+String(r.name).replace(/</g,'&lt;')+'</td><td style="text-align:center;padding:.45rem .5rem;border-bottom:1px solid #eee">'+r.v+'</td><td style="text-align:center;padding:.45rem .5rem;border-bottom:1px solid #eee">'+r.c+'</td><td style="text-align:center;padding:.45rem .5rem;border-bottom:1px solid #eee">'+r.ct+'</td><td style="padding:.45rem .5rem;border-bottom:1px solid #eee">'+(r.last? new Date(r.last).toLocaleDateString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'}) : '\u2014')+'</td></tr>').join('') : '<tr><td colspan="5" style="padding:.6rem">No views or clicks counted yet.</td></tr>';
+  }catch(e){ msg.textContent='Could not load stats \u2014 try Refresh.'; }
+}
+</script>
+</body>
+</html>
