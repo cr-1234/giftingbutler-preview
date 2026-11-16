@@ -593,7 +593,21 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .pnav{border-top:1px solid var(--brd);max-height:calc(100dvh - 8rem);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:.45rem .7rem .8rem}
   .pnav-link{display:flex;align-items:center;gap:.7rem;width:100%;padding:.55rem .4rem;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.05);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
   .pnav-link:last-child{border-bottom:none}
-  .pnav-ic{width:32px;height:32px;flex:none;border-radius:50%;background:var(--plum-lt);color:var(--plum);display:flex;align-items:center;justify-content:center}
+  .pnav-ic{width:32px;height:32px;flex:none;border-radius:50%;background:var(--plum-lt);color:var(--plum);border:1px solid rgba(91,45,142,.2);display:flex;align-items:center;justify-content:center}
+  /* Panel rows wear the site's OWN top-bar buttons (owner,
+     2026-11-15 — he cropped the top bar's three soft circles and
+     said "these are what u should use for giftingbutler"): the
+     .ti chip treatment — pink circle + rose heart (Wishlist,
+     .ti-wl), cream circle + gold bell (Reminders, .ti-bell),
+     lavender circle + plum gift (Giveaway, .ti-gift) — sized
+     down to the panel's rows. Gift This Room never had a top-bar
+     button, so its .ti-room takes the family's plum chip (the
+     same tint as .ti-gift's); Notifications and Sign out keep
+     the plum .pnav-ic circle above — the look of the site's own
+     account bell (.wbell). */
+  .pnav .ti{width:32px!important;height:32px!important}
+  .pnav .ti svg{width:16px;height:16px}
+  .pnav .ti-room::before{background:rgba(91,45,142,.15);border-color:rgba(91,45,142,.2)}
   .pnav-h{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin:.7rem .4rem .25rem}
   .pnav-cat{display:flex;align-items:center;gap:.6rem;width:100%;padding:.42rem .4rem;background:none;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:.93rem;font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
   .pnav-cat.on{background:var(--plum-lt);color:var(--plum);font-weight:700}
@@ -1740,10 +1754,10 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
         <div id="pnav-cats"></div>
       </div>
     </div>
-    <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist</button>
-    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders</button>
-    <button class="pnav-link" onclick="closePnav();om('gw-modal')"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg></span>Giveaway</button>
-    <button class="pnav-link" onclick="location.href='room-gifts.html'"><span class="pnav-ic"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
+    <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="ti ti-wl"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist</button>
+    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="ti ti-bell"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders</button>
+    <button class="pnav-link" onclick="closePnav();om('gw-modal')"><span class="ti ti-gift"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg></span>Giveaway</button>
+    <button class="pnav-link" onclick="location.href='room-gifts.html'"><span class="ti ti-room"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
     <div class="pnav-sec">
       <button class="pnav-sec-h" id="pnav-sec-h-more" onclick="togglePnavSec('more')" aria-expanded="false"><span>More</span><span class="pnav-arrow" id="pnav-arrow-more">▸</span></button>
       <div class="pnav-sec-body" id="pnav-sec-body-more" style="display:none">
@@ -1850,6 +1864,19 @@ function closePnav(){
   var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','false');
 }
 document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePnav(); });
+/* Panel category glyphs wear the panel's uniform icon treatment
+   (owner, 2026-11-15 — his video: the categories each had a
+   different BRIGHT circle, and he cropped the site's own top-bar
+   buttons as the look to use): a soft tinted circle of the same
+   family as those buttons — the plum member (.pnav-ic: lavender
+   tint, plum glyph, the chips' soft border). Each category keeps
+   its OWN glyph, recoloured from its baked-in white to plum
+   through currentColor. The categories' own bright colours are
+   untouched everywhere outside this panel (desktop strip, feed). */
+function pnavCatGlyph(c){
+  if(c.svg) return c.svg.replace(/fill="#fff"/g,'fill="currentColor"');
+  return c.icon||'';
+}
 function renderPnavCats(){
   var host=document.getElementById('pnav-cats'); if(!host||typeof CATS==='undefined') return;
   var html='';
@@ -1859,7 +1886,7 @@ function renderPnavCats(){
        counts a category's subcategories into its number, so the
        single row's count covers everything under it; the age
        breakdowns live on the site itself, not in this menu. */
-    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="cpi" style="background:'+c.bg+'">'+c.icon+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
+    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="pnav-ic">'+pnavCatGlyph(c)+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
   });
   host.innerHTML=html;
   var ac=document.getElementById('pnav-all-count'); if(ac)ac.textContent=pnavCatCount('all');
@@ -3003,6 +3030,7 @@ function renderP(){
   if(GB_MODE==='general'&&!searchQ&&GB_JEWISH_CATS.indexOf(activeCat)<0){
     items=items.filter(p=>!isJudaica(p));
   }
+  let searchScoreOf=null;
   if(searchQ){
     let q=searchQ.toLowerCase().trim();let maxP=Infinity,minP=0,mm;
     if(mm=q.match(/(?:under|below|less than|cheaper than)\s*\$?\s*(\d+)/))maxP=+mm[1];
@@ -3051,27 +3079,59 @@ function renderP(){
       }
       return prev[lb];
     }
-    function fuzzyMatch(tok, blob){
-      if(blob.includes(tok))return true;
+    /* Ranked matching (owner, 2026-11-15 — his video: "drone"
+       buried the actual drone last, behind coolers and blenders;
+       "elefant" put fingertip towels and roses ahead of the
+       second elephant; "coil" buried both Tesla Coils). Every
+       search word scores against each gift: the word in the
+       product NAME beats everything, a near-spelling of a name
+       word comes next ("elefant" still finds the elephants),
+       then brand/category text, then the description. The old
+       matcher ran its spelling tolerance over every word of
+       every description, so "drone" matched "done", "elefant"
+       matched "elegant" and "coil" matched "cool" (the whole
+       Cool Finds shelf) — the tolerance now applies to name
+       words only, and short words get a tighter leash. */
+    function fuzzyWord(tok, words){
       if(tok.length<4)return false;
-      const words=blob.split(/[^a-z0-9]+/);
-      const maxD=2;
+      const maxD=tok.length>=6?2:1;
       for(const w of words){
         if(!w||Math.abs(w.length-tok.length)>maxD)continue;
         if(lev(tok,w)<=maxD)return true;
       }
       return false;
     }
+    function tokScore(tok, title, titleWords, mid, blob){
+      if(title.includes(tok))return 100;
+      if(fuzzyWord(tok, titleWords))return 60;
+      if(mid.includes(tok))return 30;
+      if(blob.includes(tok))return 20;
+      return 0;
+    }
+    const scoreOf=new Map();
     items=items.filter(p=>{
       if(p.price>maxP||p.price<minP)return false;
       if(!toks.length)return true;
       const KIDS_CATS=['kids','children-u3','children-4-8','children-9-12','grandchildren','baby'];
-      if(toks.includes('grandchildren') && p.cats.some(c=>KIDS_CATS.includes(c))) return true;
-      if(toks.includes('him') && p.cats.includes('him')) return true;
-      if(toks.includes('her') && p.cats.includes('her')) return true;
-      const blob=(p.title+' '+p.brand+' '+p.desc+' '+p.cats.map(id=>id+' '+((CM[id]&&CM[id].label)||'')).join(' ')).toLowerCase();
-      return toks.every(t=>fuzzyMatch(t,blob));
+      const catText=p.cats.map(id=>id+' '+((CM[id]&&CM[id].label)||'')).join(' ');
+      const title=(p.title||'').toLowerCase();
+      const titleWords=title.split(/[^a-z0-9]+/).filter(Boolean);
+      const mid=((p.brand||'')+' '+catText).toLowerCase();
+      const blob=(title+' '+mid+' '+(p.desc||'')).toLowerCase();
+      let score=0,ok=true;
+      for(const t of toks){ const s=tokScore(t,title,titleWords,mid,blob); if(!s){ok=false;break;} score+=s; }
+      if(!ok){
+        // Category-intent shortcuts keep their old reach, at the
+        // weakest rank — a name match always outranks them.
+        if(toks.includes('grandchildren') && p.cats.some(c=>KIDS_CATS.includes(c))) score=25;
+        else if(toks.includes('him') && p.cats.includes('him')) score=25;
+        else if(toks.includes('her') && p.cats.includes('her')) score=25;
+        else return false;
+      }
+      scoreOf.set(p,score);
+      return true;
     });
+    searchScoreOf=scoreOf;
   }
   const cat=CM[activeCat];
   if(searchQ)ttl.innerHTML=`Results for <em>"${searchQ}"</em>`;
@@ -3096,6 +3156,11 @@ function renderP(){
     else if(sortMode==='price-desc')items.sort((a,b)=>{const ea=livePriceFor(a),eb=livePriceFor(b);return ((eb&&eb.price!=null?eb.price:b.price)||0)-((ea&&ea.price!=null?ea.price:a.price)||0);});
     else if(sortMode==='popular')items.sort((a,b)=>((WC[b.id]||0)-(WC[a.id]||0)));
   }
+  // Search results: best matches first (the score map is built by
+  // the search filter above). Array.prototype.sort is stable, so
+  // inside one match level the order the sorts above produced —
+  // Featured, price, popularity — stands as the tiebreak.
+  if(searchScoreOf)items.sort((a,b)=>(searchScoreOf.get(b)||0)-(searchScoreOf.get(a)||0));
   if(!items.length){grid.innerHTML=`<div class="nores"><p>${searchQ?`No matches for "<em>${searchQ}</em>" — <button onclick="clearSearch()" style="background:none;border:none;color:var(--plum);font-weight:700;cursor:pointer;text-decoration:underline;font-size:.9rem">browse all</button>`:'No gifts in this category yet.'}</p></div>`;return}
 
   const _cardStrs=items.map(p=>cardHTML(p));
