@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Unsubscribe | Gifting Butler</title>
 <meta name="robots" content="noindex">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f7f3fc;color:#2b2140;line-height:1.6;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem}
-.card{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:20px;padding:2.2rem;max-width:440px;width:100%;text-align:center;box-shadow:0 10px 34px rgba(40,20,70,.09)}
+.card{background:#fff;border:1px solid rgba(91,45,142,.12);border-radius:20px;padding:2.2rem;max-width:440px;width:100%;text-align:center;box-shadow:0 10px 34px rgba(40,20,70,.09);position:relative}
+.xout{position:absolute;top:.85rem;right:1.05rem;font-size:1.4rem;line-height:1;color:#5B2D8E;text-decoration:none;font-weight:600;padding:.2rem}
 .brand{font-family:Georgia,serif;font-style:italic;font-size:1.5rem;color:#5B2D8E;margin-bottom:1rem}
 h1{font-size:1.25rem;margin-bottom:.6rem}
 p{font-size:.9rem;color:#5c5470;margin-bottom:1.2rem}
@@ -19,11 +20,11 @@ button{background:linear-gradient(135deg,#5B2D8E,#7C3AED);color:#fff;border:none
 button:disabled{opacity:.55;cursor:default}
 .ok{color:#1c7a3d;font-weight:600}
 .err{color:#b91c1c;font-weight:600}
-.back{display:inline-block;margin-top:1.2rem;font-size:.82rem;color:#5B2D8E;font-weight:600;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="card">
+  <a class="xout" href="index.html" aria-label="Close — back to Gifting Butler">&times;</a>
   <div class="brand">Gifting Butler</div>
   <div id="step-confirm">
     <h1>Unsubscribe from emails?</h1>
@@ -36,7 +37,6 @@ button:disabled{opacity:.55;cursor:default}
     <h1 class="ok">You're unsubscribed.</h1>
     <p>No more weekly emails from us. Sorry to see you go — you can resubscribe anytime from the site.</p>
   </div>
-  <a class="back" href="/">&larr; Back to Gifting Butler</a>
 </div>
 <script>
 var FN_URL='https://us-central1-giftingbutler-74395.cloudfunctions.net/unsubscribeNewsletter';
