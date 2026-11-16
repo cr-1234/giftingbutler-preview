@@ -522,7 +522,8 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
 .fc a{display:block;font-size:.8rem;color:rgba(255,255,255,.5);text-decoration:none;margin-bottom:.45rem;transition:color .15s}
 .fc a:hover{color:#fff}
 .foot-cc{padding:0 2.5rem 2rem}.foot-cc-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:1.1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:1rem 1.25rem}.foot-cc img{height:52px;width:auto;display:block}.foot-cc-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}.foot-cc-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}.foot-cc-text{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.45;margin-top:.2rem}.foot-cc-btn{margin-left:auto;flex-shrink:0;background:#EDE5F8;color:#5B2D8E;text-decoration:none;font-weight:700;font-size:.86rem;padding:.55rem 1.1rem;border-radius:999px}.foot-cc-btn:hover{background:#fff}@media(max-width:640px){.foot-cc{padding:0 1.25rem 1.5rem}.foot-cc-inner{flex-wrap:wrap}.foot-cc-btn{margin-left:0}}
-.cc-feed-card{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);cursor:default;align-items:center;justify-content:center;text-align:center;padding:1.4rem 1.1rem}
+.card.cc-feed-card{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);cursor:default;align-items:center;justify-content:center;text-align:center;padding:1.4rem 1.1rem}
+.card.cc-feed-card:hover{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%)}
 .cc-feed-card img{height:52px;width:auto;display:block;margin:0 auto .7rem}
 .cc-feed-label{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.25rem}
 .cc-feed-title{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.3}
@@ -2091,7 +2092,7 @@ function phdrSearchClear(){
         <div class="foot-cc-title">Looking for deals, not just gifts?</div>
         <p class="foot-cc-text">CommonCents hunts down premium deals and price drops every day — every cent counts.</p>
       </div>
-      <a class="foot-cc-btn" href="https://commoncentsdeals.com" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a>
+      <a class="foot-cc-btn" href="https://cr-1234.github.io/commoncents/" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a>
     </div>
   </div>
   <div class="foot-top">
@@ -2134,7 +2135,7 @@ function phdrSearchClear(){
         <a href="guides/">Gift Guides</a>
         <a href="room-gifts.html">Gift This Room</a>
         <a href="suggest.html">Suggest a Gift</a>
-        <a href="https://commoncentsdeals.com" target="_blank" rel="noopener">CommonCents — Daily Deals</a>
+        <a href="https://cr-1234.github.io/commoncents/" target="_blank" rel="noopener">CommonCents — Daily Deals</a>
       </div>
       <div class="fc">
         <h4>Company</h4>
@@ -3031,7 +3032,7 @@ function renderRecent(){
 // appears inside the gift feed — same content as the footer card, one
 // grid slot. Built fresh on each render; never part of the items list.
 function ccFeedCardHTML(){
-  return `<div class="card cc-feed-card"><img src="img/cc-logo-tag.png" alt="" aria-hidden="true"><div class="cc-feed-label">Our other site</div><div class="cc-feed-title">Looking for deals, not just gifts?</div><p class="cc-feed-text">CommonCents hunts down premium deals and price drops every day — every cent counts.</p><a class="cc-feed-btn" href="https://commoncentsdeals.com" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a></div>`;
+  return `<div class="card cc-feed-card"><img src="img/cc-logo-tag.png" alt="" aria-hidden="true"><div class="cc-feed-label">Our other site</div><div class="cc-feed-title">Looking for deals, not just gifts?</div><p class="cc-feed-text">CommonCents hunts down premium deals and price drops every day — every cent counts.</p><a class="cc-feed-btn" href="https://cr-1234.github.io/commoncents/" target="_blank" rel="noopener noreferrer">See the deals &#8594;</a></div>`;
 }
 function renderP(){
   const grid=document.getElementById('grid');
@@ -3452,7 +3453,7 @@ function gbDismissNote(n){
 var GB_NOTE_FOCUS = null;
 function gbOpenNoteTarget(n){
   if(!n) return;
-  if(n.site === 'cc'){ window.open('https://commoncentsdeals.com', '_blank', 'noopener'); return; }
+  if(n.site === 'cc'){ window.open('https://cr-1234.github.io/commoncents/', '_blank', 'noopener'); return; }
   if(!n.refId) return;
   var p = P.find(function(x){ return gbCmtKey(x) === String(n.refId); });
   if(!p){ toast('That gift is no longer live.'); return; }
