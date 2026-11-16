@@ -591,7 +591,23 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
    matches CC's header too: .55rem above the wordmark and a
    .55rem gap down to the search (CC: .55rem header padding,
    .35rem row gap + .2rem search offset). The wordmark's size
-   and left anchor are unchanged. */
+   and left anchor are unchanged.
+   Alignment + readability round (same day, latest): the owner
+   saw the wordmark "hugging the top", not aligned with the
+   three lines. The row already centred both boxes; the offset
+   lived inside the artwork — in logo-wordmark.svg the lettering
+   spans y 307–701 of the old viewBox (centre 504 against the
+   box's 628.5), so the letters sat ~11px high in their 64px
+   box while the button's lines sit at their box's centre. The
+   viewBox window is shifted up (min-y 276 -> 151.9, same
+   1571x705 size, so the rendered size is identical) to centre
+   the lettering in the box; the row's align-items:center then
+   puts the letters and the lines on the same centre line.
+   And the slimmed pill clipped its placeholder mid-word
+   ("Search gifts, occ…") in faint --ink3: the phone input's
+   placeholder is now the short "Search gifts…" (the desktop
+   inputs keep the long one) and the placeholder colour is
+   #555 at full opacity, so the words read whole and dark. */
 .phdr{display:none}
 .pnav-bg{display:none}
 @media(max-width:768px){
@@ -607,7 +623,7 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .phdr-searchrow{padding:0 1.25rem .55rem}
   .phdr-pill{display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--brd);border-radius:999px;padding:.55rem .9rem;width:min(60%,270px);margin:0 auto;color:var(--ink3)}
   .phdr-pill input{flex:1;border:none;background:transparent;outline:none;font-family:'Inter',sans-serif;font-size:.92rem;color:var(--ink);min-width:0}
-  .phdr-pill input::placeholder{color:var(--ink3)}
+  .phdr-pill input::placeholder{color:#555;opacity:1}
   #phdr-search-clear{background:none;border:none;cursor:pointer;color:#888;font-size:16px;line-height:1;padding:0 2px;align-items:center}
   .pnav{border-top:1px solid var(--brd);max-height:calc(100dvh - 8rem);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:.45rem .7rem .8rem}
   .pnav-link{display:flex;align-items:center;gap:.7rem;width:100%;padding:.55rem .4rem;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.05);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
@@ -1760,7 +1776,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
   <div class="phdr-searchrow">
     <div class="phdr-pill">
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/></svg>
-      <input type="text" id="phdr-search" placeholder="Search gifts, occasions…" oninput="phdrSearchInput(this)" onkeydown="if(event.key==='Enter'){searchQ=this.value.trim();renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})}if(event.key==='Escape'){phdrSearchClear()}" autocomplete="off">
+      <input type="text" id="phdr-search" placeholder="Search gifts…" oninput="phdrSearchInput(this)" onkeydown="if(event.key==='Enter'){searchQ=this.value.trim();renderP();document.getElementById('feed').scrollIntoView({behavior:'smooth',block:'start'})}if(event.key==='Escape'){phdrSearchClear()}" autocomplete="off">
       <button id="phdr-search-clear" onclick="phdrSearchClear()" style="display:none" aria-label="Clear">×</button>
     </div>
   </div>
