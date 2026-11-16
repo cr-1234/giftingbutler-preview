@@ -1754,8 +1754,8 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
         <div id="pnav-cats"></div>
       </div>
     </div>
-    <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="ti ti-wl"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist</button>
-    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="ti ti-bell"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders</button>
+    <button class="pnav-link" onclick="closePnav();om('wl-modal')"><span class="ti ti-wl"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg></span>Wishlist<span class="pnav-count" id="pnav-wl-count" style="display:none"></span></button>
+    <button class="pnav-link" onclick="closePnav();om('rem-modal')"><span class="ti ti-bell"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg></span>Reminders<span class="pnav-count" id="pnav-rem-count" style="display:none"></span></button>
     <button class="pnav-link" onclick="closePnav();om('gw-modal')"><span class="ti ti-gift"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/></svg></span>Giveaway</button>
     <button class="pnav-link" onclick="location.href='room-gifts.html'"><span class="ti ti-room"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M2 8a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8zM7 6V5a2 2 0 012-2h2a2 2 0 012 2v1H7zM10 8.3a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4z" clip-rule="evenodd"/></svg></span>Gift This Room</button>
     <div class="pnav-sec">
@@ -1790,7 +1790,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(91,45,142,.28) rgba(0,0,0,.04)}
 function togglePnav(){
   var p=document.getElementById('pnav');
   if(!p) return;
-  if(p.style.display==='none'){ renderPnavCats(); renderPnavAcct(); p.style.maxHeight='calc(100dvh - '+phdrH()+'px)'; p.style.display='block'; var b=document.getElementById('pnav-bg'); if(b)b.style.display='block'; var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','true'); }
+  if(p.style.display==='none'){ renderPnavCats(); renderPnavAcct(); renderPnavCounts(); p.style.maxHeight='calc(100dvh - '+phdrH()+'px)'; p.style.display='block'; var b=document.getElementById('pnav-bg'); if(b)b.style.display='block'; var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','true'); }
   else closePnav();
 }
 function togglePnavSec(key){
@@ -1808,6 +1808,20 @@ function togglePnavSec(key){
    the panel's bottom and is painted here too. renderAuth calls this
    on every sign-in change; togglePnav calls it on every open, so
    the block is never stale. */
+/* The person's picture, wherever it lives (owner, 2026-11-15):
+   the main profile photo when there is one; when the account was
+   made with email and Google was linked later, the photo sits on
+   the linked sign-in method instead — look there too before
+   giving up and falling back to the initial letter. ONE resolver,
+   shared by the panel's account block and the top account button
+   (setAuthBtn) — the owner asked why the top button didn't show
+   his picture when the panel did; now both paint the same face. */
+function gbUserPhoto(user){
+  if(!user) return '';
+  var pic=user.photoURL||'';
+  if(!pic&&user.providerData){ for(var pi=0;pi<user.providerData.length;pi++){ var pd=user.providerData[pi]; if(pd&&pd.photoURL){ pic=pd.photoURL; break; } } }
+  return pic;
+}
 function renderPnavAcct(user){
   var host=document.getElementById('pnav-acct'); if(!host) return;
   if(user===undefined){ var u=(window.gbAuth&&window.gbAuth.currentUser); user=u||null; }
@@ -1817,19 +1831,32 @@ function renderPnavAcct(user){
     return;
   }
   var name=(user.displayName||'').trim()||(user.email?user.email.split('@')[0]:'Your account');
-  /* The person's picture (owner, 2026-11-15): the main profile
-     photo when there is one; when the account was made with email
-     and Google was linked later, the photo lives on the linked
-     method instead — look there too before falling back to the
-     initial letter. */
-  var pic=user.photoURL||'';
-  if(!pic&&user.providerData){ for(var pi=0;pi<user.providerData.length;pi++){ var pd=user.providerData[pi]; if(pd&&pd.photoURL){ pic=pd.photoURL; break; } } }
+  var pic=gbUserPhoto(user);
   var av=pic?'<img src="'+pic+'" referrerpolicy="no-referrer" alt="">':'<span>'+gbNoteEsc(name.charAt(0).toUpperCase())+'</span>';
   host.innerHTML='<div class="pnav-acct-row"><span class="pnav-avatar">'+av+'</span><span class="pnav-acct-id"><span class="pnav-acct-label">Your name on the site</span><span class="pnav-acct-name">'+gbNoteEsc(name)+'</span></span><button class="pnav-change" onclick="pnavChangeName()">Change name</button></div>';
 }
 function pnavChangeName(){
   closePnav();
   if(typeof window.gbAccount==='function'){ window.gbAccount(); if(typeof window.gbNameEditShow==='function')window.gbNameEditShow(); }
+}
+/* Numbers on the panel's Wishlist and Reminders rows (owner,
+   2026-11-15 19:23 — "add numbers to wish list and maybe to
+   reminders but in the wish list for sure"). The wishlist number
+   is every gift saved across the person's wishlists, the
+   reminders number is how many reminders they have — both read
+   straight from family/reminders, the same lists the site itself
+   keeps and shows in the wishlist/reminder windows. A row with
+   nothing in it shows no number at all (signed out, the lists
+   are cleared, so both rows stay numberless rather than showing
+   a wrong one). Repainted when the panel opens and whenever the
+   lists re-render (renderWL/renderReminders call it), so the
+   numbers are never stale. */
+function renderPnavCounts(){
+  var wl=0;
+  if(typeof family!=='undefined'&&family){ for(var i=0;i<family.length;i++){ if(family[i]&&family[i].wl) wl+=family[i].wl.length; } }
+  var rem=(typeof reminders!=='undefined'&&reminders)?reminders.length:0;
+  var wEl=document.getElementById('pnav-wl-count'); if(wEl){ wEl.textContent=wl?String(wl):''; wEl.style.display=wl?'':'none'; }
+  var rEl=document.getElementById('pnav-rem-count'); if(rEl){ rEl.textContent=rem?String(rem):''; rEl.style.display=rem?'':'none'; }
 }
 /* The Notifications row: opens the account window landed on its
    notifications (gbAccount renders the notes; we then bring them
@@ -1864,19 +1891,6 @@ function closePnav(){
   var btn=document.getElementById('phdr-burger'); if(btn)btn.setAttribute('aria-expanded','false');
 }
 document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePnav(); });
-/* Panel category glyphs wear the panel's uniform icon treatment
-   (owner, 2026-11-15 — his video: the categories each had a
-   different BRIGHT circle, and he cropped the site's own top-bar
-   buttons as the look to use): a soft tinted circle of the same
-   family as those buttons — the plum member (.pnav-ic: lavender
-   tint, plum glyph, the chips' soft border). Each category keeps
-   its OWN glyph, recoloured from its baked-in white to plum
-   through currentColor. The categories' own bright colours are
-   untouched everywhere outside this panel (desktop strip, feed). */
-function pnavCatGlyph(c){
-  if(c.svg) return c.svg.replace(/fill="#fff"/g,'fill="currentColor"');
-  return c.icon||'';
-}
 function renderPnavCats(){
   var host=document.getElementById('pnav-cats'); if(!host||typeof CATS==='undefined') return;
   var html='';
@@ -1886,7 +1900,7 @@ function renderPnavCats(){
        counts a category's subcategories into its number, so the
        single row's count covers everything under it; the age
        breakdowns live on the site itself, not in this menu. */
-    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="pnav-ic">'+pnavCatGlyph(c)+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
+    html+='<button class="pnav-cat'+(c.id===activeCat&&!activeSubCat?' on':'')+'" onclick="pnavCat(\''+c.id+'\')"><span class="cpi" style="background:'+c.bg+'">'+c.icon+'</span>'+c.label+'<span class="pnav-count">'+pnavCatCount(c.id)+'</span></button>';
   });
   host.innerHTML=html;
   var ac=document.getElementById('pnav-all-count'); if(ac)ac.textContent=pnavCatCount('all');
@@ -3620,6 +3634,7 @@ function addMember(e){
 function delM(id){family=family.filter(x=>x.id!==id);if(activeM===id)activeM=family.length?family[0].id:null;S.set('gb_fam',family);renderMembers();renderWL()}
 function wlDisplayName(n){n=String(n==null?'':n).trim();if(!n)return 'Wishlist';return (/wishlist/i.test(n)||/['\u2019]s(\s|$)/.test(n))?n:(n+"'s Wishlist");}
 function renderWL(){
+  if(typeof renderPnavCounts==='function')renderPnavCounts();
   const wrap=document.getElementById('active-wl');if(!activeM){wrap.style.display='none';return}
   const m=family.find(x=>x.id===activeM);if(!m){wrap.style.display='none';return}
   wrap.style.display='block';document.getElementById('wl-title').textContent=wlDisplayName(m.name);
@@ -4174,6 +4189,7 @@ function doShareAction(type){
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 window._editingRemId=null;window._confirmDeleteRemId=null;
 function renderReminders(){
+  if(typeof renderPnavCounts==='function')renderPnavCounts();
   const el=document.getElementById('rem-list');
   if(!reminders.length){el.innerHTML='<div class="empty" style="padding:1.3rem .9rem"><div style="font-size:1.6rem;margin-bottom:.35rem">🔔</div><div style="font-style:normal;font-weight:700;color:var(--ink2);font-size:.82rem;margin-bottom:.2rem">No reminders yet</div><div style="font-size:.74rem;font-style:normal">Add your first one above \u2014 we\u2019ll email you before the big day.</div></div>';return;}
   const today=new Date();
@@ -4895,6 +4911,11 @@ function fsbInput(el){
   };
 
   // -- Sidebar button reflects auth state (photo + name) --
+  // The picture goes through gbUserPhoto, the same resolver the
+  // phone panel's account block uses (owner, 2026-11-15): a photo
+  // that lives on a linked sign-in method (Google linked after an
+  // email sign-up) shows here too — this paints every account
+  // button (top bar, sidebar, bottom bar) in renderAuth.
   function setAuthBtn(btn,user){
     if(!btn) return;
     const ico=btn.querySelector('.s-ico')||btn;
@@ -4902,8 +4923,9 @@ function fsbInput(el){
       btn.title=(user.displayName||'Account')+' — tap to sign out';
       ico.classList.add('gb-arrow-in');
       ico.style.overflow='hidden'; ico.style.padding='0';
-      ico.innerHTML=user.photoURL
-        ? '<img src="'+user.photoURL+'" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
+      const pic=(typeof gbUserPhoto==='function')?gbUserPhoto(user):(user.photoURL||'');
+      ico.innerHTML=pic
+        ? '<img src="'+pic+'" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'
         : '<span style="font-weight:600;font-size:1rem;color:var(--plum)">'+((user.displayName||'U').trim().charAt(0).toUpperCase())+'</span>';
       const lbl=btn.querySelector('.s-label');
       if(lbl) lbl.textContent=(user.displayName||'').split(' ')[0]||'You';
