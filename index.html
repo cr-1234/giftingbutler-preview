@@ -580,12 +580,23 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
    (20px, the same inset CommonCents' header uses). The wordmark
    sits a little more towards the centre, balanced by the lines
    button inset on the right; the anchored layout itself is
-   unchanged (logo cell still flex:0 1 auto, never centred). */
+   unchanged (logo cell still flex:0 1 auto, never centred).
+   Search-size round (same day, latest): side by side with
+   CommonCents, the owner read this search bar as much bigger —
+   "like 25% smaller" over there. The bulk was the pill spanning
+   the whole row: it now wears CommonCents' own proportions —
+   a compact centred pill, width min(60%,270px), with CC's
+   input padding (.55rem .9rem) and font size (.92rem) — inside
+   the same 1.25rem-inset row. The top row's vertical rhythm
+   matches CC's header too: .55rem above the wordmark and a
+   .55rem gap down to the search (CC: .55rem header padding,
+   .35rem row gap + .2rem search offset). The wordmark's size
+   and left anchor are unchanged. */
 .phdr{display:none}
 .pnav-bg{display:none}
 @media(max-width:768px){
   .phdr{display:block;position:sticky;top:0;z-index:300;background:#fff;border-bottom:1px solid var(--brd)}
-  .phdr-row{display:flex;align-items:center;gap:.55rem;padding:.45rem 1.25rem .4rem}
+  .phdr-row{display:flex;align-items:center;gap:.55rem;padding:.55rem 1.25rem .55rem}
   .phdr-logo{display:flex;align-items:center;flex:0 1 auto;min-width:0}
   .phdr-logo img{height:64px;width:auto;max-width:100%;display:block}
   .phdr-spacer{flex:1}
@@ -594,7 +605,7 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
   .phdr-burger{border:none;background:none;border-radius:0}
   .phdr-burger:active{background:none}
   .phdr-searchrow{padding:0 1.25rem .55rem}
-  .phdr-pill{display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--brd);border-radius:999px;padding:.42rem .8rem;color:var(--ink3)}
+  .phdr-pill{display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--brd);border-radius:999px;padding:.55rem .9rem;width:min(60%,270px);margin:0 auto;color:var(--ink3)}
   .phdr-pill input{flex:1;border:none;background:transparent;outline:none;font-family:'Inter',sans-serif;font-size:.92rem;color:var(--ink);min-width:0}
   .phdr-pill input::placeholder{color:var(--ink3)}
   #phdr-search-clear{background:none;border:none;cursor:pointer;color:#888;font-size:16px;line-height:1;padding:0 2px;align-items:center}
