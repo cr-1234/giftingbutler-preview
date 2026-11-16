@@ -3210,11 +3210,15 @@ function renderP(){
   if(!items.length){grid.innerHTML=`<div class="nores"><p>${searchQ?`No matches for "<em>${searchQ}</em>" — <button onclick="clearSearch()" style="background:none;border:none;color:var(--plum);font-weight:700;cursor:pointer;text-decoration:underline;font-size:.9rem">browse all</button>`:'No gifts in this category yet.'}</p></div>`;return}
 
   const _cardStrs=items.map(p=>cardHTML(p));
-  // Sister-site ad in the feed (owner, 2026-11-15): once, after the 6th
-  // gift, in browse views showing 7+ gifts — spliced into the rendered
-  // HTML only, never into items, so it never counts as a gift, never
-  // displaces one, and never appears in search results.
-  if(!searchQ&&!_ggMode&&_cardStrs.length>=7)_cardStrs.splice(6,0,ccFeedCardHTML());
+  // Sister-site ad in the feed (owner, 2026-11-15): once, in browse
+  // views showing 7+ gifts — spliced into the rendered HTML only,
+  // never into items, so it never counts as a gift, never displaces
+  // one, and never appears in search results. Placement (owner,
+  // later the same day): the card closes the FIRST row — the right
+  // side of the page is what people see first. The grid runs 4
+  // across, 2 across at 768px and under (the .cards-grid rules),
+  // so the splice point follows the same breakpoint.
+  if(!searchQ&&!_ggMode&&_cardStrs.length>=7){var _gc=window.matchMedia('(max-width:768px)').matches?2:4;_cardStrs.splice(_gc-1,0,ccFeedCardHTML());}
   grid.innerHTML=`<div class="cards-grid">${_cardStrs.join("")}</div>`;
   if(typeof gbLoadVotes==='function')gbLoadVotes();
   if(typeof renderRecent==='function')renderRecent();
