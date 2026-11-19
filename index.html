@@ -2166,14 +2166,14 @@ function phdrSearchClear(){
 <div class="ov" id="privacy-modal" onclick="oc(event,this)">
   <div class="modal" style="max-width:540px;max-height:80vh;overflow-y:auto">
     <button class="mx" onclick="cm('privacy-modal')" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div class="mhd"><h3>Privacy Policy</h3><p style="font-size:.78rem;color:var(--ink3)">Last updated: June 2026</p></div>
+    <div class="mhd"><h3>Privacy Policy</h3><p style="font-size:.78rem;color:var(--ink3)">Last updated: November 2026</p></div>
     <div class="mbd" style="line-height:1.75;font-size:.87rem;color:var(--ink2)">
-      <p><strong>1. Information We Collect</strong><br>We collect email addresses when you enter our weekly giveaway, set up gift reminders, or subscribe to our newsletter. If you choose to receive reminders by text, we also collect your phone number for that purpose only. We do not collect any other personal information.</p>
+      <p><strong>1. Information We Collect</strong><br>We collect email addresses when you enter our weekly giveaway, set up gift reminders, or subscribe to our newsletter. When you create a member account, we also collect your email address and save your wishlist, gift reminders, votes, comments, and alert choices to your account. If you choose to receive reminders by text, we also collect your phone number for that purpose only. We do not collect any other personal information.</p>
       <p style="margin-top:.8rem"><strong>2. How We Use Your Information</strong><br>Your email is used to send giveaway confirmation and winner announcements, to deliver the gift reminders you requested, and to send our weekly newsletter with gift ideas (unsubscribe anytime with one click). Giveaway confirmation emails and gift reminder emails may each include a small advertisement from Giftingbutler or a third-party advertiser. We will never send unsolicited marketing emails, and we do not sell, rent, or share your email with third parties.</p>
       <p style="margin-top:.8rem"><strong>3. Affiliate Links</strong><br>Giftingbutler participates in the Amazon Services LLC Associates Program. When you click a product link and make a purchase, we may earn a small commission at no extra cost to you. We only recommend products we genuinely believe in.</p>
       <p style="margin-top:.8rem"><strong>4. Cookies &amp; Analytics</strong><br>We may use cookies and analytics tools (such as Google Analytics) to understand how visitors use our site. This data is aggregated and anonymous. You can disable cookies in your browser settings at any time.</p>
       <p style="margin-top:.8rem"><strong>5. Data Retention</strong><br>Giveaway entries are deleted after each weekly drawing. Reminder data is stored until you delete it.</p>
-      <p style="margin-top:.8rem"><strong>6. Your Rights</strong><br>You can request deletion of your data at any time by emailing us at <a href="mailto:giftingbutler.help@gmail.com" style="color:var(--plum)">giftingbutler.help@gmail.com</a>.</p>
+      <p style="margin-top:.8rem"><strong>6. Your Rights</strong><br>You can delete your account and everything saved with it at any time with the Delete Account button in your account window on the site, or request deletion of your data by emailing us at <a href="mailto:giftingbutler.help@gmail.com" style="color:var(--plum)">giftingbutler.help@gmail.com</a>.</p>
       <p style="margin-top:.8rem"><strong>7. Contact</strong><br>Questions about this policy? Email us at <a href="mailto:giftingbutler.help@gmail.com" style="color:var(--plum)">giftingbutler.help@gmail.com</a>.</p>
     </div>
   </div>
@@ -5089,7 +5089,8 @@ function fsbInput(el){
     '<div id="acct-guard" style="margin-top:.85rem;padding:0 1.7rem;display:flex;flex-direction:column;gap:.5rem"></div>'+
     '<div id="acct-notes" style="display:none;margin-top:.85rem;padding:0 1.7rem;text-align:left"></div>'+
     '<div id="acct-newgift" style="display:none;margin-top:.85rem;padding:0 1.7rem;text-align:left"></div>'+
-    '<button class="btn btn-ghost btn-full" style="margin:.85rem 1.7rem 1.7rem;width:calc(100% - 3.4rem)" onclick="gbSignOut()">Sign out</button></div></div>';
+    '<button class="btn btn-ghost btn-full" style="margin:.85rem 1.7rem 0;width:calc(100% - 3.4rem)" onclick="gbSignOut()">Sign out</button>'+
+    '<button id="acct-delete" style="display:block;margin:.9rem auto 1.6rem;background:none;border:none;color:#b03a2e;font-size:.8rem;font-weight:600;cursor:pointer;padding:.2rem .4rem" onclick="gbDeleteAccount(this)">Delete account</button></div></div>';
   (function(){const w=document.createElement('div');w.innerHTML=accountHTML;document.body.appendChild(w.firstChild);})();
   window.gbAccount=function(){
     const u=auth.currentUser; if(!u)return;
@@ -5107,6 +5108,32 @@ function fsbInput(el){
     om('account-modal');
   };
   window.gbSignOut=function(){ auth.signOut().then(()=>{try{cm('account-modal');}catch(e){}toast('Signed out');}); };
+
+  /* Delete account (owner request, 2026-11-19): two taps — the first
+     arms the button with the full warning, the second calls the
+     server, which erases the member's data on both sites and the
+     sign-in itself. On success we sign out locally and say so. */
+  window.gbDeleteAccount=async function(btn){
+    if(!btn) return;
+    if(!btn.dataset.armed){
+      btn.dataset.armed='1';
+      btn.textContent='Tap again to permanently delete your account and everything saved with it';
+      setTimeout(()=>{ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent='Delete account'; } }, 6000);
+      return;
+    }
+    btn.disabled=true; btn.textContent='Deleting\u2026';
+    try{
+      const tok=await gbCmtToken();
+      const r=await gbCmtApi('deleteMyAccount', {}, tok);
+      if(!r || !r.ok) throw new Error('bad');
+      try{cm('account-modal');}catch(e){}
+      await auth.signOut();
+      toast('Your account has been deleted.');
+    }catch(e){
+      btn.disabled=false; delete btn.dataset.armed; btn.textContent='Delete account';
+      toast('That could not be deleted \u2014 try again.');
+    }
+  };
 
   // Show only the first letters of an email — enough to recognise the
   // account, never the whole address (owner's request, 2026-11-11).
