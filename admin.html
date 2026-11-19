@@ -287,6 +287,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
       <button class="nav-item" onclick="openTab('suggestions',this)">
         <span class="nav-icon">💡</span><span>Suggestions</span>
       </button>
+      <button class="nav-item" onclick="openTab('members',this)">
+        <span class="nav-icon">👥</span><span>Members</span>
+      </button>
       <div class="sidebar-foot">
         <button class="btn-sm btn-outline" style="width:100%" onclick="window.open('https://console.firebase.google.com/project/giftingbutler-74395','_blank')">Firebase</button>
       </div>
@@ -526,6 +529,29 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
         </div>
       </div>
 
+      <div id="tab-members" class="panel">
+        <div class="panel-head">
+          <h1>Members</h1>
+          <button class="btn-sm btn-outline" onclick="loadGbMembers()">Refresh</button>
+        </div>
+        <p style="color:#6b6480;font-size:.9rem;margin:.2rem 0 1rem">Everyone who has ever signed up — both sites share one account system, so this is the combined list for Gifting Butler and CommonCents, newest first. Visible only to you: the server checks it's really your account before it sends anything; the list is never public.</p>
+        <div id="gb-mem-msg" style="margin-bottom:.6rem"></div>
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.92rem">
+          <thead><tr>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Member</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Joined</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:2px solid #e7e2f2">Last active</th>
+            <th style="text-align:right;padding:.5rem;border-bottom:2px solid #e7e2f2">CC picks</th>
+            <th style="text-align:right;padding:.5rem;border-bottom:2px solid #e7e2f2">CC votes</th>
+            <th style="text-align:right;padding:.5rem;border-bottom:2px solid #e7e2f2">GB wishlist</th>
+            <th style="text-align:right;padding:.5rem;border-bottom:2px solid #e7e2f2">GB reminders</th>
+          </tr></thead>
+          <tbody id="gb-mem-body"><tr><td colspan="7" style="padding:.6rem">Open this tab to load members.</td></tr></tbody>
+        </table>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -564,6 +590,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
       </label>
     </div>
     <div class="modal-foot">
+      <button id="modal-restore" class="btn-sm btn-save" style="display:none" onclick="restoreProduct()" title="Bring this deleted product back to the site">↩ Restore</button>
       <button class="btn-sm btn-danger" onclick="deleteProductPermanently()" title="Permanently removes from site (stored in Firestore)">🗑 Delete</button>
       <button class="btn-sm btn-outline" style="color:var(--amber);border-color:var(--amber)" onclick="hideProduct()" title="Hide from site — can be unhidden later">Hide</button>
       <button class="btn-sm btn-outline" onclick="closeModal()">Cancel</button>
@@ -1316,6 +1343,7 @@ function openModal(id) {
   renderModalImgs();
   window._modalCats = [...(p.cats || [])]; renderModalCats();
   document.getElementById('modal-tziut').checked    = !!p.tziut;
+  document.getElementById('modal-restore').style.display = p.deleted ? '' : 'none';
   document.getElementById('edit-modal').classList.add('open');
 }
 
@@ -1374,6 +1402,18 @@ async function saveModal() {
   closeModal();
   renderProdTable();
   toast('✅ Product updated — saving…');
+}
+
+async function restoreProduct() {
+  const id = parseInt(document.getElementById('modal-id').value);
+  if (!confirm('Restore this product? It will go back on the site.')) return;
+  setOverride(id, 'deleted', false);
+  setOverride(id, 'active', true);
+  await new Promise(r => setTimeout(r, 1600)); // let the debounced save land
+  closeModal();
+  renderProdTable();
+  renderStats();
+  toast('✅ Product restored!');
 }
 
 function hideProduct() {
@@ -1672,6 +1712,7 @@ function openTab(name, btn) {
   if (name === 'order') { initOrderTab(); }
   if (name === 'stats') { loadGbStats(); }
   if (name === 'suggestions') { loadGbSuggestions(); }
+  if (name === 'members') { loadGbMembers(); }
 }
 
 // ── Gift suggestions queue (engagement plan D) ──
@@ -1741,6 +1782,45 @@ async function gbSugSet(id, status) {
     if (res && res.ok) loadGbSuggestions();
     else alert('That did not save — try again.');
   } catch (e) { alert('That did not save — try again.'); }
+}
+
+// ── Members roster (shared account pool) ──
+// The listMembers endpoint is owner-only on the SERVER — it returns
+// other people's emails, so it verifies the token's email before
+// sending anything; this tab just renders what comes back. Same
+// roster as the CommonCents admin: one account pool serves both.
+function gbMemDate(ms) {
+  return ms ? new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+}
+async function loadGbMembers() {
+  const body = document.getElementById('gb-mem-body');
+  const msg = document.getElementById('gb-mem-msg');
+  if (!body) return;
+  body.innerHTML = '<tr><td colspan="7" style="padding:.6rem">Loading…</td></tr>';
+  try {
+    const res = await gbSugCall('listMembers', {});
+    if (!res || !res.ok || !Array.isArray(res.members)) throw new Error('bad response');
+    if (msg) msg.textContent = res.members.length + ' member' + (res.members.length === 1 ? '' : 's') + ' total.';
+    if (!res.members.length) {
+      body.innerHTML = '<tr><td colspan="7" style="padding:.6rem">No members yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = res.members.map(function (m) {
+      let who = gbSugEsc(m.email);
+      if (m.name && m.name !== m.email) who = '<strong>' + gbSugEsc(m.name) + '</strong><br><span style="color:#6b6480;font-size:.82rem">' + gbSugEsc(m.email) + '</span>';
+      if (m.disabled) who += ' <span style="color:#b03a2e">(disabled)</span>';
+      return '<tr>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + who + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + gbMemDate(m.joinedAt) + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2">' + gbMemDate(m.lastActiveAt) + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;text-align:right">' + (m.ccPicks || 0) + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;text-align:right">' + (m.ccVotes || 0) + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;text-align:right">' + (m.gbWishlist || 0) + '</td>' +
+        '<td style="padding:.5rem;border-bottom:1px solid #e7e2f2;text-align:right">' + (m.gbReminders || 0) + '</td></tr>';
+    }).join('');
+  } catch (e) {
+    body.innerHTML = '<tr><td colspan="7" style="padding:.6rem">Could not load the member list.</td></tr>';
+  }
 }
 
 // ── Category Order manager ──
