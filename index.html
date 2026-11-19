@@ -3380,22 +3380,25 @@ async function gbSetNotesMuted(muted){
   gbRenderNotes();
   await gbNotesCall('setNotificationsMuted', { muted: GB_NOTES.muted });
 }
+function gbNotesHeader(){
+  return '<div class="ng-row" style="border-top:none;padding:.1rem 0 .5rem"><div><div class="ng-lab">Notifications</div><div class="ng-sub">' + (GB_NOTES.muted ? 'Off \u2014 replies and updates are paused' : 'Replies and updates land here') + '</div></div><button type="button" class="ng-sw' + (GB_NOTES.muted ? '' : ' on') + '" id="acct-notes-sw" aria-label="Turn notifications on or off"></button></div>';
+}
+function gbBindNotesSwitch(){
+  var sw = document.getElementById('acct-notes-sw');
+  if(sw) sw.addEventListener('click', function(){ gbSetNotesMuted(!GB_NOTES.muted); });
+}
 function gbRenderNotes(){
   var host = document.getElementById('acct-notes');
   if(!host) return;
   if(GB_NOTES.muted){
-    // Off state (owner request 2026-11-14): one quiet row — tapping
-    // it turns notifications back on. No list, no badge.
     host.style.display = '';
-    host.innerHTML = '<button type="button" class="btn btn-ghost btn-full" id="acct-notes-on">Notifications are off \u2014 Turn on</button>';
-    var onBtn = document.getElementById('acct-notes-on');
-    if(onBtn) onBtn.addEventListener('click', function(){ gbSetNotesMuted(false); });
+    host.innerHTML = gbNotesHeader();
+    gbBindNotesSwitch();
     return;
   }
-  var toggleHtml = '<div class="gb-notes-toggle"><span>Notifications on</span><button type="button" class="btn btn-ghost" id="acct-notes-off">Turn off</button></div>';
-  if(!GB_NOTES.items.length){ host.style.display = ''; host.innerHTML = toggleHtml + '<div class="btn btn-ghost btn-full" style="pointer-events:none">Notifications \u2014 nothing yet</div>'; var off0 = document.getElementById('acct-notes-off'); if(off0) off0.addEventListener('click', function(){ gbSetNotesMuted(true); }); return; }
+  if(!GB_NOTES.items.length){ host.style.display = ''; host.innerHTML = gbNotesHeader() + '<div class="btn btn-ghost btn-full" style="pointer-events:none">Nothing yet</div>'; gbBindNotesSwitch(); return; }
   host.style.display = '';
-  host.innerHTML = toggleHtml + '<div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:.15rem">Notifications</div>' +
+  host.innerHTML = gbNotesHeader() +
     GB_NOTES.items.slice(0, 8).map(function(n, i){
       var site = n.site === 'gb' ? 'Giftingbutler' : 'CommonCents';
       var what = n.type === 'reply' ? '<strong>' + gbNoteEsc(n.fromName || 'Someone') + '</strong> replied to your comment' : (n.type === 'newgift' ? '<strong>New gifts just landed</strong>' : '<strong>Your submission is live</strong>');
@@ -3405,8 +3408,7 @@ function gbRenderNotes(){
       var nidx = clickable ? ' data-nidx="' + i + '"' : '';
       return '<div class="gb-note' + clickable + '"' + nidx + '><span class="gn-site">' + site + '</span> ' + what + txt + when + '</div>';
     }).join('');
-  var offBtn = document.getElementById('acct-notes-off');
-  if(offBtn) offBtn.addEventListener('click', function(){ gbSetNotesMuted(true); });
+  gbBindNotesSwitch();
   host.querySelectorAll('.gb-note.clickable').forEach(function(el){
     el.addEventListener('click', function(){
       var n = GB_NOTES.items[parseInt(el.getAttribute('data-nidx'), 10)];
