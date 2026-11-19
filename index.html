@@ -5118,7 +5118,7 @@ function fsbInput(el){
     if(!btn.dataset.armed){
       btn.dataset.armed='1';
       btn.textContent='Tap again to permanently delete your account and everything saved with it';
-      setTimeout(()=>{ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent='Delete account'; } }, 6000);
+      setTimeout(()=>{ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent='Delete account'; } }, 15000);
       return;
     }
     btn.disabled=true; btn.textContent='Deleting\u2026';
