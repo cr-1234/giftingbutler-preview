@@ -542,9 +542,10 @@ footer{background:linear-gradient(170deg,#231238 0%,#160b26 60%,#10071d 100%);co
 
 /* -- RESPONSIVE -- */
 @media(max-width:960px){.det-grid{grid-template-columns:1fr}.foot-top{grid-template-columns:1fr;gap:2rem;padding:2rem 1.5rem}.foot-links{grid-template-columns:1fr 1fr}
-  /* keep Shop/Save/Share reachable without scrolling on mobile, without reordering
-     the actual content (title -> description -> tags stays in natural reading order) */
-  #d-actions-dock{position:sticky;bottom:0;left:0;right:0;background:linear-gradient(0deg,#f1ecfa 70%,rgba(241,236,250,0));padding-top:.6rem;padding-bottom:1.5rem;margin-top:.4rem;margin-bottom:-1.5rem;border-radius:0 0 var(--r4) var(--r4);z-index:5}
+  /* The actions dock sits in the normal flow under the price. It used to be
+     position:sticky with a negative bottom margin, which pinned it OVER the
+     description while scrolling and cut the text off (owner report 2026-11-16). */
+  #d-actions-dock{margin-top:.4rem}
 }
 /* ── PHONE COMPACT HEADER (owner, 2026-11-15 — SlickDeals-style) ──
    Phones get ONE slim sticky header: a top row (hamburger, logo,
