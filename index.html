@@ -3384,7 +3384,7 @@ function gbRenderNotes(){
   host.innerHTML = toggleHtml + '<div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:.15rem">Notifications</div>' +
     GB_NOTES.items.slice(0, 8).map(function(n, i){
       var site = n.site === 'gb' ? 'Gifting Butler' : 'CommonCents';
-      var what = n.type === 'reply' ? '<strong>' + gbNoteEsc(n.fromName || 'Someone') + '</strong> replied to your comment' : '<strong>Your submission is live</strong>';
+      var what = n.type === 'reply' ? '<strong>' + gbNoteEsc(n.fromName || 'Someone') + '</strong> replied to your comment' : (n.type === 'newgift' ? '<strong>New gifts just landed</strong>' : '<strong>Your submission is live</strong>');
       var txt = n.text ? ' <span class="gn-text">&ldquo;' + gbNoteEsc(n.text) + '&rdquo;</span>' : '';
       var when = n.ts ? ' <span class="gn-when">&middot; ' + gbNoteWhen(n.ts) + '</span>' : '';
       var clickable = (n.site === 'cc' || n.refId) ? ' clickable' : '';
@@ -3415,6 +3415,33 @@ function gbRenderNotes(){
    once (back to the empty state when it was the last one); the
    server delete follows in the background via dismissNotification.
    If the call fails the note simply returns on the next load. */
+/* ── New-gift alerts (owner request, 2026-11-16): two switches in
+   the account window — hear about newly posted gifts on this site,
+   by email, both, or neither. Prefs live server-side on the
+   member's notifications doc (gbGet/gbSetNewGiftPrefs); the daily
+   scan fans out only when the catalog actually gained a gift. */
+async function gbRenderNewGiftPrefs(){
+  var host = document.getElementById('acct-newgift');
+  if(!host) return;
+  var tok = await gbCmtToken();
+  if(!tok){ host.style.display = 'none'; return; }
+  var prefs = { site: false, email: false };
+  try { prefs = await gbCmtApi('gbGetNewGiftPrefs', {}, tok); } catch (e) { /* leave both off */ }
+  host.style.display = '';
+  host.innerHTML = '<div style="font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem">New gift alerts</div>'
+    + '<label style="display:flex;align-items:center;gap:.5rem;font-size:.86rem;padding:.28rem 0;cursor:pointer"><input type="checkbox" id="ng-site"' + (prefs.site ? ' checked' : '') + '> Tell me on this site</label>'
+    + '<label style="display:flex;align-items:center;gap:.5rem;font-size:.86rem;padding:.28rem 0;cursor:pointer"><input type="checkbox" id="ng-email"' + (prefs.email ? ' checked' : '') + '> Email me</label>'
+    + '<div style="font-size:.74rem;color:var(--ink3);margin-top:.15rem">When a new gift is posted, we\'ll let you know \u2014 pick either, both, or neither.</div>';
+  var save = async function(){
+    var sEl = document.getElementById('ng-site'), mEl = document.getElementById('ng-email');
+    if(!sEl || !mEl) return;
+    var t2 = await gbCmtToken();
+    try { await gbCmtApi('gbSetNewGiftPrefs', { site: sEl.checked, email: mEl.checked }, t2); toast('New gift alerts saved'); }
+    catch (e) { toast('Could not save that \u2014 try again.'); }
+  };
+  document.getElementById('ng-site').addEventListener('change', save);
+  document.getElementById('ng-email').addEventListener('change', save);
+}
 function gbDismissNote(n){
   if(!n || !n.id) return;
   GB_NOTES.items = GB_NOTES.items.filter(function(x){ return x.id !== n.id; });
@@ -5044,6 +5071,7 @@ function fsbInput(el){
     +'<div style="display:flex;gap:.45rem;margin-top:.5rem"><button class="btn btn-plum" style="flex:1" onclick="gbNameSave()">Save name</button><button class="btn btn-ghost" style="flex:1" onclick="gbNameEditHide()">Cancel</button></div></div></div>'+
     '<div id="acct-guard" style="margin-top:.85rem;padding:0 1.7rem;display:flex;flex-direction:column;gap:.5rem"></div>'+
     '<div id="acct-notes" style="display:none;margin-top:.85rem;padding:0 1.7rem;text-align:left"></div>'+
+    '<div id="acct-newgift" style="display:none;margin-top:.85rem;padding:0 1.7rem;text-align:left"></div>'+
     '<button class="btn btn-ghost btn-full" style="margin:.85rem 1.7rem 1.7rem;width:calc(100% - 3.4rem)" onclick="gbSignOut()">Sign out</button></div></div>';
   (function(){const w=document.createElement('div');w.innerHTML=accountHTML;document.body.appendChild(w.firstChild);})();
   window.gbAccount=function(){
@@ -5058,6 +5086,7 @@ function fsbInput(el){
     document.getElementById('acct-email').textContent=(u.email?gbMaskEmail(u.email):(u.phoneNumber||''))+(provLabel?'  ·  via '+provLabel:'');
     gbRenderGuard(u);
     gbRenderNotes();
+    gbRenderNewGiftPrefs();
     om('account-modal');
   };
   window.gbSignOut=function(){ auth.signOut().then(()=>{try{cm('account-modal');}catch(e){}toast('Signed out');}); };
