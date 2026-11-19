@@ -3257,7 +3257,7 @@ function toggleSave(id){
     }catch(e){}
   }else{
     if(!activeM){const newId=family.length?Math.max(...family.map(x=>x.id))+1:1;family.push({id:newId,name:'My Wishlist',wl:[]});activeM=newId;}
-    const m=family.find(x=>x.id===activeM);m.wl.push({t:p.title,u:p.url,i:p.img});S.set('gb_fam',family);bumpWish(p.id,1);toast('? Saved to wishlist');
+    const m=family.find(x=>x.id===activeM);m.wl.push({t:p.title,u:p.url,i:p.img});S.set('gb_fam',family);bumpWish(p.id,1);toast('\u2764 Saved to wishlist');
   }
   paintHeart(id);try{renderMembers();renderWL();}catch(e){}
 }
